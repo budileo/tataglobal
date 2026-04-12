@@ -95,11 +95,8 @@
     <!-- Main Content -->
     <main class="p-4 md:p-8 max-w-7xl mx-auto">
       
-      <!-- Tabs Laporan Mendatar -->
       <div class="flex flex-wrap gap-2 md:gap-0 border-b border-slate-200 mb-6 print:hidden">
-         <button class="px-6 py-3 font-semibold text-emerald-600 border-b-2 border-emerald-600 outline-none">Laporan Penerimaan</button>
-         <button class="px-6 py-3 font-semibold text-slate-500 hover:text-slate-800 hover:border-slate-300 border-b-2 border-transparent outline-none">Summary Harian</button>
-         <button class="px-6 py-3 font-semibold text-slate-500 hover:text-slate-800 hover:border-slate-300 border-b-2 border-transparent outline-none">Rekap Piutang</button>
+         <button class="px-6 py-3 font-semibold text-emerald-600 border-b-2 border-emerald-600 outline-none">Aktivitas Penjualan</button>
       </div>
 
       <!-- Tabel/Data Section -->
@@ -129,11 +126,13 @@
             <table class="w-full text-left text-sm text-slate-600">
                <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-[13px] print:text-[12px] print:text-slate-800">
                   <tr>
-                     <th class="px-3 py-2 border-r border-slate-100 w-12 text-center">No</th>
-                     <th class="px-3 py-2 border-r border-slate-100 w-40">Tanggal</th>
-                     <th class="px-3 py-2 border-r border-slate-100 text-right">Jumlah Penjualan</th>
-                     <th class="px-3 py-2 border-r border-slate-100 text-right">Sisa Piutang Berjalan</th>
-                     <th class="px-3 py-2 bg-emerald-50 text-emerald-900 text-right">Jumlah Penerimaan</th>
+                      <th class="px-3 py-2 border-r border-slate-100 w-12 text-center">No</th>
+                      <th class="px-3 py-2 border-r border-slate-100 w-40">Tanggal</th>
+                      <th class="px-3 py-2 border-r border-slate-100 text-center w-24">Jml Faktur</th>
+                      <th class="px-3 py-2 border-r border-slate-100 text-right">Jumlah Penjualan</th>
+                      <th class="px-3 py-2 border-r border-slate-100 text-right">Sisa Piutang Berjalan</th>
+                      <th class="px-3 py-2 border-r border-slate-100 text-right">Jumlah Penerimaan</th>
+                      <th class="px-3 py-2 bg-emerald-50 text-emerald-900 text-center no-print">Aksi</th>
                   </tr>
                </thead>
                <tbody id="rekap-tbody">
@@ -154,80 +153,105 @@
             </button>
          </div>
 
-         <!-- Kop Surat Laporan -->
-         <div class="mb-8 text-center md:text-left relative">
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight uppercase">LAPORAN PENJUALAN HARIAN</h2>
-            <p class="text-emerald-700 font-bold text-sm mb-1 text-slate-600">CV Global Putra Swasembada</p>
-            <p class="text-slate-500 text-xs mt-1">Periode : <span id="det-periode" class="font-semibold text-slate-800"></span></p>
-         </div>
+          <!-- Kop Surat Laporan -->
+          <div class="mb-8 text-center md:text-left relative">
+             <h2 id="det-title" class="text-2xl font-black text-slate-900 tracking-tight uppercase">LAPORAN PENJUALAN HARIAN</h2>
+             <p class="text-emerald-700 font-bold text-sm mb-1">CV Global Putra Swasembada</p>
+             <p class="text-slate-500 text-xs mt-1">Periode : <span id="det-periode" class="font-semibold text-slate-800"></span></p>
+          </div>
 
-         <!-- Grid Neraca -->
-         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 print:grid-cols-2 print:gap-8 text-slate-800">
-            <!-- COL KIRI: PENERIMAAN KAS -->
-            <div>
-               <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-5 uppercase text-[13px] tracking-widest">Penerimaan Kas</h3>
-               
-               <div class="mb-5">
-                  <p class="font-bold text-emerald-800 text-[11px] mb-2 uppercase border-b border-emerald-100 pb-1">A. Waktu Bayar</p>
-                  <ul id="det-waktu" class="pl-2 space-y-1.5 text-[13px] font-medium text-slate-700"></ul>
-               </div>
-
-               <div class="mb-5">
-                  <p class="font-bold text-emerald-800 text-[11px] mb-2 uppercase border-b border-emerald-100 pb-1">B. Cara Bayar</p>
-                  <ul id="det-cara" class="pl-2 space-y-1.5 text-[13px] font-medium text-slate-700"></ul>
-               </div>
-
-               <div class="mb-5">
-                  <p class="font-bold text-emerald-800 text-[11px] mb-2 uppercase border-b border-emerald-100 pb-1">C. Kas Berdasarkan Kolektor</p>
-                  <ul id="det-kolektor" class="pl-2 space-y-1.5 text-[13px] font-medium text-slate-700"></ul>
-               </div>
-
-               <div class="mt-8 pt-3 border-t-2 border-slate-400 flex justify-between items-center text-lg font-black text-slate-900 bg-emerald-50 px-4 py-2.5 rounded print:bg-transparent print:px-0">
-                  <span>TOTAL KAS :</span>
-                  <span id="det-totalkas" class="text-emerald-700 print:text-slate-900">Rp 0</span>
-               </div>
-            </div>
-
-            <!-- COL KANAN: PENJUALAN -->
-            <div>
-               <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-5 uppercase text-[13px] tracking-widest">Penjualan</h3>
-
-               <div class="space-y-2.5 text-[13px] font-semibold text-slate-800">
-                  <div class="flex justify-between items-center"><span>Penjualan Rp :</span> <span id="det-jualrp" class="text-base text-slate-900"></span></div>
-                  <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-3"><span>Penjualan Kg :</span> <span id="det-jualkg" class="text-slate-600"></span></div>
-               </div>
-
-               <div class="mt-5">
-                  <div class="flex justify-between font-bold text-rose-700 mb-2 border-b border-rose-100 pb-1 text-[13px]"><span>Total Potongan Rp :</span> <span id="det-potrp"></span></div>
-                  <ul class="pl-2 space-y-1.5 text-[12px] text-rose-600 font-medium">
-                     <li class="flex justify-between"><span>- Potongan Harga Rp. :</span> <span id="det-pot-harga"></span></li>
-                     <li class="flex justify-between"><span>- Potongan Ayam Mati Rp. :</span> <span id="det-pot-mati"></span></li>
-                     <li class="flex justify-between"><span>- Ayam Susut Rp. :</span> <span id="det-pot-susut"></span></li>
-                     <li class="flex justify-between"><span>- Ayam Pulang Rp. :</span> <span id="det-pot-pulang"></span></li>
-                  </ul>
-               </div>
-
-               <div class="mt-8 pt-3 border-t-2 border-slate-400 flex justify-between items-center text-lg font-black text-slate-900 bg-slate-100 px-4 py-2.5 rounded print:bg-transparent print:px-0">
-                  <span>PENJUALAN BERSIH :</span>
-                  <span id="det-netrp"></span>
-               </div>
-            </div>
-         </div>
-
-         <!-- BAWAH: PIUTANG -->
-         <div class="mt-8 md:mt-12 pt-6 flex flex-col items-center border-t-2 border-dashed border-slate-300">
-            <div class="w-full md:w-1/2">
-                <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-4 uppercase text-[13px] tracking-widest text-center">Piutang</h3>
-                <div class="space-y-2 text-[13px] font-medium text-slate-600 px-4">
-                <div class="flex justify-between"><span>Piutang Hari Ini :</span> <span id="det-piutang-hari"></span></div>
-                <div class="flex justify-between border-b border-dashed border-slate-200 pb-2"><span>Piutang Lalu Belum Lunas :</span> <span id="det-piutang-lama"></span></div>
-                <div class="flex justify-between text-base font-black text-rose-700 pt-2">
-                    <span>TOTAL PIUTANG :</span>
-                    <span id="det-piutang-total"></span>
+          <!-- 1. MODE: PENERIMAAN (Existing Neraca) -->
+          <div id="container-penerimaan" class="mode-container hidden">
+             <!-- Grid Neraca -->
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 print:grid-cols-2 print:gap-8 text-slate-800">
+                <!-- COL KIRI: PENERIMAAN KAS -->
+                <div>
+                   <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-5 uppercase text-[13px] tracking-widest">Penerimaan Kas</h3>
+                   <div class="mb-5"><p class="font-bold text-emerald-800 text-[11px] mb-2 uppercase border-b border-emerald-100 pb-1">A. Waktu Bayar</p><ul id="det-waktu" class="pl-2 space-y-1.5 text-[13px] font-medium text-slate-700"></ul></div>
+                   <div class="mb-5"><p class="font-bold text-emerald-800 text-[11px] mb-2 uppercase border-b border-emerald-100 pb-1">B. Cara Bayar</p><ul id="det-cara" class="pl-2 space-y-1.5 text-[13px] font-medium text-slate-700"></ul></div>
+                   <div class="mb-5"><p class="font-bold text-emerald-800 text-[11px] mb-2 uppercase border-b border-emerald-100 pb-1">C. Kas Berdasarkan Kolektor</p><ul id="det-kolektor" class="pl-2 space-y-1.5 text-[13px] font-medium text-slate-700"></ul></div>
+                   <div class="mt-8 pt-3 border-t-2 border-slate-400 flex justify-between items-center text-lg font-black text-slate-900 bg-emerald-50 px-4 py-2.5 rounded print:bg-transparent print:px-0">
+                      <span>TOTAL KAS :</span>
+                      <span id="det-totalkas" class="text-emerald-700 print:text-slate-900">Rp 0</span>
+                   </div>
                 </div>
+                <!-- COL KANAN: PENJUALAN -->
+                <div>
+                   <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-5 uppercase text-[13px] tracking-widest">Penjualan</h3>
+                   <div class="space-y-2.5 text-[13px] font-semibold text-slate-800">
+                      <div class="flex justify-between items-center"><span>Penjualan Rp :</span> <span id="det-jualrp" class="text-base text-slate-900"></span></div>
+                      <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-3"><span>Penjualan Kg :</span> <span id="det-jualkg" class="text-slate-600"></span></div>
+                   </div>
+                   <div class="mt-5">
+                      <div class="flex justify-between font-bold text-rose-700 mb-2 border-b border-rose-100 pb-1 text-[13px]"><span>Total Potongan Rp :</span> <span id="det-potrp"></span></div>
+                      <ul class="pl-2 space-y-1.5 text-[12px] text-rose-600 font-medium">
+                         <li class="flex justify-between"><span>- Potongan Harga Rp. :</span> <span id="det-pot-harga"></span></li>
+                         <li class="flex justify-between"><span>- Potongan Ayam Mati Rp. :</span> <span id="det-pot-mati"></span></li>
+                         <li class="flex justify-between"><span>- Ayam Susut Rp. :</span> <span id="det-pot-susut"></span></li>
+                         <li class="flex justify-between"><span>- Ayam Pulang Rp. :</span> <span id="det-pot-pulang"></span></li>
+                      </ul>
+                   </div>
+                   <div class="mt-8 pt-3 border-t-2 border-slate-400 flex justify-between items-center text-lg font-black text-slate-900 bg-slate-100 px-4 py-2.5 rounded print:bg-transparent print:px-0">
+                      <span>PENJUALAN BERSIH :</span>
+                      <span id="det-netrp"></span>
+                   </div>
                 </div>
-            </div>
-         </div>
+             </div>
+             <!-- BAWAH: PIUTANG -->
+             <div class="mt-8 md:mt-12 pt-6 flex flex-col items-center border-t-2 border-dashed border-slate-300">
+                <div class="w-full md:w-1/2">
+                    <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-4 uppercase text-[13px] tracking-widest text-center">Piutang</h3>
+                    <div class="space-y-2 text-[13px] font-medium text-slate-600 px-4">
+                       <div class="flex justify-between"><span>Piutang Hari Ini :</span> <span id="det-piutang-hari"></span></div>
+                       <div class="flex justify-between border-b border-dashed border-slate-200 pb-2"><span>Piutang Lalu Belum Lunas :</span> <span id="det-piutang-lama"></span></div>
+                       <div class="flex justify-between text-base font-black text-rose-700 pt-2"><span>TOTAL PIUTANG :</span> <span id="det-piutang-total"></span></div>
+                    </div>
+                </div>
+             </div>
+          </div>
+
+          <!-- 2. MODE: POTONGAN (TABEL DETAIL) -->
+          <div id="container-potongan" class="mode-container hidden">
+             <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-600 border-collapse">
+                   <thead>
+                      <tr class="bg-slate-100 border-b border-slate-300 text-slate-700">
+                         <th class="px-2 py-2 border-r border-slate-200 w-8">No</th>
+                         <th class="px-2 py-2 border-r border-slate-200 w-24">Marketing</th>
+                         <th class="px-2 py-2 border-r border-slate-200 w-24">No Faktur</th>
+                         <th class="px-2 py-2 border-r border-slate-200">Konsumen</th>
+                         <th class="px-2 py-2 border-r border-slate-200 text-right">Tagihan</th>
+                         <th class="px-2 py-2 border-r border-slate-200 text-right font-bold text-rose-700 bg-rose-50">Ttl Potong</th>
+                         <th class="px-2 py-2 border-r border-slate-200 text-right">Pot.Harga</th>
+                         <th class="px-2 py-2 border-r border-slate-200 text-right">A.Mati(Kg/Rp)</th>
+                         <th class="px-2 py-2 border-r border-slate-200 text-right">A.Susut(Kg/Rp)</th>
+                         <th class="px-2 py-2 text-right">A.Pulang(Kg/Rp)</th>
+                      </tr>
+                   </thead>
+                   <tbody id="tbody-det-potongan"></tbody>
+                </table>
+             </div>
+          </div>
+
+          <!-- 3. MODE: PIUTANG (TABEL DETAIL) -->
+          <div id="container-piutang" class="mode-container hidden">
+             <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-600 border-collapse">
+                   <thead>
+                      <tr class="bg-slate-100 border-b border-slate-300 text-slate-700">
+                         <th class="px-2 py-2 border-r border-slate-200 w-8">No</th>
+                         <th class="px-2 py-2 border-r border-slate-200 w-24">Marketing</th>
+                         <th class="px-2 py-2 border-r border-slate-200 w-24">No Faktur</th>
+                         <th class="px-2 py-2 border-r border-slate-200">Konsumen</th>
+                         <th class="px-2 py-2 border-r border-slate-200 text-right">Tagihan</th>
+                         <th class="px-2 py-2 border-r border-slate-200 text-right">Pembayaran</th>
+                         <th class="px-2 py-2 text-right font-bold text-rose-700 bg-rose-50">Sisa Piutang</th>
+                      </tr>
+                   </thead>
+                   <tbody id="tbody-det-piutang"></tbody>
+                </table>
+             </div>
+          </div>
       </div>
 
     </main>
@@ -254,11 +278,13 @@
                 if(!byDate[d]) byDate[d] = {
                     date: d, penerimaan: 0, penjualanRp: 0, penjualanKg: 0,
                     potTotal:0, potHarga:0, potMatiRp:0, potSusutRp:0, potPulangRp:0,
+                    bonIds: new Set(), // Track unique bons for the day
                     waktuMap: {}, caraMap: {}, kolMap: {}, kasirMap: {}
                 };
                 const entry = byDate[d];
                 const nom = h.nominal || 0;
                 entry.penerimaan += nom;
+                entry.bonIds.add(b.id);
                 
                 const w = (h.waktu || 'TDK DIKETAHUI').toUpperCase();
                 entry.waktuMap[w] = (entry.waktuMap[w] || 0) + nom;
@@ -286,9 +312,11 @@
                 if(!byDate[bd]) byDate[bd] = {
                     date: bd, penerimaan: 0, penjualanRp: 0, penjualanKg: 0,
                     potTotal:0, potHarga:0, potMatiRp:0, potSusutRp:0, potPulangRp:0,
+                    bonIds: new Set(),
                     waktuMap: {}, caraMap: {}, kolMap: {}, kasirMap: {}
                 };
                 byDate[bd].penjualanRp += b.total;
+                byDate[bd].bonIds.add(b.id);
                 (b.items || []).forEach(it => { byDate[bd].penjualanKg += (it.netto || 0); });
             }
          });
@@ -316,7 +344,7 @@
          const tbody = document.getElementById('rekap-tbody');
          tbody.innerHTML = '';
          if(rekapData.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-slate-400 border-none font-medium">Belum ada data penerimaan untuk periode terpilih.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="py-12 text-center text-slate-400 border-none font-medium">Belum ada data aktivitas untuk periode terpilih.</td></tr>`;
          } else {
             rekapData.forEach((row, i) => {
                 let piutangHariIni = 0;
@@ -328,29 +356,63 @@
                    }
                 });
 
+                const count = row.bonIds.size;
+
                 const tr = document.createElement('tr');
-                tr.className = "border-b border-slate-100 hover:bg-slate-100 transition-colors cursor-pointer group text-[13px] print:text-[12px] print:text-black";
+                tr.className = "border-b border-slate-100 hover:bg-slate-100 transition-colors group text-[13px] print:text-[12px] print:text-black";
                 tr.innerHTML = `
-                    <td class="px-3 py-2.5 border-r border-slate-100 text-center font-medium">${i+1}</td>
-                    <td class="px-3 py-2.5 border-r border-slate-100 font-bold text-emerald-700 group-hover:underline print:text-black">${new Date(row.date).toLocaleDateString('id-ID', {weekday:'long', day:'2-digit', month:'long', year:'numeric'})}</td>
-                    <td class="px-3 py-2.5 border-r border-slate-100 text-right font-medium">${formatRp(row.penjualanRp)}</td>
-                    <td class="px-3 py-2.5 border-r border-slate-100 text-right text-rose-600 font-semibold print:text-black">${formatRp(piutangHariIni)}</td>
-                    <td class="px-3 py-2.5 bg-emerald-50 text-emerald-800 font-bold text-right group-hover:bg-emerald-200 transition-colors print:bg-transparent print:text-black">${formatRp(row.penerimaan)}</td>
+                    <td class="px-3 py-2 border-r border-slate-100 text-center font-medium">${i+1}</td>
+                    <td class="px-3 py-2 border-r border-slate-100 font-bold text-slate-700">${new Date(row.date).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'})}</td>
+                    <td class="px-3 py-2 border-r border-slate-100 text-center font-bold text-blue-600">${count}</td>
+                    <td class="px-3 py-2 border-r border-slate-100 text-right font-medium">${formatRp(row.penjualanRp)}</td>
+                    <td class="px-3 py-2 border-r border-slate-100 text-right text-rose-600 font-semibold print:text-black">${formatRp(piutangHariIni)}</td>
+                    <td class="px-3 py-2 border-r border-slate-100 text-right font-bold text-emerald-800">${formatRp(row.penerimaan)}</td>
+                    <td class="px-3 py-2 text-center no-print">
+                        <div class="flex gap-1 justify-center">
+                            <button class="btn-det bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="penerimaan" data-date="${row.date}">Penerimaan</button>
+                            <button class="btn-det bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="potongan" data-date="${row.date}">Potongan</button>
+                            <button class="btn-det bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="piutang" data-date="${row.date}">Piutang</button>
+                        </div>
+                    </td>
                 `;
-                tr.addEventListener('click', () => showDetail(row.date));
                 tbody.appendChild(tr);
+            });
+
+            tbody.querySelectorAll('.btn-det').forEach(btn => {
+               btn.addEventListener('click', () => showDetail(btn.dataset.date, btn.dataset.mode));
             });
          }
       }
 
-      function showDetail(dateStr) {
+      function showDetail(dateStr, mode = 'penerimaan') {
          document.getElementById('view-rekap').classList.add('hidden');
          document.getElementById('view-detail').classList.remove('hidden');
 
+         // Hide all mode containers
+         document.querySelectorAll('.mode-container').forEach(c => c.classList.add('hidden'));
+
+         const dateObj = new Date(dateStr);
+         const formattedDate = dateObj.toLocaleDateString('id-ID', {weekday: 'long', day:'2-digit', month:'long', year:'numeric'});
+         document.getElementById('det-periode').textContent = formattedDate;
+
+         if (mode === 'penerimaan') {
+            document.getElementById('det-title').textContent = 'LAPORAN PENJUALAN HARIAN';
+            document.getElementById('container-penerimaan').classList.remove('hidden');
+            renderDetailPenerimaan(dateStr);
+         } else if (mode === 'potongan') {
+            document.getElementById('det-title').textContent = 'RINCIAN POTONGAN HARIAN';
+            document.getElementById('container-potongan').classList.remove('hidden');
+            renderDetailPotongan(dateStr);
+         } else if (mode === 'piutang') {
+            document.getElementById('det-title').textContent = 'RINCIAN PIUTANG HARIAN';
+            document.getElementById('container-piutang').classList.remove('hidden');
+            renderDetailPiutang(dateStr);
+         }
+      }
+
+      function renderDetailPenerimaan(dateStr) {
          const row = rekapData.find(d => d.date === dateStr);
          if(!row) return;
-
-         document.getElementById('det-periode').textContent = new Date(row.date).toLocaleDateString('id-ID', {weekday: 'long', day:'2-digit', month:'long', year:'numeric'});
 
          const mapToList = (mapObj) => {
             const keys = Object.keys(mapObj);
@@ -361,11 +423,8 @@
          document.getElementById('det-waktu').innerHTML = mapToList(row.waktuMap);
          document.getElementById('det-cara').innerHTML = mapToList(row.caraMap);
          document.getElementById('det-kolektor').innerHTML = mapToList(row.kolMap);
-         // (User did not explicitly write A Kasir but we can leave Kasir out if not strictly needed based on their example "Waktu, Cara, Kolektor")
-         
          document.getElementById('det-totalkas').textContent = formatRp(row.penerimaan);
 
-         // PENJUALAN
          document.getElementById('det-jualrp').textContent = formatRp(row.penjualanRp);
          document.getElementById('det-jualkg').textContent = formatKg(row.penjualanKg);
          
@@ -377,7 +436,6 @@
 
          document.getElementById('det-netrp').textContent = formatRp(row.penjualanRp - row.potTotal);
 
-         // PIUTANG
          const bons = getAllBons();
          let piutangHariIni = 0;
          let piutangLama = 0;
@@ -394,6 +452,81 @@
          document.getElementById('det-piutang-hari').textContent = formatRp(piutangHariIni);
          document.getElementById('det-piutang-lama').textContent = formatRp(piutangLama);
          document.getElementById('det-piutang-total').textContent = formatRp(piutangHariIni + piutangLama);
+      }
+
+      function renderDetailPotongan(dateStr) {
+         const bons = getAllBons();
+         // Filter bons created on this date OR bons that have payments/deductions on this date?
+         // User said: "Menampilkan Data dalam bentuk Tabel: Kolektor, No Faktur, Konsumen..."
+         // Usually it means bons created on this date.
+         const dailyBons = bons.filter(b => b.tanggal === dateStr);
+         const tbody = document.getElementById('tbody-det-potongan');
+         tbody.innerHTML = '';
+
+         if(!dailyBons.length) {
+            tbody.innerHTML = `<tr><td colspan="10" class="py-8 text-center text-slate-400">Tidak ada data faktur pada tanggal ini.</td></tr>`;
+            return;
+         }
+
+         dailyBons.forEach((b, i) => {
+            const pot = (b.historiBayar || []).reduce((acc, h) => {
+               const p = h.potongan || {};
+               acc.total += (h.totalPotongan || 0);
+               acc.harga += (p.harga || 0);
+               acc.matiRp += (p.matiRp || 0); acc.matiKg += (p.matiKg || 0);
+               acc.susutRp += (p.susutRp || 0); acc.susutKg += (p.susutKg || 0);
+               acc.pulangRp += (p.pulangRp || 0); acc.pulangKg += (p.pulangKg || 0);
+               return acc;
+            }, {total:0, harga:0, matiRp:0, matiKg:0, susutRp:0, susutKg:0, pulangRp:0, pulangKg:0});
+
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-slate-200 hover:bg-slate-50";
+            tr.innerHTML = `
+               <td class="px-2 py-2 border-r border-slate-200 text-center">${i+1}</td>
+               <td class="px-2 py-2 border-r border-slate-200 uppercase">${b.kolektor || '-'}</td>
+               <td class="px-2 py-2 border-r border-slate-200 font-bold">${b.id}</td>
+               <td class="px-2 py-2 border-r border-slate-200">${b.konsumen}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right font-medium">${b.total.toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right font-bold text-rose-700 bg-rose-50">${pot.total.toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right">${pot.harga.toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right text-[10px]"><span class="block">${pot.matiKg} Kg</span><span class="text-rose-600">${pot.matiRp.toLocaleString('id-ID')}</span></td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right text-[10px]"><span class="block">${pot.susutKg} Kg</span><span class="text-rose-600">${pot.susutRp.toLocaleString('id-ID')}</span></td>
+               <td class="px-2 py-2 text-right text-[10px]"><span class="block">${pot.pulangKg} Kg</span><span class="text-rose-600">${pot.pulangRp.toLocaleString('id-ID')}</span></td>
+            `;
+            tbody.appendChild(tr);
+         });
+      }
+
+      function renderDetailPiutang(dateStr) {
+         const bons = getAllBons();
+         const targetBons = bons.filter(b => b.tanggal === dateStr);
+         const tbody = document.getElementById('tbody-det-piutang');
+         tbody.innerHTML = '';
+
+         if(!targetBons.length) {
+            tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">Tidak ada data piutang pada tanggal ini.</td></tr>`;
+            return;
+         }
+
+         targetBons.forEach((b, i) => {
+            const hist = b.historiBayar || [];
+            const paid = hist.reduce((s, h) => s + (h.nominal || 0), 0);
+            const pot = hist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
+            const sisa = b.total - pot - paid;
+
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-slate-200 hover:bg-slate-50";
+            tr.innerHTML = `
+               <td class="px-2 py-2 border-r border-slate-200 text-center">${i+1}</td>
+               <td class="px-2 py-2 border-r border-slate-200 uppercase font-bold">${b.kolektor || '-'}</td>
+               <td class="px-2 py-2 border-r border-slate-200 font-bold">${b.id}</td>
+               <td class="px-2 py-2 border-r border-slate-200">${b.konsumen}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right font-medium">${b.total.toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right font-medium text-emerald-700">${paid.toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 text-right font-bold text-rose-700 bg-rose-50">${sisa.toLocaleString('id-ID')}</td>
+            `;
+            tbody.appendChild(tr);
+         });
       }
 
       document.getElementById('btn-back-detail').addEventListener('click', () => {
