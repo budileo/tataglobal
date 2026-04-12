@@ -70,25 +70,39 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Buat Bon Baru
         </button>
       </div>
-      <div class="flex flex-wrap gap-2 mb-5 items-center">
-        <span class="text-xs font-semibold text-slate-500 mr-1">Filter:</span>
-        <button data-filter="hari-ini" class="filter-btn active text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Hari Ini</button>
-        <button data-filter="kemarin" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Kemarin</button>
-        <button data-filter="minggu-ini" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Minggu Ini</button>
-        <button data-filter="bulan-ini" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Bulan Ini</button>
-        <div class="flex items-center gap-1 ml-1">
-          <input id="filterDateFrom" type="date" class="border border-slate-200 rounded px-2 py-1 text-xs outline-emerald-500">
-          <span class="text-xs text-slate-400">s/d</span>
-          <input id="filterDateTo" type="date" class="border border-slate-200 rounded px-2 py-1 text-xs outline-emerald-500">
-          <button data-filter="range" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Tampilkan</button>
+      <div class="flex flex-wrap gap-2 mb-5 items-center justify-between border-b border-slate-200 pb-3">
+        <div class="flex flex-wrap gap-2 items-center">
+            <span class="text-xs font-semibold text-slate-500 mr-1">Filter Waktu:</span>
+            <button data-filter="hari-ini" class="filter-btn active text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Hari Ini</button>
+            <button data-filter="kemarin" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Kemarin</button>
+            <button data-filter="minggu-ini" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Minggu Ini</button>
+            <button data-filter="bulan-ini" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Bulan Ini</button>
+            <div class="flex items-center gap-1 ml-1">
+            <input id="filterDateFrom" type="date" class="border border-slate-200 rounded px-2 py-1 text-xs outline-emerald-500">
+            <span class="text-xs text-slate-400">s/d</span>
+            <input id="filterDateTo" type="date" class="border border-slate-200 rounded px-2 py-1 text-xs outline-emerald-500">
+            <button data-filter="range" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Terbapkan</button>
+            </div>
         </div>
+        <button id="toggle-summary-btn" class="text-xs font-bold text-slate-500 hover:text-emerald-600 transition-colors bg-white border border-slate-200 px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-sm">
+           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> 
+           Tampilkan / Sembunyikan Ringkasan
+        </button>
       </div>
       <!-- Summary Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm"><p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Jumlah Bon</p><h3 id="summary-count" class="text-2xl font-bold text-slate-900">0</h3></div>
-        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm"><p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Total Penjualan</p><h3 id="summary-total" class="text-2xl font-bold text-slate-900">Rp 0</h3></div>
-        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden"><div class="absolute right-0 top-0 w-1.5 h-full bg-rose-500 rounded-r"></div><p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Piutang</p><h3 id="summary-piutang" class="text-2xl font-bold text-rose-600">Rp 0</h3></div>
-        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden"><div class="absolute right-0 top-0 w-1.5 h-full bg-emerald-500 rounded-r"></div><p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Lunas</p><h3 id="summary-lunas" class="text-2xl font-bold text-emerald-700">Rp 0</h3></div>
+      <div id="summary-cards-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6 transition-all hidden">
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Jumlah Bon</p><h3 id="sum-jml-bon" class="text-lg font-bold text-slate-800">0</h3></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Total Penjualan</p><h3 id="sum-jual" class="text-lg font-bold text-emerald-700">Rp 0</h3></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Jumlah Penjualan (Netto)</p><h3 class="text-lg font-bold text-slate-800"><span id="sum-netto">0</span> Kg <span id="sum-ekor" class="text-xs text-slate-400">| 0 Ekor</span></h3></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm relative"><div class="absolute right-0 top-0 w-1 h-full bg-rose-500 rounded-r"></div><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Piutang / Sisa</p><h3 id="sum-piutang" class="text-lg font-bold text-rose-600">Rp 0</h3><p id="sum-piutang-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Total Penerimaan</p><h3 id="sum-terima" class="text-lg font-bold text-emerald-600">Rp 0</h3><p id="sum-terima-pct" class="text-[10px] font-semibold text-slate-400">0% dari Total Penjualan</p></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Total Lunas</p><h3 id="sum-lunas" class="text-lg font-bold text-emerald-700">Rp 0</h3><p id="sum-lunas-pct" class="text-[10px] font-semibold text-slate-400">0% dari Total Penjualan</p></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Jumlah Pembayaran</p><h3 id="sum-xbayar" class="text-lg font-bold text-slate-800">0x Bayar</h3></div>
+         <div class="bg-rose-50/50 p-3 rounded-lg border border-rose-100 shadow-sm"><p class="text-[10px] text-rose-600 font-bold uppercase mb-0.5">Total Potongan</p><h3 id="sum-pot" class="text-lg font-bold text-rose-600">Rp 0</h3><p id="sum-pot-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
+         <div class="bg-rose-50/50 p-3 rounded-lg border border-rose-100 shadow-sm"><p class="text-[10px] text-rose-600 font-bold uppercase mb-0.5">Tot. Pot. Harga</p><h3 id="sum-pot-harga" class="text-lg font-bold text-rose-600">Rp 0</h3><p id="sum-pot-harga-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
+         <div class="bg-rose-50/50 p-3 rounded-lg border border-rose-100 shadow-sm"><p class="text-[10px] text-rose-600 font-bold uppercase mb-0.5">Tot. Pot. Ayam Mati</p><h3 id="sum-pot-mati" class="text-lg font-bold text-rose-600">Rp 0  <span id="sum-pot-mati-kg" class="text-xs text-rose-400">| 0 Kg</span></h3><p id="sum-pot-mati-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
+         <div class="bg-rose-50/50 p-3 rounded-lg border border-rose-100 shadow-sm"><p class="text-[10px] text-rose-600 font-bold uppercase mb-0.5">Tot. Pot. Ayam Susut</p><h3 id="sum-pot-susut" class="text-lg font-bold text-rose-600">Rp 0  <span id="sum-pot-susut-kg" class="text-xs text-rose-400">| 0 Kg</span></h3><p id="sum-pot-susut-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
+         <div class="bg-rose-50/50 p-3 rounded-lg border border-rose-100 shadow-sm"><p class="text-[10px] text-rose-600 font-bold uppercase mb-0.5">Tot. Pot. Ayam Pulang</p><h3 id="sum-pot-pulang" class="text-lg font-bold text-rose-600">Rp 0  <span id="sum-pot-pulang-kg" class="text-xs text-rose-400">| 0 Kg</span></h3><p id="sum-pot-pulang-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
       </div>
       <!-- Table -->
       <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
@@ -343,9 +357,17 @@
         if(bon.keterangan){kw.style.display='';ke.textContent=bon.keterangan;}else{kw.style.display='none';}
 
         const sb=document.getElementById('detail-status-badge');
-        sb.innerHTML=bon.status==='LUNAS'
-          ?'<span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">✓ LUNAS</span>'
-          :'<span class="inline-flex items-center gap-1 bg-rose-100 text-rose-700 text-xs font-bold px-3 py-1 rounded-full">● PIUTANG</span>';
+        let cl = 'bg-rose-100 text-rose-700', text = '● PIUTANG';
+        if(bon.status === 'LUNAS') { cl = 'bg-emerald-100 text-emerald-800'; text = '✓ LUNAS'; }
+        else if(bon.status === 'SEBAGIAN') { cl = 'bg-amber-100 text-amber-800'; text = '● SEBAGIAN'; }
+        sb.innerHTML=`<span class="inline-flex items-center gap-1 ${cl} text-xs font-bold px-3 py-1 rounded-full">${text}</span>`;
+        
+        if(bon.status === 'LUNAS') {
+           document.getElementById('btn-edit-bon').style.display = 'none';
+        } else {
+           // tailwind utility 'flex' is used for this button usually
+           document.getElementById('btn-edit-bon').style.display = 'inline-flex';
+        }
 
         // Render items table
         const items=bon.items||[];
@@ -441,6 +463,9 @@
         }return{from:f,to:t};
       }
       document.getElementById('searchInput').addEventListener('input',()=>renderTable());
+      document.getElementById('toggle-summary-btn').addEventListener('click', () => {
+         document.getElementById('summary-cards-container').classList.toggle('hidden');
+      });
 
       // ==============================
       // RENDER TABLE
@@ -450,20 +475,87 @@
         const filtered=bons.map((b,i)=>({...b,_idx:i})).filter(b=>{
           return(b.tanggal>=from&&b.tanggal<=to)&&(!q||b.id.toLowerCase().includes(q)||b.konsumen.toLowerCase().includes(q));
         });
-        document.getElementById('summary-count').textContent=filtered.length;
-        document.getElementById('summary-total').textContent='Rp '+filtered.reduce((s,b)=>s+b.total,0).toLocaleString('id-ID');
-        document.getElementById('summary-piutang').textContent='Rp '+filtered.filter(b=>b.status==='PIUTANG').reduce((s,b)=>s+b.total,0).toLocaleString('id-ID');
-        document.getElementById('summary-lunas').textContent='Rp '+filtered.filter(b=>b.status==='LUNAS').reduce((s,b)=>s+b.total,0).toLocaleString('id-ID');
+        let sumPenjualan=0, sumKgNetto=0, sumEkor=0, sumTerbayar=0, sumPiutang=0, sumLunas=0, sumXBayar=0, sumPotongan=0;
+        let sP_Harga=0, sP_MatiRp=0, sP_MatiKg=0, sP_SusutRp=0, sP_SusutKg=0, sP_PulangRp=0, sP_PulangKg=0;
+
+        filtered.forEach(b => {
+           sumPenjualan += b.total;
+           b.items?.forEach(it => { sumKgNetto += (it.netto || 0); sumEkor += Number(it.jmlAyam || 0); });
+           
+           const hist = b.historiBayar || [];
+           let terbayar = 0;
+           let potTotal = 0;
+           sumXBayar += hist.length;
+
+           hist.forEach(h => {
+              terbayar += (h.nominal || 0);
+              potTotal += (h.totalPotongan || 0);
+              sumPotongan += (h.totalPotongan || 0);
+              const p = h.potongan || {};
+              sP_Harga += (p.harga || 0);
+              sP_MatiRp += (p.matiRp || 0); sP_MatiKg += (p.matiKg || 0);
+              sP_SusutRp += (p.susutRp || 0); sP_SusutKg += (p.susutKg || 0);
+              sP_PulangRp += (p.pulangRp || 0); sP_PulangKg += (p.pulangKg || 0);
+           });
+
+           sumTerbayar += terbayar;
+           const tagihanAkhir = b.total - potTotal; 
+           let sisa = tagihanAkhir - terbayar;
+           if(sisa < 0) sisa = 0;
+
+           if(sisa === 0 && b.total > 0) sumLunas += terbayar;  // we check total > 0 so empty ones don't count
+           else sumPiutang += sisa;
+        });
+
+        const getPct = (val) => sumPenjualan > 0 ? ((val / sumPenjualan) * 100).toFixed(1) + '%' : '0%';
+        
+        document.getElementById('sum-jml-bon').textContent = filtered.length;
+        document.getElementById('sum-jual').textContent = 'Rp ' + sumPenjualan.toLocaleString('id-ID');
+        document.getElementById('sum-netto').textContent = sumKgNetto.toLocaleString('id-ID');
+        document.getElementById('sum-ekor').textContent = '| ' + sumEkor.toLocaleString('id-ID') + ' Ekor';
+        
+        document.getElementById('sum-piutang').textContent = 'Rp ' + sumPiutang.toLocaleString('id-ID');
+        document.getElementById('sum-piutang-pct').textContent = getPct(sumPiutang) + ' dari Total Penjualan';
+        
+        document.getElementById('sum-terima').textContent = 'Rp ' + sumTerbayar.toLocaleString('id-ID');
+        document.getElementById('sum-terima-pct').textContent = getPct(sumTerbayar) + ' dari Total Penjualan';
+        
+        document.getElementById('sum-lunas').textContent = 'Rp ' + sumLunas.toLocaleString('id-ID');
+        document.getElementById('sum-lunas-pct').textContent = getPct(sumLunas) + ' dari Total Penjualan';
+        
+        document.getElementById('sum-xbayar').textContent = sumXBayar + 'x Bayar';
+        
+        document.getElementById('sum-pot').textContent = 'Rp ' + sumPotongan.toLocaleString('id-ID');
+        document.getElementById('sum-pot-pct').textContent = getPct(sumPotongan) + ' dari Total Penjualan';
+
+        document.getElementById('sum-pot-harga').textContent = 'Rp ' + sP_Harga.toLocaleString('id-ID');
+        document.getElementById('sum-pot-harga-pct').textContent = getPct(sP_Harga) + ' dari Total Penjualan';
+
+        document.getElementById('sum-pot-mati').innerHTML = 'Rp ' + sP_MatiRp.toLocaleString('id-ID') + ' <span class="text-[11px] text-rose-400">| ' + sP_MatiKg.toLocaleString('id-ID') + ' Kg</span>';
+        document.getElementById('sum-pot-mati-pct').textContent = getPct(sP_MatiRp) + ' dari Total Penjualan';
+
+        document.getElementById('sum-pot-susut').innerHTML = 'Rp ' + sP_SusutRp.toLocaleString('id-ID') + ' <span class="text-[11px] text-rose-400">| ' + sP_SusutKg.toLocaleString('id-ID') + ' Kg</span>';
+        document.getElementById('sum-pot-susut-pct').textContent = getPct(sP_SusutRp) + ' dari Total Penjualan';
+
+        document.getElementById('sum-pot-pulang').innerHTML = 'Rp ' + sP_PulangRp.toLocaleString('id-ID') + ' <span class="text-[11px] text-rose-400">| ' + sP_PulangKg.toLocaleString('id-ID') + ' Kg</span>';
+        document.getElementById('sum-pot-pulang-pct').textContent = getPct(sP_PulangRp) + ' dari Total Penjualan';
 
         const tbody=document.getElementById('bon-table-body'),empty=document.getElementById('empty-state');
         if(!filtered.length){tbody.innerHTML='';empty.classList.remove('hidden');return;}
         empty.classList.add('hidden');
         tbody.innerHTML=filtered.map((b,i)=>{
-          const sc=b.status==='LUNAS'?'bg-emerald-100 text-emerald-800':'bg-rose-100 text-rose-700';
+          let scCode = 'P', scStr = 'Piutang', scCls = 'bg-rose-100 text-rose-700';
+          if(b.status === 'LUNAS') { scCode = 'L'; scStr = 'Lunas'; scCls = 'bg-emerald-100 text-emerald-800'; }
+          else if(b.status === 'SEBAGIAN') { scCode = 'S'; scStr = 'Sebagian'; scCls = 'bg-amber-100 text-amber-800'; }
+          const isLunas = b.status === 'LUNAS';
+
           const fd=new Date(b.tanggal).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
           const itemsCount = b.items ? b.items.length : 0;
           const totalNetto = b.items ? b.items.reduce((s, it) => s + (it.netto || (it.bruto - it.kotak)), 0) : 0;
-          return`<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer" data-idx="${b._idx}">
+          
+          const actionBtn = isLunas ? `<span class="text-[10px] text-slate-300 font-bold bg-slate-50 px-2 py-1 rounded">SELESAI</span>` : `<button class="btn-detail text-emerald-600 hover:underline text-[11px] font-semibold" data-idx="${b._idx}">Detail</button>`;
+
+          return`<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors ${!isLunas?'cursor-pointer':''}" ${!isLunas?`data-idx="${b._idx}"`:''}>
             <td class="px-2 py-2 border-r border-slate-100 text-center text-slate-400">${i+1}</td>
             <td class="px-2 py-2 border-r border-slate-100 whitespace-nowrap text-xs">${fd}</td>
             <td class="px-2 py-2 border-r border-slate-100 font-bold text-slate-800 text-xs">${b.id}</td>
@@ -472,8 +564,8 @@
             <td class="px-2 py-2 border-r border-slate-100">${b.konsumen}</td>
             <td class="px-2 py-2 border-r border-slate-100 text-slate-500">${b.staf}</td>
             <td class="px-2 py-2 border-r border-slate-100 text-right font-semibold">${b.total.toLocaleString('id-ID')}</td>
-            <td class="px-2 py-2 border-r border-slate-100 text-center"><span class="text-[10px] font-bold px-2 py-1 rounded ${sc}">${b.status}</span></td>
-            <td class="px-2 py-2 text-center"><button class="btn-detail text-emerald-600 hover:underline text-[11px] font-semibold" data-idx="${b._idx}">Detail</button></td>
+            <td class="px-2 py-2 border-r border-slate-100 text-center"><span class="text-[10px] uppercase font-bold px-2 py-1 rounded ${scCls}">${scCode} - ${scStr}</span></td>
+            <td class="px-2 py-2 text-center">${actionBtn}</td>
           </tr>`;
         }).join('');
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pembayaran - Operasional Keuangan</title>
+    <title>Pembayaran - TATA GLOBAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = { theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } } }
@@ -11,17 +11,24 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
       body { font-family: 'Inter', sans-serif; }
+      .filter-btn.active { background-color: #059669; color: #fff; border-color: #059669; }
     </style>
   </head>
-  <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
+  <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 print:pl-0 print:pb-0 print:bg-white transition-all duration-300">
     
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between">
-      <h2 class="text-xl font-bold text-slate-900">Pembayaran & Potongan</h2>
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between print:hidden">
+      <div class="flex items-center gap-3">
+        <h2 id="page-title" class="text-xl font-bold text-slate-900">Pembayaran & Potongan</h2>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Keuangan</span>
+        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">K</div>
+      </div>
     </header>
 
     <!-- Sidebar Section -->
-    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
-      
+    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300 print:hidden">
       <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
@@ -33,41 +40,17 @@
       </div>
 
       <div class="flex md:flex-col md:w-full w-max md:space-y-1">
-        <!-- Dashboard -->
-        <a href="dashboard.html" title="Dashboard" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span>
-        </a>
+        <a href="dashboard.html" title="Dashboard" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span></a>
         
-        <!-- Bon Penjualan -->
-        <a href="bon.html" title="Bon Penjualan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Bon Penjualan</span>
-        </a>
+        <a href="bon.html" title="Bon Penjualan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Bon Penjualan</span></a>
 
-        <!-- Pembayaran -->
-        <a href="pembayaran.html" title="Pembayaran & Potongan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pembayaran</span>
-        </a>
+        <a href="pembayaran.html" title="Pembayaran" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pembayaran</span></a>
 
-        <!-- Laporan -->
-        <a href="laporan.html" title="Laporan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Laporan</span>
-        </a>
+        <a href="laporan.html" title="Laporan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Laporan</span></a>
 
-        <!-- Master Data -->
-        <a href="#" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span>
-        </a>
+        <a href="master.html" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span></a>
 
-        <!-- Histori Aktivitas -->
-        <a href="#" title="Histori Aktivitas" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Histori Aktivitas</span>
-        </a>
+        <a href="histori.html" title="Histori Aktivitas" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Histori Aktivitas</span></a>
       </div>
 
       <!-- User Info -->
@@ -83,77 +66,587 @@
       </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="p-4 md:p-8 max-w-5xl mx-auto">
-      
-      <!-- Cari Bon -->
-      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6 flex items-end gap-4">
-        <div class="w-full">
-           <label class="block text-xs font-semibold text-slate-500 mb-1">Cari Bon (Input Manual / Dropdown)</label>
-           <select class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500">
-             <option>-- Pilih Bon Piutang --</option>
-             <option selected>BN-01 - Bp. Budi (Rp 1.876.000)</option>
-           </select>
+    <!-- ============================================== -->
+    <!-- VIEW 1: DAFTAR TRANSAKSI                       -->
+    <!-- ============================================== -->
+    <main id="view-list" class="p-4 md:p-8 max-w-6xl mx-auto">
+      <div class="flex flex-col sm:flex-row gap-3 mb-4">
+        <div class="relative flex-1">
+          <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <input id="searchInput" type="text" placeholder="Cari No Faktur atau Nama Konsumen..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
         </div>
-        <button class="bg-slate-800 text-white px-4 py-2 rounded text-sm font-semibold hover:bg-slate-700">Tarik Data</button>
+      </div>
+      
+      <div class="flex flex-wrap gap-2 mb-5 items-center justify-between border-b border-slate-200 pb-3">
+        <div class="flex flex-wrap gap-2 items-center">
+            <span class="text-xs font-semibold text-slate-500 mr-1">Filter Waktu:</span>
+            <button data-filter="hari-ini" class="filter-btn active text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Hari Ini</button>
+            <button data-filter="kemarin" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Kemarin</button>
+            <button data-filter="minggu-ini" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Minggu Ini</button>
+            <button data-filter="bulan-ini" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Bulan Ini</button>
+            <div class="flex items-center gap-1 ml-1">
+            <input id="filterDateFrom" type="date" class="border border-slate-200 rounded px-2 py-1 text-xs outline-emerald-500">
+            <span class="text-xs text-slate-400">s/d</span>
+            <input id="filterDateTo" type="date" class="border border-slate-200 rounded px-2 py-1 text-xs outline-emerald-500">
+            <button id="btn-range" data-filter="range" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Cari Range Waktu</button>
+            </div>
+        </div>
+        <button id="toggle-summary-btn" class="text-xs font-bold text-slate-500 hover:text-emerald-600 transition-colors bg-white border border-slate-200 px-3 py-1.5 rounded-lg flex items-center gap-2 shadow-sm">
+           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> 
+           Tampilkan / Sembunyikan Ringkasan
+        </button>
       </div>
 
-      <!-- Detail dan Potongan -->
+      <!-- Summary Cards -->
+      <div id="summary-cards-container" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6 transition-all hidden">
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Jumlah Bon</p><h3 id="sum-jml-bon" class="text-lg font-bold text-slate-800">0</h3></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Total Penjualan</p><h3 id="sum-jual" class="text-lg font-bold text-emerald-700">Rp 0</h3></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Jumlah Penjualan (Netto)</p><h3 class="text-lg font-bold text-slate-800"><span id="sum-netto">0</span> Kg <span id="sum-ekor" class="text-xs text-slate-400">| 0 Ekor</span></h3></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm relative"><div class="absolute right-0 top-0 w-1 h-full bg-rose-500 rounded-r"></div><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Piutang / Sisa</p><h3 id="sum-piutang" class="text-lg font-bold text-rose-600">Rp 0</h3><p id="sum-piutang-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Total Penerimaan</p><h3 id="sum-terima" class="text-lg font-bold text-emerald-600">Rp 0</h3><p id="sum-terima-pct" class="text-[10px] font-semibold text-slate-400">0% dari Total Penjualan</p></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Total Lunas</p><h3 id="sum-lunas" class="text-lg font-bold text-emerald-700">Rp 0</h3><p id="sum-lunas-pct" class="text-[10px] font-semibold text-slate-400">0% dari Total Penjualan</p></div>
+         <div class="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"><p class="text-[10px] text-slate-500 font-bold uppercase mb-0.5">Jumlah Pembayaran</p><h3 id="sum-xbayar" class="text-lg font-bold text-slate-800">0x Bayar</h3></div>
+         <div class="bg-rose-50/50 p-3 rounded-lg border border-rose-100 shadow-sm"><p class="text-[10px] text-rose-600 font-bold uppercase mb-0.5">Total Potongan</p><h3 id="sum-pot" class="text-lg font-bold text-rose-600">Rp 0</h3><p id="sum-pot-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
+         <div class="bg-rose-50/50 p-3 rounded-lg border border-rose-100 shadow-sm"><p class="text-[10px] text-rose-600 font-bold uppercase mb-0.5">Tot. Pot. Harga</p><h3 id="sum-pot-harga" class="text-lg font-bold text-rose-600">Rp 0</h3><p id="sum-pot-harga-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
+         <div class="bg-rose-50/50 p-3 rounded-lg border border-rose-100 shadow-sm"><p class="text-[10px] text-rose-600 font-bold uppercase mb-0.5">Tot. Pot. Ayam Mati</p><h3 id="sum-pot-mati" class="text-lg font-bold text-rose-600">Rp 0  <span id="sum-pot-mati-kg" class="text-xs text-rose-400">| 0 Kg</span></h3><p id="sum-pot-mati-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
+         <div class="bg-rose-50/50 p-3 rounded-lg border border-rose-100 shadow-sm"><p class="text-[10px] text-rose-600 font-bold uppercase mb-0.5">Tot. Pot. Ayam Susut</p><h3 id="sum-pot-susut" class="text-lg font-bold text-rose-600">Rp 0  <span id="sum-pot-susut-kg" class="text-xs text-rose-400">| 0 Kg</span></h3><p id="sum-pot-susut-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
+         <div class="bg-rose-50/50 p-3 rounded-lg border border-rose-100 shadow-sm"><p class="text-[10px] text-rose-600 font-bold uppercase mb-0.5">Tot. Pot. Ayam Pulang</p><h3 id="sum-pot-pulang" class="text-lg font-bold text-rose-600">Rp 0  <span id="sum-pot-pulang-kg" class="text-xs text-rose-400">| 0 Kg</span></h3><p id="sum-pot-pulang-pct" class="text-[10px] font-semibold text-rose-400">0% dari Total Penjualan</p></div>
+      </div>
+
+      <!-- Table List -->
+      <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-600">
+            <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+              <tr>
+                <th class="px-2 py-2 border-r border-slate-100 w-10 text-center">No</th>
+                <th class="px-2 py-2 border-r border-slate-100 w-24">Tanggal</th>
+                <th class="px-2 py-2 border-r border-slate-100 w-24">No Faktur</th>
+                <th class="px-2 py-2 border-r border-slate-100">Konsumen</th>
+                <th class="px-2 py-2 border-r border-slate-100 text-right">Tagihan Awal</th>
+                <th class="px-2 py-2 border-r border-slate-100 text-right bg-rose-50 text-rose-700">Ttl Potongan</th>
+                <th class="px-2 py-2 border-r border-slate-100 text-right">Tlh Dibayar</th>
+                <th class="px-2 py-2 border-r border-slate-100 text-center">x Bayar</th>
+                <th class="px-2 py-2 border-r border-slate-100 text-right">Sisa Tagihan</th>
+                <th class="px-2 py-2 border-r border-slate-100 text-center">Status</th>
+                <th class="px-2 py-2 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="payment-table-body"></tbody>
+          </table>
+        </div>
+        <div id="empty-state" class="hidden p-12 text-center text-slate-400">
+          <svg class="w-16 h-16 mx-auto mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <p class="font-semibold text-lg mb-1">Belum Ada Bon</p><p class="text-sm">Tidak ditemukan data bon faktur untuk filter ini.</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- ============================================== -->
+    <!-- VIEW 2: FORM PEMBAYARAN                        -->
+    <!-- ============================================== -->
+    <main id="view-form" class="p-4 md:p-8 max-w-5xl mx-auto hidden print:p-0 print:m-0 print:max-w-none w-full">
+      <div class="no-print flex justify-between items-center mb-6">
+        <button id="btn-kembali" class="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>Kembali ke Daftar Bon
+        </button>
+        <button id="btn-download-pdf" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 shadow">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>Download PDF & Cetak
+        </button>
+      </div>
+
+      <!-- Print Only Title -->
+      <div class="hidden print:block relative mb-8 border-b-2 border-dashed border-slate-200 pb-4 mt-8">
+        <div class="flex items-center gap-2 mb-1">
+          <div class="w-10 h-10 bg-emerald-600 rounded flex items-center justify-center"><span class="text-white font-bold text-sm">TG</span></div>
+          <div>
+            <h3 class="text-xl font-bold text-slate-900 tracking-tight leading-tight">BUKTI PEMBAYARAN</h3>
+            <p class="text-[11px] font-semibold text-emerald-700 leading-tight">CV Global Putra Swasembada</p>
+          </div>
+        </div>
+        <p class="text-[10px] text-slate-400 pl-12">Distributor Ayam Potong Pekanbaru</p>
+        <div id="print-status-stamp" class="absolute top-0 right-4 transform rotate-6 opacity-80 pointer-events-none"></div>
+      </div>
+
+      <!-- Informasi Tagihan Awal -->
+      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6 print:shadow-none print:border-slate-300 print:mb-4">
+         <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-2 print:border-slate-300">
+           <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Informasi Tagihan Awal</h4>
+           <span id="form-id-badge" class="bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded text-xs">BN-XXX</span>
+         </div>
+         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div><p class="text-xs text-slate-500 mb-1">Konsumen</p><p id="form-konsumen-text" class="text-sm font-semibold text-slate-800">-</p></div>
+            <div><p class="text-xs text-slate-500 mb-1">Tanggal Bon</p><p id="form-tglbon-text" class="text-sm font-semibold text-slate-800">-</p></div>
+            <div><p class="text-xs text-slate-500 mb-1">Total Item</p><p id="form-item-text" class="text-sm font-semibold text-slate-800">-</p></div>
+            <div><p class="text-xs text-slate-500 mb-1">Tagihan Bon Awal</p><p id="form-tagihanawal-text" class="text-lg text-slate-900 font-bold">-</p></div>
+         </div>
+      </div>
+
+      <!-- Histori Pembayaran -->
       <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6">
-         <h4 class="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider border-b border-slate-100 pb-2">Informasi Tagihan Awal</h4>
-         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div><p class="text-xs text-slate-500 mb-1">Konsumen</p><p class="text-sm font-semibold">Bapak Budi</p></div>
-            <div><p class="text-xs text-slate-500 mb-1">Tgl Bon</p><p class="text-sm font-semibold">12/04/2026</p></div>
-            <div><p class="text-xs text-slate-500 mb-1">Cara Bayar</p>
-                <select class="border border-slate-200 rounded px-1 py-0.5 text-sm"><option>Tunai</option><option>Transfer</option></select>
-            </div>
-            <div><p class="text-xs text-slate-500 mb-1">Tagihan Awal</p><p class="text-emerald-700 font-bold">Rp 1.876.000</p></div>
-         </div>
+        <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider border-b border-slate-100 pb-2 mb-4">Histori Pembayaran Sebelumnya</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-600 mb-2">
+            <thead class="bg-slate-50 text-slate-500 text-xs font-semibold">
+              <tr>
+                <th class="px-2 py-2 border-b border-slate-200">Tgl Bayar</th>
+                <th class="px-2 py-2 border-b border-slate-200">Kolektor</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">Pot Harga</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Mati (Kg/Rp)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Susut (Kg/Rp)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Pulang (Kg/Rp)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right bg-rose-50 text-rose-700 text-xs">Ttl Potong</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right bg-emerald-50 text-emerald-700 text-sm">Nominal Bayar</th>
+              </tr>
+            </thead>
+            <tbody id="histori-table-body">
+              <!-- Riwayat pembayaran -->
+            </tbody>
+          </table>
+        </div>
+        <div class="flex justify-end pt-2 text-sm font-bold text-slate-800">
+          Total Terbayar Sebelumnya: <span id="text-total-terbayar" class="ml-2 text-emerald-700">Rp 0</span>
+        </div>
+      </div>
 
-         <h4 class="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider border-b border-slate-100 pb-2">Potongan (Klaim)</h4>
-         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            
-            <div class="flex flex-col border border-slate-100 rounded p-3 bg-slate-50">
-               <label class="text-xs font-semibold text-slate-600 mb-2">Potongan Harga</label>
-               <input type="number" class="w-full border border-slate-200 rounded px-2 py-1 text-sm outline-emerald-500" value="0">
-            </div>
-            
-            <div class="flex flex-col border border-slate-100 rounded p-3 bg-slate-50">
-               <div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold text-slate-600">Ayam Mati</label> <input type="number" class="w-12 text-xs border rounded p-0.5" placeholder="Kg" title="Berat (Kg)"></div>
-               <input type="number" class="w-full border border-slate-200 rounded px-2 py-1 text-sm outline-emerald-500" value="0" placeholder="Nominal Rp">
-            </div>
+      <!-- Pengaturan Pembayaran Baru -->
+      <div id="section-bayar-baru" class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6 print:hidden">
+        <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider border-b border-slate-100 pb-2 mb-4">Data Pembayaran Saat Ini</h4>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Tgl Pembayaran</label><input id="inp-tgl-bayar" type="date" class="w-full border border-slate-200 rounded px-3 py-2"></div>
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Kolektor Marketing</label><select id="inp-kolektor" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option>--Pilih--</option><option>Andi</option><option>Budi M.</option></select></div>
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Cara Bayar</label><select id="inp-cara-bayar" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option>Kasir</option><option>Marketing</option><option>Transfer</option></select></div>
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Waktu Bayar</label><select id="inp-waktu-bayar" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option>Pagi</option><option>Siang</option><option>Sore</option><option>Malam</option></select></div>
+        </div>
+        <div class="text-xs text-slate-400 mt-[-10px] mb-4">Kasir Finance: <strong class="text-slate-600">Budi Ariadi</strong> (Auto)</div>
 
-            <div class="flex flex-col border border-slate-100 rounded p-3 bg-slate-50">
-               <div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold text-slate-600">Ayam Susut</label> <input type="number" class="w-12 text-xs border rounded p-0.5" placeholder="Kg"></div>
-               <input type="number" class="w-full border border-slate-200 rounded px-2 py-1 text-sm outline-emerald-500" value="0" placeholder="Nominal Rp">
-            </div>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-100 pb-2 mb-4 gap-2">
+           <h4 class="font-bold text-rose-700 text-sm uppercase tracking-wider">POTONGAN / KLAIM (OPSIONAL)</h4>
+           <div class="text-rose-700 font-bold text-sm bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-100">
+             Total Potongan: <span id="label-total-potongan" class="font-mono text-base">Rp 0</span>
+           </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="flex flex-col border border-slate-200 rounded-lg p-4 bg-slate-50 relative justify-end">
+              <label class="text-xs font-bold text-slate-700 mb-3">Potongan Harga</label>
+              <div class="flex items-center gap-2">
+                 <span class="text-[11px] font-bold text-slate-400 w-6">Rp</span>
+                 <input type="number" id="pot-harga" class="potongan-calc w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-rose-500 font-bold text-rose-700" value="0">
+              </div>
+          </div>
+          
+          <div class="flex flex-col border border-slate-200 rounded-lg p-4 bg-slate-50 gap-3">
+              <label class="text-xs font-bold text-slate-700">Ayam Mati</label>
+              <div class="flex items-center gap-2">
+                 <span class="text-[11px] font-bold text-slate-400 w-6">Kg</span>
+                 <input type="number" id="mati-kg" class="w-full border border-slate-200 rounded px-2 py-1 text-xs outline-rose-500 bg-white" placeholder="0">
+              </div>
+              <div class="flex items-center gap-2">
+                 <span class="text-[11px] font-bold text-slate-400 w-6">Rp</span>
+                 <input type="number" id="pot-mati" class="potongan-calc w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-rose-500 font-bold text-rose-700" value="0" placeholder="0">
+              </div>
+          </div>
 
-            <div class="flex flex-col border border-slate-100 rounded p-3 bg-slate-50">
-               <div class="flex justify-between items-center mb-2"><label class="text-xs font-semibold text-slate-600">Ayam Pulang</label> <input type="number" class="w-12 text-xs border rounded p-0.5" placeholder="Kg"></div>
-               <input type="number" class="w-full border border-slate-200 rounded px-2 py-1 text-sm outline-emerald-500" value="0" placeholder="Nominal Rp">
-            </div>
-         </div>
+          <div class="flex flex-col border border-slate-200 rounded-lg p-4 bg-slate-50 gap-3">
+              <label class="text-xs font-bold text-slate-700">Ayam Susut</label>
+              <div class="flex items-center gap-2">
+                 <span class="text-[11px] font-bold text-slate-400 w-6">Kg</span>
+                 <input type="number" id="susut-kg" class="w-full border border-slate-200 rounded px-2 py-1 text-xs outline-rose-500 bg-white" placeholder="0">
+              </div>
+              <div class="flex items-center gap-2">
+                 <span class="text-[11px] font-bold text-slate-400 w-6">Rp</span>
+                 <input type="number" id="pot-susut" class="potongan-calc w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-rose-500 font-bold text-rose-700" value="0" placeholder="0">
+              </div>
+          </div>
+
+          <div class="flex flex-col border border-slate-200 rounded-lg p-4 bg-slate-50 gap-3">
+              <label class="text-xs font-bold text-slate-700">Ayam Pulang</label>
+              <div class="flex items-center gap-2">
+                 <span class="text-[11px] font-bold text-slate-400 w-6">Kg</span>
+                 <input type="number" id="pulang-kg" class="w-full border border-slate-200 rounded px-2 py-1 text-xs outline-rose-500 bg-white" placeholder="0">
+              </div>
+              <div class="flex items-center gap-2">
+                 <span class="text-[11px] font-bold text-slate-400 w-6">Rp</span>
+                 <input type="number" id="pot-pulang" class="potongan-calc w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-rose-500 font-bold text-rose-700" value="0" placeholder="0">
+              </div>
+          </div>
+        </div>
       </div>
 
       <!-- Checkout Pembayaran -->
-      <div class="bg-navy-900 text-white p-6 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-6">
-         <div>
-            <p class="text-slate-400 text-sm mb-1">Sisa Tagihan Setelah Potongan</p>
-            <h2 class="text-3xl font-bold font-mono">Rp 1.876.000</h2>
+      <div id="section-checkout" class="bg-navy-900 text-white p-6 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-6 print:bg-white print:text-slate-900 print:shadow-none print:p-0 print:border-t-2 print:border-dashed print:border-slate-300 print:pt-4 print:mt-4 print:rounded-none">
+         <div class="w-full md:w-auto text-center md:text-left">
+            <p class="text-slate-400 text-sm mb-1 print:text-slate-600 print:uppercase print:font-bold">Sisa Tagihan Setelah Terbayar</p>
+            <h2 id="calc-sisa-tagihan" class="text-3xl font-bold font-mono text-emerald-400 print:text-slate-900">Rp 0</h2>
+            <p id="calc-info" class="text-[10px] text-slate-500 mt-1 uppercase print:hidden">Awal: 0 | Total Pot: 0 | Terbayar Sblm: 0</p>
          </div>
          
-         <div class="w-full md:w-auto relative">
-            <span class="absolute left-3 top-2.5 font-bold text-slate-600">Rp</span>
-            <input type="number" class="w-full md:w-64 pl-10 pr-4 py-3 text-slate-900 rounded bg-white outline-emerald-500 font-bold" placeholder="Input Bayar (Misal 1.000.000)">
+         <div class="w-full md:w-auto relative print:hidden">
+            <label class="block text-xs text-slate-400 font-bold mb-1 uppercase">Nominal Uang Diterima</label>
+            <span class="absolute left-3 top-[34px] font-bold text-slate-600">Rp</span>
+            <input type="number" id="inp-bayar-rp" class="w-full md:w-56 pl-10 pr-4 py-3 text-slate-900 rounded bg-white outline-emerald-500 font-bold text-lg" placeholder="1000000">
          </div>
          
-         <button class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-8 rounded transition-colors shadow">
-            Simpan Pembayaran
+         <button id="btn-simpan-bayar" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-8 rounded transition-colors shadow print:hidden">
+            SIMPAN PEMBAYARAN
          </button>
       </div>
-
     </main>
 
-    <script src="app.js"></script>
+    <!-- App Logic -->
+    <script>
+    (function(){
+      const STORAGE_KEY = 'polikas_bon_data_v2';
+      let editingBonIndex = -1;
+      let activeFilter = 'hari-ini';
+      
+      // Helpers
+      function getAllBons() { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+      function saveAllBons(bons) { localStorage.setItem(STORAGE_KEY, JSON.stringify(bons)); }
+      function getStatusConfig(sysStat, paid, totalAkhir) {
+        // Enforce new Logic:
+        // P (Piutang) = paid == 0
+        // S (Sebagian) = paid > 0 && paid < totalAkhir
+        // L (Lunas) = paid >= totalAkhir
+        // Fallback untuk system yang lama 
+        if(sysStat === 'LUNAS' || paid >= totalAkhir) return { code:'L', str:'Lunas', cls:'bg-emerald-100 text-emerald-800' };
+        if(paid > 0 && paid < totalAkhir) return { code:'S', str:'Sebagian', cls:'bg-amber-100 text-amber-800' };
+        return { code:'P', str:'Piutang', cls:'bg-rose-100 text-rose-700' };
+      }
+
+      // Views
+      const viewList = document.getElementById('view-list');
+      const viewForm = document.getElementById('view-form');
+      const pageTitle = document.getElementById('page-title');
+
+      function showListView() {
+        viewList.classList.remove('hidden');
+        viewForm.classList.add('hidden');
+        pageTitle.textContent = 'Pembayaran & Potongan';
+        renderTable();
+      }
+
+      function showFormView(idx) {
+        const bons = getAllBons();
+        const bon = bons[idx];
+        if(!bon) return;
+        editingBonIndex = idx;
+        
+        // Reset Inputs
+        document.getElementById('inp-tgl-bayar').value = new Date().toISOString().split('T')[0];
+        document.getElementById('inp-kolektor').selectedIndex = 0;
+        document.getElementById('inp-cara-bayar').selectedIndex = 0;
+        document.getElementById('inp-waktu-bayar').selectedIndex = 0;
+        document.querySelectorAll('.potongan-calc').forEach(el => el.value = 0);
+        ['mati-kg','susut-kg','pulang-kg'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('inp-bayar-rp').value = '';
+
+        const isLunas = bon.status === 'LUNAS';
+        
+        const stampStr = isLunas ?
+           `<h1 class="text-3xl font-black text-emerald-600 border-4 border-emerald-600 inline-block px-4 py-2 uppercase tracking-widest">» L U N A S «</h1>` :
+           `<h1 class="text-3xl font-black text-rose-600 border-4 border-rose-600 inline-block px-4 py-2 uppercase tracking-widest">» BELUM LUNAS «</h1>`;
+        document.getElementById('print-status-stamp').innerHTML = stampStr;
+
+        if(isLunas) {
+           document.getElementById('section-bayar-baru').style.display = 'none';
+           // section checkout cannot be entirely hidden since we need sisa tagihan for print still, rely on print:hidden classes instead
+        } else {
+           document.getElementById('section-bayar-baru').style.display = '';
+        }
+
+        // Fill Header Form
+        document.getElementById('form-id-badge').textContent = bon.id;
+        document.getElementById('form-konsumen-text').textContent = bon.konsumen;
+        document.getElementById('form-tglbon-text').textContent = new Date(bon.tanggal).toLocaleDateString('id-ID');
+        document.getElementById('form-item-text').textContent = (bon.items?.length || 0) + ' Item';
+        document.getElementById('form-tagihanawal-text').textContent = 'Rp ' + bon.total.toLocaleString('id-ID');
+        
+        // Render histori
+        const histTbody = document.getElementById('histori-table-body');
+        const hist = bon.historiBayar || [];
+        let totalPaid = 0;
+        if(hist.length === 0) {
+          histTbody.innerHTML = `<tr><td colspan="6" class="px-3 py-4 text-center text-slate-400 italic">Belum ada riwayat pembayaran untuk bon ini.</td></tr>`;
+        } else {
+          histTbody.innerHTML = hist.map(h => {
+             totalPaid += (h.nominal || 0);
+             return `<tr class="border-b border-slate-100 text-xs">
+               <td class="px-2 py-2 text-slate-700">${h.tanggal}<br><span class="text-[10px] text-slate-400 font-bold">${h.caraBayar}</span></td>
+               <td class="px-2 py-2">${h.kolektor}<br><span class="text-[10px] text-slate-400">${h.waktu}</span></td>
+               <td class="px-2 py-2 text-right text-rose-600">${(h.potongan?.harga||0).toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 text-right text-rose-600"><span class="text-[10px] text-slate-400 font-bold">${h.potongan?.matiKg||0} Kg</span><br>${(h.potongan?.matiRp||0).toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 text-right text-rose-600"><span class="text-[10px] text-slate-400 font-bold">${h.potongan?.susutKg||0} Kg</span><br>${(h.potongan?.susutRp||0).toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 text-right text-rose-600"><span class="text-[10px] text-slate-400 font-bold">${h.potongan?.pulangKg||0} Kg</span><br>${(h.potongan?.pulangRp||0).toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 text-right text-rose-700 font-bold bg-rose-50">${(h.totalPotongan||0).toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 text-right text-emerald-700 font-bold bg-emerald-50 text-sm">${(h.nominal||0).toLocaleString('id-ID')}</td>
+             </tr>`;
+          }).join('');
+        }
+        document.getElementById('text-total-terbayar').textContent = 'Rp ' + totalPaid.toLocaleString('id-ID');
+
+        runCalculations();
+        
+        viewList.classList.add('hidden');
+        viewForm.classList.remove('hidden');
+        pageTitle.textContent = 'Proses Pembayaran';
+      }
+
+      function runCalculations() {
+         if(editingBonIndex < 0) return;
+         const bon = getAllBons()[editingBonIndex];
+         
+         const potHarga = parseFloat(document.getElementById('pot-harga').value)||0;
+         const potMati = parseFloat(document.getElementById('pot-mati').value)||0;
+         const potSusut = parseFloat(document.getElementById('pot-susut').value)||0;
+         const potPulang = parseFloat(document.getElementById('pot-pulang').value)||0;
+         const totalPotNew = potHarga + potMati + potSusut + potPulang;
+
+         const hist = bon.historiBayar || [];
+         let accumPaid = 0;
+         let accumPot = 0;
+         hist.forEach(h => { accumPaid += (h.nominal||0); accumPot += (h.totalPotongan||0); });
+
+         let totalAkhirFixed = bon.total - accumPot; // This is how much needs to be paid BEFORE current transaction's deductions
+         let currentTarget = totalAkhirFixed - totalPotNew; // Tagihan Akhir = Tagihan - semua potongan lama - potongan baru
+         let sisaBayar = currentTarget - accumPaid; // Sisa = Tagihan Akhir - total uang yg sudah masuk lama
+         
+         if(sisaBayar < 0) sisaBayar = 0; 
+         
+         document.getElementById('label-total-potongan').textContent = 'Rp ' + totalPotNew.toLocaleString('id-ID');
+         document.getElementById('calc-sisa-tagihan').textContent = 'Rp ' + sisaBayar.toLocaleString('id-ID');
+         document.getElementById('calc-info').textContent = `*Sisa Tagihan = (Tagihan Awal - Total Potongan Lama & Baru) - Total Terbayar Sebelumnya`;
+      }
+
+      // Setup Listeners
+      document.getElementById('btn-kembali').addEventListener('click', showListView);
+      document.getElementById('btn-download-pdf').addEventListener('click', () => { window.print(); });
+      document.querySelectorAll('.potongan-calc').forEach(el => {
+         el.addEventListener('input', runCalculations);
+         el.addEventListener('change', runCalculations);
+      });
+
+      // Filter Logic
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if(btn.id !== 'btn-range') {
+             filterButtons.forEach(b => b.classList.remove('active'));
+             btn.classList.add('active');
+             activeFilter = btn.dataset.filter;
+             renderTable();
+          }
+        });
+      });
+      document.getElementById('btn-range').addEventListener('click', () => {
+         filterButtons.forEach(b => b.classList.remove('active'));
+         document.getElementById('btn-range').classList.add('active');
+         activeFilter = 'range';
+         renderTable();
+      });
+      document.getElementById('toggle-summary-btn').addEventListener('click', () => {
+         document.getElementById('summary-cards-container').classList.toggle('hidden');
+      });
+
+      function getFilterDateRange(){
+        const now = new Date(), ts = now.toISOString().split('T')[0];
+        let f, t;
+        switch(activeFilter){
+          case 'hari-ini': f = t = ts; break;
+          case 'kemarin': { const y = new Date(now); y.setDate(y.getDate()-1); f = t = y.toISOString().split('T')[0]; break; }
+          case 'minggu-ini': { const d=now.getDay(), diff=now.getDate()-d+(d===0?-6:1), m=new Date(now); m.setDate(diff); f=m.toISOString().split('T')[0]; t=ts; break; }
+          case 'bulan-ini': f = ts.substring(0,8) + '01'; t = ts; break;
+          case 'range': f = document.getElementById('filterDateFrom').value || ts; t = document.getElementById('filterDateTo').value || ts; break;
+          default: f = t = ts;
+        }
+        return { from:f, to:t };
+      }
+      document.getElementById('searchInput').addEventListener('input', renderTable);
+
+      function renderTable() {
+        const bons = getAllBons();
+        const {from, to} = getFilterDateRange();
+        const query = document.getElementById('searchInput').value.trim().toLowerCase();
+
+        const filtered = bons.map((b,i)=>({...b,_idx:i})).filter(b => {
+           const matchBon = !query || b.id.toLowerCase().includes(query) || b.konsumen.toLowerCase().includes(query);
+           const matchHistori = !query || (b.historiBayar || []).some(h => 
+              (h.kolektor && h.kolektor.toLowerCase().includes(query)) || 
+              (h.caraBayar && h.caraBayar.toLowerCase().includes(query))
+           );
+           return (b.tanggal >= from && b.tanggal <= to) && (matchBon || matchHistori);
+        });
+
+        let sumPenjualan = 0, sumKgNetto = 0, sumEkor = 0, sumTerbayar = 0, sumPiutang = 0, sumLunas = 0, sumXBayar = 0, sumPotongan = 0;
+        let sP_Harga = 0, sP_MatiRp = 0, sP_MatiKg = 0, sP_SusutRp = 0, sP_SusutKg = 0, sP_PulangRp = 0, sP_PulangKg = 0;
+
+        const empty = document.getElementById('empty-state');
+        const tbody = document.getElementById('payment-table-body');
+
+        if(filtered.length === 0) {
+           tbody.innerHTML = '';
+           empty.classList.remove('hidden');
+        } else {
+           empty.classList.add('hidden');
+           tbody.innerHTML = filtered.map((b) => {
+              sumPenjualan += b.total;
+              b.items?.forEach(it => { sumKgNetto += (it.netto || 0); sumEkor += Number(it.jmlAyam || 0); });
+              
+              const hist = b.historiBayar || [];
+              let terbayar = 0;
+              let potTotal = 0;
+              sumXBayar += hist.length;
+
+              hist.forEach(h => {
+                 terbayar += (h.nominal || 0);
+                 potTotal += (h.totalPotongan || 0);
+                 sumPotongan += (h.totalPotongan || 0);
+                 const p = h.potongan || {};
+                 sP_Harga += (p.harga || 0);
+                 sP_MatiRp += (p.matiRp || 0); sP_MatiKg += (p.matiKg || 0);
+                 sP_SusutRp += (p.susutRp || 0); sP_SusutKg += (p.susutKg || 0);
+                 sP_PulangRp += (p.pulangRp || 0); sP_PulangKg += (p.pulangKg || 0);
+              });
+
+              sumTerbayar += terbayar;
+              const tagihanAkhir = b.total - potTotal; 
+              let sisa = tagihanAkhir - terbayar;
+              if(sisa < 0) sisa = 0;
+
+              if(sisa === 0) sumLunas += terbayar; 
+              else sumPiutang += sisa;
+
+              const sc = getStatusConfig(b.status, terbayar, tagihanAkhir); // P/L/S
+              const fd = new Date(b.tanggal).toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'});
+              
+              // Nonaktifkan tombol bayar jika Lunas
+              const isLunas = sc.code === 'L';
+              const actionBtn = isLunas 
+                 ? `<button class="btn-bayar bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs px-3 py-1.5 rounded shadow-sm transition-colors" data-idx="${b._idx}">Histori</button>`
+                 : `<button class="btn-bayar bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-3 py-1.5 rounded shadow-sm transition-colors" data-idx="${b._idx}">Bayar</button>`;
+
+              return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer" data-idx="${b._idx}">
+                 <td class="px-2 py-2 border-r border-slate-100 text-center text-slate-400">${b._idx+1}</td>
+                 <td class="px-2 py-2 border-r border-slate-100 whitespace-nowrap text-xs">${fd}</td>
+                 <td class="px-2 py-2 border-r border-slate-100 font-bold text-slate-800 text-xs">${b.id}</td>
+                 <td class="px-2 py-2 border-r border-slate-100">${b.konsumen}</td>
+                 <td class="px-2 py-2 border-r border-slate-100 text-right font-semibold text-slate-700">${b.total.toLocaleString('id-ID')}</td>
+                 <td class="px-2 py-2 border-r border-slate-100 text-right font-bold text-rose-600 bg-rose-50">${potTotal.toLocaleString('id-ID')}</td>
+                 <td class="px-2 py-2 border-r border-slate-100 text-right font-bold text-emerald-600">${terbayar.toLocaleString('id-ID')}</td>
+                 <td class="px-2 py-2 border-r border-slate-100 text-center font-bold text-slate-500">${hist.length}x</td>
+                 <td class="px-2 py-2 border-r border-slate-100 text-right font-bold text-emerald-700">${sisa.toLocaleString('id-ID')}</td>
+                 <td class="px-2 py-2 border-r border-slate-100 text-center"><span class="text-[10px] uppercase font-bold px-2 py-1 rounded ${sc.cls}">${sc.code} - ${sc.str}</span></td>
+                 <td class="px-2 py-2 text-center">${actionBtn}</td>
+              </tr>`;
+           }).join('');
+
+           // Listeners on row double click
+           tbody.querySelectorAll('tr[data-idx]').forEach(tr => {
+              tr.addEventListener('dblclick', () => showFormView(+tr.dataset.idx));
+           });
+           tbody.querySelectorAll('.btn-bayar').forEach(btn => {
+              btn.addEventListener('click', e => { e.stopPropagation(); showFormView(+btn.dataset.idx); });
+           });
+        }
+
+        // Subtotals in Header
+        const getPct = (val) => sumPenjualan > 0 ? ((val / sumPenjualan) * 100).toFixed(1) + '%' : '0%';
+        
+        document.getElementById('sum-jml-bon').textContent = filtered.length;
+        document.getElementById('sum-jual').textContent = 'Rp ' + sumPenjualan.toLocaleString('id-ID');
+        document.getElementById('sum-netto').textContent = sumKgNetto.toLocaleString('id-ID');
+        document.getElementById('sum-ekor').textContent = '| ' + sumEkor.toLocaleString('id-ID') + ' Ekor';
+        
+        document.getElementById('sum-piutang').textContent = 'Rp ' + sumPiutang.toLocaleString('id-ID');
+        document.getElementById('sum-piutang-pct').textContent = getPct(sumPiutang) + ' dari Total Penjualan';
+        
+        document.getElementById('sum-terima').textContent = 'Rp ' + sumTerbayar.toLocaleString('id-ID');
+        document.getElementById('sum-terima-pct').textContent = getPct(sumTerbayar) + ' dari Total Penjualan';
+        
+        document.getElementById('sum-lunas').textContent = 'Rp ' + sumLunas.toLocaleString('id-ID');
+        document.getElementById('sum-lunas-pct').textContent = getPct(sumLunas) + ' dari Total Penjualan';
+        
+        document.getElementById('sum-xbayar').textContent = sumXBayar + 'x Bayar';
+        
+        document.getElementById('sum-pot').textContent = 'Rp ' + sumPotongan.toLocaleString('id-ID');
+        document.getElementById('sum-pot-pct').textContent = getPct(sumPotongan) + ' dari Total Penjualan';
+
+        document.getElementById('sum-pot-harga').textContent = 'Rp ' + sP_Harga.toLocaleString('id-ID');
+        document.getElementById('sum-pot-harga-pct').textContent = getPct(sP_Harga) + ' dari Total Penjualan';
+
+        document.getElementById('sum-pot-mati').innerHTML = 'Rp ' + sP_MatiRp.toLocaleString('id-ID') + ' <span class="text-[11px] text-rose-400">| ' + sP_MatiKg.toLocaleString('id-ID') + ' Kg</span>';
+        document.getElementById('sum-pot-mati-pct').textContent = getPct(sP_MatiRp) + ' dari Total Penjualan';
+
+        document.getElementById('sum-pot-susut').innerHTML = 'Rp ' + sP_SusutRp.toLocaleString('id-ID') + ' <span class="text-[11px] text-rose-400">| ' + sP_SusutKg.toLocaleString('id-ID') + ' Kg</span>';
+        document.getElementById('sum-pot-susut-pct').textContent = getPct(sP_SusutRp) + ' dari Total Penjualan';
+
+        document.getElementById('sum-pot-pulang').innerHTML = 'Rp ' + sP_PulangRp.toLocaleString('id-ID') + ' <span class="text-[11px] text-rose-400">| ' + sP_PulangKg.toLocaleString('id-ID') + ' Kg</span>';
+        document.getElementById('sum-pot-pulang-pct').textContent = getPct(sP_PulangRp) + ' dari Total Penjualan';
+      }
+
+      // SIMPAN BAYAR
+      document.getElementById('btn-simpan-bayar').addEventListener('click', () => {
+         if(editingBonIndex < 0) return;
+         
+         const nominal = parseFloat(document.getElementById('inp-bayar-rp').value);
+         if(isNaN(nominal) || nominal <= 0) { alert('Harap isi nominal pembayaran dengan benar.'); return; }
+
+         const tglBayar = document.getElementById('inp-tgl-bayar').value;
+         const kol = document.getElementById('inp-kolektor').value;
+         const cara = document.getElementById('inp-cara-bayar').value;
+         const waktu = document.getElementById('inp-waktu-bayar').value;
+
+         if(!tglBayar || kol === '--Pilih--' || !kol) { alert('Harap isi Tanggal dan Kolektor.'); return; }
+
+         const potHarga = parseFloat(document.getElementById('pot-harga').value)||0;
+         const potMati = parseFloat(document.getElementById('pot-mati').value)||0;
+         const matiKg = parseFloat(document.getElementById('mati-kg').value)||0;
+         const potSusut = parseFloat(document.getElementById('pot-susut').value)||0;
+         const susutKg = parseFloat(document.getElementById('susut-kg').value)||0;
+         const potPulang = parseFloat(document.getElementById('pot-pulang').value)||0;
+         const pulangKg = parseFloat(document.getElementById('pulang-kg').value)||0;
+         const totalPotNew = potHarga + potMati + potSusut + potPulang;
+
+         // Load db
+         const bons = getAllBons();
+         const targetBon = bons[editingBonIndex];
+         
+         // Inisialisasi histori jika belum ada
+         if(!targetBon.historiBayar) targetBon.historiBayar = [];
+
+         // Buat object Payment Event
+         const payEvent = {
+           id: 'PY-' + Date.now(),
+           tanggal: tglBayar,
+           kolektor: kol,
+           kasir: 'Budi Ariadi', // Hardcoded requirement
+           caraBayar: cara,
+           waktu: waktu,
+           nominal: nominal,
+           potongan: { harga: potHarga, matiKg, matiRp: potMati, susutKg, susutRp: potSusut, pulangKg, pulangRp: potPulang },
+           totalPotongan: totalPotNew
+         };
+
+         targetBon.historiBayar.push(payEvent);
+
+         // Recalculate everything for updating the main "status" attribute on Bon
+         let sumPaid = 0, sumPot = 0;
+         targetBon.historiBayar.forEach(h => { sumPaid += (h.nominal||0); sumPot += (h.totalPotongan||0); });
+         let newTagihanAkhir = targetBon.total - sumPot;
+         let sc = getStatusConfig(targetBon.status, sumPaid, newTagihanAkhir); // Get P/S/L
+
+         // Override status explicitly logic bisnis
+         targetBon.status = sc.code === 'L' ? 'LUNAS' : (sc.code === 'S' ? 'SEBAGIAN' : 'PIUTANG');
+
+         saveAllBons(bons);
+         
+         alert('Pembayaran berhasil disimpan!');
+         showListView();
+      });
+
+      // Init
+      showListView();
+    })();
+    </script>
   </body>
 </html>
