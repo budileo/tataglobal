@@ -469,7 +469,10 @@
          }
 
          dailyBons.forEach((b, i) => {
-            const pot = (b.historiBayar || []).reduce((acc, h) => {
+            const hist = b.historiBayar || [];
+            const collector = hist.length > 0 ? hist[0].kolektor : (b.kolektor || '-');
+
+            const pot = hist.reduce((acc, h) => {
                const p = h.potongan || {};
                acc.total += (h.totalPotongan || 0);
                acc.harga += (p.harga || 0);
@@ -483,7 +486,7 @@
             tr.className = "border-b border-slate-200 hover:bg-slate-50";
             tr.innerHTML = `
                <td class="px-2 py-2 border-r border-slate-200 text-center">${i+1}</td>
-               <td class="px-2 py-2 border-r border-slate-200 uppercase">${b.kolektor || '-'}</td>
+               <td class="px-2 py-2 border-r border-slate-200 uppercase">${collector}</td>
                <td class="px-2 py-2 border-r border-slate-200 font-bold">${b.id}</td>
                <td class="px-2 py-2 border-r border-slate-200">${b.konsumen}</td>
                <td class="px-2 py-2 border-r border-slate-200 text-right font-medium">${b.total.toLocaleString('id-ID')}</td>
@@ -510,6 +513,7 @@
 
          targetBons.forEach((b, i) => {
             const hist = b.historiBayar || [];
+            const collector = hist.length > 0 ? hist[0].kolektor : (b.kolektor || '-');
             const paid = hist.reduce((s, h) => s + (h.nominal || 0), 0);
             const pot = hist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
             const sisa = b.total - pot - paid;
@@ -518,7 +522,7 @@
             tr.className = "border-b border-slate-200 hover:bg-slate-50";
             tr.innerHTML = `
                <td class="px-2 py-2 border-r border-slate-200 text-center">${i+1}</td>
-               <td class="px-2 py-2 border-r border-slate-200 uppercase font-bold">${b.kolektor || '-'}</td>
+               <td class="px-2 py-2 border-r border-slate-200 uppercase font-bold">${collector}</td>
                <td class="px-2 py-2 border-r border-slate-200 font-bold">${b.id}</td>
                <td class="px-2 py-2 border-r border-slate-200">${b.konsumen}</td>
                <td class="px-2 py-2 border-r border-slate-200 text-right font-medium">${b.total.toLocaleString('id-ID')}</td>
