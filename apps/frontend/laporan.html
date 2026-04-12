@@ -11,16 +11,25 @@
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
       body { font-family: 'Inter', sans-serif; }
+      @media print {
+         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+         @page { size: portrait; margin: 15mm; }
+         .print\:grid-cols-2 { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+         .print\:gap-8 { gap: 2rem !important; }
+         .print\:border-black { border-color: #000 !important; }
+         .print\:text-black { color: #000 !important; }
+         body { padding-bottom: 0 !important; }
+      }
     </style>
   </head>
   <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
     
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between">
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between print:hidden">
       <h2 class="text-xl font-bold text-slate-900">Laporan Keuangan & Operasional</h2>
     </header>
 
     <!-- Sidebar Section -->
-    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
+    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300 print:hidden">
       
       <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
         <div class="flex items-center gap-3">
@@ -87,62 +96,333 @@
     <main class="p-4 md:p-8 max-w-7xl mx-auto">
       
       <!-- Tabs Laporan Mendatar -->
-      <div class="flex flex-wrap gap-2 md:gap-0 border-b border-slate-200 mb-6">
+      <div class="flex flex-wrap gap-2 md:gap-0 border-b border-slate-200 mb-6 print:hidden">
          <button class="px-6 py-3 font-semibold text-emerald-600 border-b-2 border-emerald-600 outline-none">Laporan Penerimaan</button>
          <button class="px-6 py-3 font-semibold text-slate-500 hover:text-slate-800 hover:border-slate-300 border-b-2 border-transparent outline-none">Summary Harian</button>
          <button class="px-6 py-3 font-semibold text-slate-500 hover:text-slate-800 hover:border-slate-300 border-b-2 border-transparent outline-none">Rekap Piutang</button>
       </div>
 
       <!-- Tabel/Data Section -->
-      <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+      <div id="view-rekap" class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6 print:shadow-none print:border-none">
          <!-- Toolbar -->
-         <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-4 bg-slate-50">
-            <h3 class="font-bold text-slate-800">Penerimaan Kas - 12 April 2026</h3>
-            <div class="flex gap-2">
-               <input type="date" class="border border-slate-200 rounded px-3 py-1.5 text-sm outline-emerald-500" value="2026-04-12">
-               <button class="bg-navy-900 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-slate-800">Print / PDF</button>
+         <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-4 bg-slate-50 print:hidden">
+            <h3 class="font-bold text-slate-800">Rekap Penerimaan Kas Harian</h3>
+            <div class="flex gap-2 items-center">
+               <span class="text-xs font-semibold text-slate-500 mr-1">Tampilkan:</span>
+               <select id="rekap-filter" class="border border-slate-200 rounded px-3 py-1.5 text-sm h-full outline-emerald-500">
+                  <option value="minggu-ini">Minggu Ini</option>
+                  <option value="bulan-ini" selected>Bulan Ini</option>
+                  <option value="range">Range Tanggal</option>
+               </select>
+               <input id="rekap-start" type="date" class="border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500 hidden">
+               <input id="rekap-end" type="date" class="border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500 hidden">
+               <button id="btn-print-rekap" class="bg-navy-900 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-slate-800 ml-2">Print PDF</button>
             </div>
+         </div>
+         <div class="hidden print:block mb-4">
+             <h2 class="text-xl font-bold uppercase mb-1">REKAP PENERIMAAN KAS HARIAN</h2>
+             <p class="text-sm">CV. Global Putra Swasembada</p>
          </div>
 
          <!-- Tabe Mendatar Clean -->
          <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-slate-600">
-               <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+               <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200 text-[13px] print:text-[12px] print:text-slate-800">
                   <tr>
-                     <th class="px-4 py-3 border-r border-slate-100">No</th>
-                     <th class="px-4 py-3 border-r border-slate-100">Konsumen / Bon</th>
-                     <th class="px-4 py-3 border-r border-slate-100">Kolektor</th>
-                     <th class="px-4 py-3 border-r border-slate-100">Potongan Harga</th>
-                     <th class="px-4 py-3 border-r border-slate-100 text-center">Mati<br><span class="text-xs text-slate-400 font-normal">Kg / Rp</span></th>
-                     <th class="px-4 py-3 border-r border-slate-100 text-center">Susut<br><span class="text-xs text-slate-400 font-normal">Kg / Rp</span></th>
-                     <th class="px-4 py-3 border-r border-slate-100 text-center">Pulang<br><span class="text-xs text-slate-400 font-normal">Kg / Rp</span></th>
-                     <th class="px-4 py-3 bg-emerald-50 text-emerald-900">Nilai Masuk (Rp)</th>
+                     <th class="px-3 py-2 border-r border-slate-100 w-12 text-center">No</th>
+                     <th class="px-3 py-2 border-r border-slate-100 w-40">Tanggal</th>
+                     <th class="px-3 py-2 border-r border-slate-100 text-right">Jumlah Penjualan</th>
+                     <th class="px-3 py-2 border-r border-slate-100 text-right">Sisa Piutang Berjalan</th>
+                     <th class="px-3 py-2 bg-emerald-50 text-emerald-900 text-right">Jumlah Penerimaan</th>
                   </tr>
                </thead>
-               <tbody>
-                  <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                     <td class="px-4 py-3 border-r border-slate-100">1</td>
-                     <td class="px-4 py-3 border-r border-slate-100"><strong>Bp. Budi</strong><br><span class="text-xs">BN-001</span></td>
-                     <td class="px-4 py-3 border-r border-slate-100">Andi (Trf)</td>
-                     <td class="px-4 py-3 border-r border-slate-100">0</td>
-                     <td class="px-4 py-3 border-r border-slate-100 text-center">0<br>-</td>
-                     <td class="px-4 py-3 border-r border-slate-100 text-center">0<br>-</td>
-                     <td class="px-4 py-3 border-r border-slate-100 text-center">0<br>-</td>
-                     <td class="px-4 py-3 bg-emerald-50 font-bold text-emerald-800">1.876.000</td>
-                  </tr>
+               <tbody id="rekap-tbody">
                </tbody>
-               <tfoot>
-                  <tr class="bg-slate-50">
-                     <td colspan="7" class="px-4 py-3 text-right font-bold text-slate-800 border-r border-slate-100">TOTAL HASIL DITERIMA KAS :</td>
-                     <td class="px-4 py-3 font-bold text-lg text-emerald-700 bg-emerald-100">Rp 1.876.000</td>
-                  </tr>
-               </tfoot>
             </table>
+         </div>
+      </div>
+
+      <!-- view-detail -->
+      <div id="view-detail" class="hidden bg-white p-6 md:p-10 rounded-xl border border-slate-100 shadow-sm mb-6 max-w-4xl mx-auto print:shadow-none print:border-none print:p-0 w-full relative">
+         <!-- Navbar in Detail -->
+         <div class="flex justify-between items-center mb-8 border-b-2 border-dashed border-slate-200 pb-4 print:hidden">
+            <button id="btn-back-detail" class="text-slate-500 hover:text-slate-800 font-medium text-sm flex items-center gap-2 transition-colors border px-3 py-1.5 rounded bg-white">
+               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> Kembali
+            </button>
+            <button id="btn-print-detail" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-sm font-medium shadow-sm transition-colors flex gap-2">
+               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> Cetak Laporan (PDF)
+            </button>
+         </div>
+
+         <!-- Kop Surat Laporan -->
+         <div class="mb-8 text-center md:text-left relative">
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight uppercase">LAPORAN PENJUALAN HARIAN</h2>
+            <p class="text-emerald-700 font-bold text-sm mb-1 text-slate-600">CV Global Putra Swasembada</p>
+            <p class="text-slate-500 text-xs mt-1">Periode : <span id="det-periode" class="font-semibold text-slate-800"></span></p>
+         </div>
+
+         <!-- Grid Neraca -->
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 print:grid-cols-2 print:gap-8 text-slate-800">
+            <!-- COL KIRI: PENERIMAAN KAS -->
+            <div>
+               <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-5 uppercase text-[13px] tracking-widest">Penerimaan Kas</h3>
+               
+               <div class="mb-5">
+                  <p class="font-bold text-emerald-800 text-[11px] mb-2 uppercase border-b border-emerald-100 pb-1">A. Waktu Bayar</p>
+                  <ul id="det-waktu" class="pl-2 space-y-1.5 text-[13px] font-medium text-slate-700"></ul>
+               </div>
+
+               <div class="mb-5">
+                  <p class="font-bold text-emerald-800 text-[11px] mb-2 uppercase border-b border-emerald-100 pb-1">B. Cara Bayar</p>
+                  <ul id="det-cara" class="pl-2 space-y-1.5 text-[13px] font-medium text-slate-700"></ul>
+               </div>
+
+               <div class="mb-5">
+                  <p class="font-bold text-emerald-800 text-[11px] mb-2 uppercase border-b border-emerald-100 pb-1">C. Kas Berdasarkan Kolektor</p>
+                  <ul id="det-kolektor" class="pl-2 space-y-1.5 text-[13px] font-medium text-slate-700"></ul>
+               </div>
+
+               <div class="mt-8 pt-3 border-t-2 border-slate-400 flex justify-between items-center text-lg font-black text-slate-900 bg-emerald-50 px-4 py-2.5 rounded print:bg-transparent print:px-0">
+                  <span>TOTAL KAS :</span>
+                  <span id="det-totalkas" class="text-emerald-700 print:text-slate-900">Rp 0</span>
+               </div>
+            </div>
+
+            <!-- COL KANAN: PENJUALAN -->
+            <div>
+               <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-5 uppercase text-[13px] tracking-widest">Penjualan</h3>
+
+               <div class="space-y-2.5 text-[13px] font-semibold text-slate-800">
+                  <div class="flex justify-between items-center"><span>Penjualan Rp :</span> <span id="det-jualrp" class="text-base text-slate-900"></span></div>
+                  <div class="flex justify-between items-center border-b border-dashed border-slate-200 pb-3"><span>Penjualan Kg :</span> <span id="det-jualkg" class="text-slate-600"></span></div>
+               </div>
+
+               <div class="mt-5">
+                  <div class="flex justify-between font-bold text-rose-700 mb-2 border-b border-rose-100 pb-1 text-[13px]"><span>Total Potongan Rp :</span> <span id="det-potrp"></span></div>
+                  <ul class="pl-2 space-y-1.5 text-[12px] text-rose-600 font-medium">
+                     <li class="flex justify-between"><span>- Potongan Harga Rp. :</span> <span id="det-pot-harga"></span></li>
+                     <li class="flex justify-between"><span>- Potongan Ayam Mati Rp. :</span> <span id="det-pot-mati"></span></li>
+                     <li class="flex justify-between"><span>- Ayam Susut Rp. :</span> <span id="det-pot-susut"></span></li>
+                     <li class="flex justify-between"><span>- Ayam Pulang Rp. :</span> <span id="det-pot-pulang"></span></li>
+                  </ul>
+               </div>
+
+               <div class="mt-8 pt-3 border-t-2 border-slate-400 flex justify-between items-center text-lg font-black text-slate-900 bg-slate-100 px-4 py-2.5 rounded print:bg-transparent print:px-0">
+                  <span>PENJUALAN BERSIH :</span>
+                  <span id="det-netrp"></span>
+               </div>
+            </div>
+         </div>
+
+         <!-- BAWAH: PIUTANG -->
+         <div class="mt-8 md:mt-12 pt-6 flex flex-col items-center border-t-2 border-dashed border-slate-300">
+            <div class="w-full md:w-1/2">
+                <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-4 uppercase text-[13px] tracking-widest text-center">Piutang</h3>
+                <div class="space-y-2 text-[13px] font-medium text-slate-600 px-4">
+                <div class="flex justify-between"><span>Piutang Hari Ini :</span> <span id="det-piutang-hari"></span></div>
+                <div class="flex justify-between border-b border-dashed border-slate-200 pb-2"><span>Piutang Lalu Belum Lunas :</span> <span id="det-piutang-lama"></span></div>
+                <div class="flex justify-between text-base font-black text-rose-700 pt-2">
+                    <span>TOTAL PIUTANG :</span>
+                    <span id="det-piutang-total"></span>
+                </div>
+                </div>
+            </div>
          </div>
       </div>
 
     </main>
 
-    <script src="app.js"></script>
+    <script>
+      // Formatting helpers
+      const formatRp = (num) => 'Rp ' + (num||0).toLocaleString('id-ID');
+      const formatKg = (num) => (num||0).toLocaleString('id-ID', {minimumFractionDigits: 1, maximumFractionDigits: 2}) + ' Kg';
+
+      const STORAGE_KEY = 'polikas_bon_data_v2';
+      function getAllBons() { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+
+      let rekapData = []; // grouped by date
+
+      function calculateRekap() {
+         const bons = getAllBons();
+         const byDate = {};
+
+         bons.forEach(b => {
+            // Receipt records
+            (b.historiBayar || []).forEach(h => {
+                const d = h.tanggal;
+                if(!d) return;
+                if(!byDate[d]) byDate[d] = {
+                    date: d, penerimaan: 0, penjualanRp: 0, penjualanKg: 0,
+                    potTotal:0, potHarga:0, potMatiRp:0, potSusutRp:0, potPulangRp:0,
+                    waktuMap: {}, caraMap: {}, kolMap: {}, kasirMap: {}
+                };
+                const entry = byDate[d];
+                const nom = h.nominal || 0;
+                entry.penerimaan += nom;
+                
+                const w = (h.waktu || 'TDK DIKETAHUI').toUpperCase();
+                entry.waktuMap[w] = (entry.waktuMap[w] || 0) + nom;
+
+                const c = (h.caraBayar || 'KASIR').toUpperCase();
+                entry.caraMap[c] = (entry.caraMap[c] || 0) + nom;
+
+                const kol = (h.kolektor || 'TANPA KOLEKTOR').toUpperCase();
+                entry.kolMap[kol] = (entry.kolMap[kol] || 0) + nom;
+
+                const ksr = (h.kasir || 'BUDI ARIADI').toUpperCase();
+                entry.kasirMap[ksr] = (entry.kasirMap[ksr] || 0) + nom;
+
+                const p = h.potongan || {};
+                entry.potHarga += (p.harga || 0);
+                entry.potMatiRp += (p.matiRp || 0);
+                entry.potSusutRp += (p.susutRp || 0);
+                entry.potPulangRp += (p.pulangRp || 0);
+                entry.potTotal += (h.totalPotongan || 0);
+            });
+
+            // Sales records
+            const bd = b.tanggal;
+            if(bd) {
+                if(!byDate[bd]) byDate[bd] = {
+                    date: bd, penerimaan: 0, penjualanRp: 0, penjualanKg: 0,
+                    potTotal:0, potHarga:0, potMatiRp:0, potSusutRp:0, potPulangRp:0,
+                    waktuMap: {}, caraMap: {}, kolMap: {}, kasirMap: {}
+                };
+                byDate[bd].penjualanRp += b.total;
+                (b.items || []).forEach(it => { byDate[bd].penjualanKg += (it.netto || 0); });
+            }
+         });
+
+         // Filter
+         const filterMode = document.getElementById('rekap-filter').value;
+         const now = new Date(), ts = now.toISOString().split('T')[0];
+         let from, to;
+         
+         if(filterMode === 'minggu-ini') {
+            const d = now.getDay(), diff = now.getDate() - d + (d === 0 ? -6 : 1);
+            const m = new Date(now); m.setDate(diff);
+            from = m.toISOString().split('T')[0]; to = ts;
+         } else if(filterMode === 'bulan-ini') {
+            from = ts.substring(0,8) + '01'; to = ts;
+         } else {
+            from = document.getElementById('rekap-start').value || ts;
+            to = document.getElementById('rekap-end').value || ts;
+         }
+
+         // Sort oldest first
+         rekapData = Object.values(byDate).filter(d => d.date >= from && d.date <= to).sort((a,b) => a.date.localeCompare(b.date));
+
+         // Render Table
+         const tbody = document.getElementById('rekap-tbody');
+         tbody.innerHTML = '';
+         if(rekapData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="py-12 text-center text-slate-400 border-none font-medium">Belum ada data penerimaan untuk periode terpilih.</td></tr>`;
+         } else {
+            rekapData.forEach((row, i) => {
+                let piutangHariIni = 0;
+                bons.forEach(b => {
+                   if(b.tanggal === row.date) {
+                      const totalPaidAtDate = (b.historiBayar || []).filter(h => h.tanggal <= row.date).reduce((s, h) => s + (h.nominal || 0) + (h.totalPotongan || 0), 0);
+                      const sisa = b.total - totalPaidAtDate;
+                      if(sisa > 0) piutangHariIni += sisa;
+                   }
+                });
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-100 hover:bg-slate-100 transition-colors cursor-pointer group text-[13px] print:text-[12px] print:text-black";
+                tr.innerHTML = `
+                    <td class="px-3 py-2.5 border-r border-slate-100 text-center font-medium">${i+1}</td>
+                    <td class="px-3 py-2.5 border-r border-slate-100 font-bold text-emerald-700 group-hover:underline print:text-black">${new Date(row.date).toLocaleDateString('id-ID', {weekday:'long', day:'2-digit', month:'long', year:'numeric'})}</td>
+                    <td class="px-3 py-2.5 border-r border-slate-100 text-right font-medium">${formatRp(row.penjualanRp)}</td>
+                    <td class="px-3 py-2.5 border-r border-slate-100 text-right text-rose-600 font-semibold print:text-black">${formatRp(piutangHariIni)}</td>
+                    <td class="px-3 py-2.5 bg-emerald-50 text-emerald-800 font-bold text-right group-hover:bg-emerald-200 transition-colors print:bg-transparent print:text-black">${formatRp(row.penerimaan)}</td>
+                `;
+                tr.addEventListener('click', () => showDetail(row.date));
+                tbody.appendChild(tr);
+            });
+         }
+      }
+
+      function showDetail(dateStr) {
+         document.getElementById('view-rekap').classList.add('hidden');
+         document.getElementById('view-detail').classList.remove('hidden');
+
+         const row = rekapData.find(d => d.date === dateStr);
+         if(!row) return;
+
+         document.getElementById('det-periode').textContent = new Date(row.date).toLocaleDateString('id-ID', {weekday: 'long', day:'2-digit', month:'long', year:'numeric'});
+
+         const mapToList = (mapObj) => {
+            const keys = Object.keys(mapObj);
+            if(!keys.length) return `<li class="italic text-slate-400">Tidak ada penerimaan</li>`;
+            return keys.map(k => `<li class="flex justify-between items-center"><span class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-300"></div> ${k}</span> <span class="font-bold">${formatRp(mapObj[k])}</span></li>`).join('');
+         };
+         
+         document.getElementById('det-waktu').innerHTML = mapToList(row.waktuMap);
+         document.getElementById('det-cara').innerHTML = mapToList(row.caraMap);
+         document.getElementById('det-kolektor').innerHTML = mapToList(row.kolMap);
+         // (User did not explicitly write A Kasir but we can leave Kasir out if not strictly needed based on their example "Waktu, Cara, Kolektor")
+         
+         document.getElementById('det-totalkas').textContent = formatRp(row.penerimaan);
+
+         // PENJUALAN
+         document.getElementById('det-jualrp').textContent = formatRp(row.penjualanRp);
+         document.getElementById('det-jualkg').textContent = formatKg(row.penjualanKg);
+         
+         document.getElementById('det-potrp').textContent = formatRp(row.potTotal);
+         document.getElementById('det-pot-harga').textContent = formatRp(row.potHarga);
+         document.getElementById('det-pot-mati').textContent = formatRp(row.potMatiRp);
+         document.getElementById('det-pot-susut').textContent = formatRp(row.potSusutRp);
+         document.getElementById('det-pot-pulang').textContent = formatRp(row.potPulangRp);
+
+         document.getElementById('det-netrp').textContent = formatRp(row.penjualanRp - row.potTotal);
+
+         // PIUTANG
+         const bons = getAllBons();
+         let piutangHariIni = 0;
+         let piutangLama = 0;
+
+         bons.forEach(b => {
+            const paidAtDate = (b.historiBayar || []).filter(h => h.tanggal <= dateStr).reduce((s, h) => s + (h.nominal || 0) + (h.totalPotongan || 0), 0);
+            const sisa = b.total - paidAtDate;
+            if(sisa > 0) {
+               if(b.tanggal === dateStr) piutangHariIni += sisa;
+               else if(b.tanggal < dateStr) piutangLama += sisa; 
+            }
+         });
+
+         document.getElementById('det-piutang-hari').textContent = formatRp(piutangHariIni);
+         document.getElementById('det-piutang-lama').textContent = formatRp(piutangLama);
+         document.getElementById('det-piutang-total').textContent = formatRp(piutangHariIni + piutangLama);
+      }
+
+      document.getElementById('btn-back-detail').addEventListener('click', () => {
+         document.getElementById('view-detail').classList.add('hidden');
+         document.getElementById('view-rekap').classList.remove('hidden');
+      });
+
+      // Filter events
+      document.getElementById('rekap-filter').addEventListener('change', (e) => {
+         const isRange = e.target.value === 'range';
+         document.getElementById('rekap-start').classList.toggle('hidden', !isRange);
+         document.getElementById('rekap-end').classList.toggle('hidden', !isRange);
+         if(!isRange) calculateRekap();
+      });
+      document.getElementById('rekap-start').addEventListener('change', calculateRekap);
+      document.getElementById('rekap-end').addEventListener('change', calculateRekap);
+
+      // Print events
+      document.getElementById('btn-print-rekap').addEventListener('click', () => window.print());
+      document.getElementById('btn-print-detail').addEventListener('click', () => window.print());
+
+      // Toggle mobile menu support (reused from other apps)
+      document.getElementById('toggleMenuBtn')?.addEventListener('click', () => {
+         const sb = document.getElementById('sidebar');
+         if(sb.style.transform === 'translateX(-100%)') sb.style.transform = 'translateX(0)';
+         else sb.style.transform = 'translateX(-100%)';
+      });
+
+      window.addEventListener('load', calculateRekap);
+    </script>
   </body>
 </html>
