@@ -236,16 +236,16 @@
           <!-- 3. MODE: PIUTANG (TABEL DETAIL) -->
           <div id="container-piutang" class="mode-container hidden">
              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-slate-600 border-collapse">
+                <table class="w-full text-left text-[11px] text-slate-600 border-collapse border border-slate-300">
                    <thead>
-                      <tr class="bg-slate-100 border-b border-slate-300 text-slate-700">
-                         <th class="px-2 py-2 border-r border-slate-200 w-8">No</th>
-                         <th class="px-2 py-2 border-r border-slate-200 w-24">Marketing</th>
-                         <th class="px-2 py-2 border-r border-slate-200 w-24">No Faktur</th>
-                         <th class="px-2 py-2 border-r border-slate-200">Konsumen</th>
-                         <th class="px-2 py-2 border-r border-slate-200 text-right">Tagihan</th>
-                         <th class="px-2 py-2 border-r border-slate-200 text-right">Pembayaran</th>
-                         <th class="px-2 py-2 text-right font-bold text-rose-700 bg-rose-50">Sisa Piutang</th>
+                      <tr class="bg-slate-200 border-b border-slate-400 text-slate-800 font-bold uppercase tracking-tighter">
+                         <th class="px-2 py-2 border-r border-slate-300 w-8 text-center">No</th>
+                         <th class="px-2 py-2 border-r border-slate-300 w-24 text-center">Tgl Faktur</th>
+                         <th class="px-2 py-2 border-r border-slate-300 w-24 text-center">No Faktur</th>
+                         <th class="px-2 py-2 border-r border-slate-300">Konsumen</th>
+                         <th class="px-2 py-2 border-r border-slate-300 text-right w-28">Tagihan</th>
+                         <th class="px-2 py-2 border-r border-slate-300 text-right w-28">Pembayaran</th>
+                         <th class="px-2 py-2 text-right w-28 font-black text-rose-800 bg-rose-50">Sisa Piutang</th>
                       </tr>
                    </thead>
                    <tbody id="tbody-det-piutang"></tbody>
@@ -502,34 +502,66 @@
 
       function renderDetailPiutang(dateStr) {
          const bons = getAllBons();
-         const targetBons = bons.filter(b => b.tanggal === dateStr);
          const tbody = document.getElementById('tbody-det-piutang');
          tbody.innerHTML = '';
 
-         if(!targetBons.length) {
-            tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">Tidak ada data piutang pada tanggal ini.</td></tr>`;
+         // 1. Ambil data faktur sampai tanggal laporan yang MASIH ADA PIUTANG
+         const unpaidBons = bons.filter(b => b.tanggal <= dateStr).map(b => {
+             const hist = (b.historiBayar || []).filter(h => h.tanggal <= dateStr);
+             const paid = hist.reduce((s, h) => s + (h.nominal || 0), 0);
+             const pot = hist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
+             const sisa = b.total - pot - paid;
+             const collector = hist.length > 0 ? hist[0].kolektor : (b.kolektor || 'TANPA MARKETING');
+             return { ...b, sisa, paid, pot, collector };
+         }).filter(b => b.sisa > 0);
+
+         if(!unpaidBons.length) {
+            tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">Semua tagihan sudah lunas per tanggal ini.</td></tr>`;
             return;
          }
 
-         targetBons.forEach((b, i) => {
-            const hist = b.historiBayar || [];
-            const collector = hist.length > 0 ? hist[0].kolektor : (b.kolektor || '-');
-            const paid = hist.reduce((s, h) => s + (h.nominal || 0), 0);
-            const pot = hist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
-            const sisa = b.total - pot - paid;
+         // 2. Group by Marketing
+         const grouped = {};
+         unpaidBons.forEach(b => {
+            if(!grouped[b.collector]) grouped[b.collector] = [];
+            grouped[b.collector].push(b);
+         });
 
-            const tr = document.createElement('tr');
-            tr.className = "border-b border-slate-200 hover:bg-slate-50";
-            tr.innerHTML = `
-               <td class="px-2 py-2 border-r border-slate-200 text-center">${i+1}</td>
-               <td class="px-2 py-2 border-r border-slate-200 uppercase font-bold">${collector}</td>
-               <td class="px-2 py-2 border-r border-slate-200 font-bold">${b.id}</td>
-               <td class="px-2 py-2 border-r border-slate-200">${b.konsumen}</td>
-               <td class="px-2 py-2 border-r border-slate-200 text-right font-medium">${b.total.toLocaleString('id-ID')}</td>
-               <td class="px-2 py-2 border-r border-slate-200 text-right font-medium text-emerald-700">${paid.toLocaleString('id-ID')}</td>
-               <td class="px-2 py-2 text-right font-bold text-rose-700 bg-rose-50">${sisa.toLocaleString('id-ID')}</td>
+         // 3. Render Groups sorted by date
+         Object.keys(grouped).sort().forEach(marketing => {
+            // Header Row untuk Marketing
+            const headerTr = document.createElement('tr');
+            headerTr.className = "bg-slate-50 border-y border-slate-300 print:bg-slate-100";
+            headerTr.innerHTML = `<td colspan="7" class="px-3 py-2 font-black text-slate-900 uppercase tracking-widest text-[12px]">MARKETING: ${marketing}</td>`;
+            tbody.appendChild(headerTr);
+
+            // Sort by Date Oldest First
+            const sortedItems = grouped[marketing].sort((a,b) => a.tanggal.localeCompare(b.tanggal));
+            
+            sortedItems.forEach((b, i) => {
+               const tr = document.createElement('tr');
+               tr.className = "border-b border-slate-200 hover:bg-slate-50 text-[11px]";
+               tr.innerHTML = `
+                  <td class="px-2 py-2 border-r border-slate-200 text-center font-medium">${i+1}</td>
+                  <td class="px-2 py-2 border-r border-slate-200 text-center">${b.tanggal}</td>
+                  <td class="px-2 py-2 border-r border-slate-200 font-bold">${b.id}</td>
+                  <td class="px-2 py-2 border-r border-slate-200 font-semibold text-slate-700">${b.konsumen}</td>
+                  <td class="px-2 py-2 border-r border-slate-200 text-right text-slate-800 font-medium">${b.total.toLocaleString('id-ID')}</td>
+                  <td class="px-2 py-2 border-r border-slate-200 text-right text-emerald-700 font-bold">${b.paid.toLocaleString('id-ID')}</td>
+                  <td class="px-2 py-2 text-right font-black text-rose-800 bg-rose-50/50">${b.sisa.toLocaleString('id-ID')}</td>
+               `;
+               tbody.appendChild(tr);
+            });
+
+            // Sub-total per Marketing (Optional but good)
+            const sumSisa = grouped[marketing].reduce((s,i)=>s+i.sisa, 0);
+            const footerTr = document.createElement('tr');
+            footerTr.className = "bg-slate-50 font-black border-b-2 border-slate-400 text-slate-900";
+            footerTr.innerHTML = `
+               <td colspan="6" class="px-3 py-2 text-right uppercase tracking-tighter">TOTAL PIUTANG ${marketing} :</td>
+               <td class="px-2 py-2 text-right text-[13px] bg-rose-100 text-rose-900">${sumSisa.toLocaleString('id-ID')}</td>
             `;
-            tbody.appendChild(tr);
+            tbody.appendChild(footerTr);
          });
       }
 
