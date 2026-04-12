@@ -215,17 +215,16 @@
              <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-600 border-collapse">
                    <thead>
-                      <tr class="bg-slate-100 border-b border-slate-300 text-slate-700">
-                         <th class="px-2 py-2 border-r border-slate-200 w-8">No</th>
-                         <th class="px-2 py-2 border-r border-slate-200 w-24">Marketing</th>
-                         <th class="px-2 py-2 border-r border-slate-200 w-24">No Faktur</th>
-                         <th class="px-2 py-2 border-r border-slate-200">Konsumen</th>
-                         <th class="px-2 py-2 border-r border-slate-200 text-right">Tagihan</th>
-                         <th class="px-2 py-2 border-r border-slate-200 text-right font-bold text-rose-700 bg-rose-50">Ttl Potong</th>
-                         <th class="px-2 py-2 border-r border-slate-200 text-right">Pot.Harga</th>
-                         <th class="px-2 py-2 border-r border-slate-200 text-right">A.Mati(Kg/Rp)</th>
-                         <th class="px-2 py-2 border-r border-slate-200 text-right">A.Susut(Kg/Rp)</th>
-                         <th class="px-2 py-2 text-right">A.Pulang(Kg/Rp)</th>
+                      <tr class="bg-slate-200 border-b border-slate-400 text-slate-800 font-bold uppercase tracking-tighter text-[10px]">
+                         <th class="px-2 py-2 border-r border-slate-300 w-8 text-center">No</th>
+                         <th class="px-2 py-2 border-r border-slate-300 w-24 text-center">Tgl / Faktur</th>
+                         <th class="px-2 py-2 border-r border-slate-300">Konsumen</th>
+                         <th class="px-2 py-2 border-r border-slate-300 text-right w-24">Tagihan / Sisa</th>
+                         <th class="px-2 py-2 border-r border-slate-300 text-right w-20 font-black text-rose-800 bg-rose-50">Ttl Potong</th>
+                         <th class="px-2 py-2 border-r border-slate-300 text-right w-20">Pot.Harga</th>
+                         <th class="px-2 py-2 border-r border-slate-300 text-right w-24">A.Mati(Kg/Rp)</th>
+                         <th class="px-2 py-2 border-r border-slate-300 text-right w-24">A.Susut(Kg/Rp)</th>
+                         <th class="px-2 py-2 text-right w-24">A.Pulang(Kg/Rp)</th>
                       </tr>
                    </thead>
                    <tbody id="tbody-det-potongan"></tbody>
@@ -456,9 +455,6 @@
 
       function renderDetailPotongan(dateStr) {
          const bons = getAllBons();
-         // Filter bons created on this date OR bons that have payments/deductions on this date?
-         // User said: "Menampilkan Data dalam bentuk Tabel: Kolektor, No Faktur, Konsumen..."
-         // Usually it means bons created on this date.
          const dailyBons = bons.filter(b => b.tanggal === dateStr);
          const tbody = document.getElementById('tbody-det-potongan');
          tbody.innerHTML = '';
@@ -468,35 +464,79 @@
             return;
          }
 
-         dailyBons.forEach((b, i) => {
-            const hist = b.historiBayar || [];
-            const collector = hist.length > 0 ? hist[0].kolektor : (b.kolektor || '-');
+         // 1. Group by Collector
+         const grouped = {};
+         dailyBons.forEach(b => {
+             const hist = (b.historiBayar || []);
+             const collector = hist.length > 0 ? hist[0].kolektor : (b.kolektor || 'TANPA MARKETING');
+             if(!grouped[collector]) grouped[collector] = [];
+             grouped[collector].push(b);
+         });
 
-            const pot = hist.reduce((acc, h) => {
-               const p = h.potongan || {};
-               acc.total += (h.totalPotongan || 0);
-               acc.harga += (p.harga || 0);
-               acc.matiRp += (p.matiRp || 0); acc.matiKg += (p.matiKg || 0);
-               acc.susutRp += (p.susutRp || 0); acc.susutKg += (p.susutKg || 0);
-               acc.pulangRp += (p.pulangRp || 0); acc.pulangKg += (p.pulangKg || 0);
-               return acc;
-            }, {total:0, harga:0, matiRp:0, matiKg:0, susutRp:0, susutKg:0, pulangRp:0, pulangKg:0});
+         // 2. Render Groups
+         Object.keys(grouped).sort().forEach(marketing => {
+            // Group Header
+            const headerTr = document.createElement('tr');
+            headerTr.className = "bg-slate-50 border-y border-slate-400 print:bg-slate-100";
+            headerTr.innerHTML = `<td colspan="10" class="px-3 py-2 font-black text-slate-900 uppercase tracking-widest text-[11px]">MARKETING: ${marketing}</td>`;
+            tbody.appendChild(headerTr);
 
-            const tr = document.createElement('tr');
-            tr.className = "border-b border-slate-200 hover:bg-slate-50";
-            tr.innerHTML = `
-               <td class="px-2 py-2 border-r border-slate-200 text-center">${i+1}</td>
-               <td class="px-2 py-2 border-r border-slate-200 uppercase">${collector}</td>
-               <td class="px-2 py-2 border-r border-slate-200 font-bold">${b.id}</td>
-               <td class="px-2 py-2 border-r border-slate-200">${b.konsumen}</td>
-               <td class="px-2 py-2 border-r border-slate-200 text-right font-medium">${b.total.toLocaleString('id-ID')}</td>
-               <td class="px-2 py-2 border-r border-slate-200 text-right font-bold text-rose-700 bg-rose-50">${pot.total.toLocaleString('id-ID')}</td>
-               <td class="px-2 py-2 border-r border-slate-200 text-right">${pot.harga.toLocaleString('id-ID')}</td>
-               <td class="px-2 py-2 border-r border-slate-200 text-right text-[10px]"><span class="block">${pot.matiKg} Kg</span><span class="text-rose-600">${pot.matiRp.toLocaleString('id-ID')}</span></td>
-               <td class="px-2 py-2 border-r border-slate-200 text-right text-[10px]"><span class="block">${pot.susutKg} Kg</span><span class="text-rose-600">${pot.susutRp.toLocaleString('id-ID')}</span></td>
-               <td class="px-2 py-2 text-right text-[10px]"><span class="block">${pot.pulangKg} Kg</span><span class="text-rose-600">${pot.pulangRp.toLocaleString('id-ID')}</span></td>
+            grouped[marketing].forEach((b, i) => {
+               const hist = b.historiBayar || [];
+               const paid = hist.reduce((s, h) => s + (h.nominal || 0), 0);
+               const pot = hist.reduce((acc, h) => {
+                  const p = h.potongan || {};
+                  acc.total += (h.totalPotongan || 0);
+                  acc.harga += (p.harga || 0);
+                  acc.matiRp += (p.matiRp || 0); acc.matiKg += (p.matiKg || 0);
+                  acc.susutRp += (p.susutRp || 0); acc.susutKg += (p.susutKg || 0);
+                  acc.pulangRp += (p.pulangRp || 0); acc.pulangKg += (p.pulangKg || 0);
+                  return acc;
+               }, {total:0, harga:0, matiRp:0, matiKg:0, susutRp:0, susutKg:0, pulangRp:0, pulangKg:0});
+               
+               const sisa = b.total - pot.total - paid;
+
+               const tr = document.createElement('tr');
+               tr.className = "border-b border-slate-200 hover:bg-slate-50 text-[10px]";
+               tr.innerHTML = `
+                  <td class="px-2 py-2 border-r border-slate-200 text-center font-medium">${i+1}</td>
+                  <td class="px-2 py-2 border-r border-slate-200 text-center">
+                     <span class="block font-bold text-slate-800">${b.id}</span>
+                     <span class="text-slate-400">${b.tanggal}</span>
+                  </td>
+                  <td class="px-2 py-2 border-r border-slate-200 font-semibold text-slate-700">${b.konsumen}</td>
+                  <td class="px-2 py-2 border-r border-slate-200 text-right">
+                     <span class="block font-bold text-slate-900">${b.total.toLocaleString('id-ID')}</span>
+                     <span class="text-rose-600 font-bold italic">${sisa.toLocaleString('id-ID')}</span>
+                  </td>
+                  <td class="px-2 py-2 border-r border-slate-200 text-right font-black text-rose-800 bg-rose-50">${pot.total.toLocaleString('id-ID')}</td>
+                  <td class="px-2 py-2 border-r border-slate-200 text-right">${pot.harga.toLocaleString('id-ID')}</td>
+                  <td class="px-2 py-2 border-r border-slate-200 text-right leading-tight">
+                     <span class="block text-slate-500">${pot.matiKg} Kg</span>
+                     <span class="text-rose-700 font-bold">${pot.matiRp.toLocaleString('id-ID')}</span>
+                  </td>
+                  <td class="px-2 py-2 border-r border-slate-200 text-right leading-tight">
+                     <span class="block text-slate-500">${pot.susutKg} Kg</span>
+                     <span class="text-rose-700 font-bold">${pot.susutRp.toLocaleString('id-ID')}</span>
+                  </td>
+                  <td class="px-2 py-2 text-right leading-tight">
+                     <span class="block text-slate-500">${pot.pulangKg} Kg</span>
+                     <span class="text-rose-700 font-bold">${pot.pulangRp.toLocaleString('id-ID')}</span>
+                  </td>
+               `;
+               tbody.appendChild(tr);
+            });
+
+            // Group Footer (Total Potongan per Marketing)
+            const sumGroupPot = grouped[marketing].reduce((s, b) => s + (b.historiBayar||[]).reduce((s2,h)=>s2+(h.totalPotongan||0),0), 0);
+            const footerTr = document.createElement('tr');
+            footerTr.className = "bg-slate-100 font-black border-y-2 border-slate-400 text-slate-900";
+            footerTr.innerHTML = `
+               <td colspan="4" class="px-3 py-2 text-right uppercase tracking-tighter">TOTAL POTONGAN MARKETING ${marketing} :</td>
+               <td class="px-2 py-2 text-right text-[12px] bg-rose-200 text-rose-900">${sumGroupPot.toLocaleString('id-ID')}</td>
+               <td colspan="5" class="bg-slate-50"></td>
             `;
-            tbody.appendChild(tr);
+            tbody.appendChild(footerTr);
          });
       }
 
