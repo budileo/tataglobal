@@ -241,7 +241,7 @@
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Tgl Pembayaran</label><input id="inp-tgl-bayar" type="date" class="w-full border border-slate-200 rounded px-3 py-2"></div>
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Kolektor Marketing</label><select id="inp-kolektor" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option>--Pilih--</option><option>Andi</option><option>Budi M.</option></select></div>
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Cara Bayar</label><select id="inp-cara-bayar" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option>Kasir</option><option>Marketing</option><option>Transfer</option></select></div>
-          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Jam Pembayaran</label><input id="inp-waktu-bayar" type="time" class="w-full border border-slate-200 rounded px-3 py-2"></div>
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Waktu Bayar</label><select id="inp-waktu-bayar" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option>Pagi</option><option>Siang</option><option>Sore</option><option>Malam</option></select></div>
         </div>
         <div class="text-xs text-slate-400 mt-[-10px] mb-4">Kasir Finance: <strong class="text-slate-600">Budi Ariadi</strong> (Auto)</div>
 
@@ -361,9 +361,7 @@
         document.getElementById('inp-tgl-bayar').value = new Date().toISOString().split('T')[0];
         document.getElementById('inp-kolektor').selectedIndex = 0;
         document.getElementById('inp-cara-bayar').selectedIndex = 0;
-        const now = new Date();
-        const currentTime = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-        document.getElementById('inp-waktu-bayar').value = currentTime;
+        document.getElementById('inp-waktu-bayar').selectedIndex = 0;
         document.querySelectorAll('.potongan-calc').forEach(el => el.value = 0);
         ['mati-kg','susut-kg','pulang-kg'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('inp-bayar-rp').value = '';
@@ -579,7 +577,7 @@
                  
                  allHistory.push({
                     tglBayar: h.tanggal,
-                    jam: h.waktu || '--:--',
+                    jam: h.waktu || '-',
                     konsumen: b.konsumen,
                     noFaktur: b.id,
                     tagihanAwal: b.total,
