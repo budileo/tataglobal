@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Operasional Keuangan</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              emerald: { 600: '#059669', 700: '#047857' },
+              navy: { 900: '#0f172a' }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+    </style>
+  </head>
+  <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
+    
+    <!-- Top Header / Mobile Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <h2 class="text-xl font-bold text-slate-900 hidden md:block">Dashboard Utama</h2>
+        <span class="text-lg font-bold text-slate-900 md:hidden">Op. Keuangan</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Role: Owner</span>
+        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">O</div>
+      </div>
+    </header>
+
+    <!-- Sidebar Section -->
+    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
+      
+      <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
+          <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
+        </div>
+        <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+
+      <div class="flex md:flex-col md:w-full w-max md:space-y-1">
+        <!-- Dashboard -->
+        <a href="dashboard.html" title="Dashboard" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span>
+        </a>
+        
+        <!-- Bon Penjualan -->
+        <a href="bon.html" title="Bon Penjualan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Bon Penjualan</span>
+        </a>
+
+        <!-- Pembayaran -->
+        <a href="pembayaran.html" title="Pembayaran & Potongan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pembayaran</span>
+        </a>
+
+        <!-- Laporan -->
+        <a href="laporan.html" title="Laporan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Laporan</span>
+        </a>
+
+        <a href="#" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span>
+        </a>
+
+        <a href="#" title="Histori Aktivitas" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Histori Aktivitas</span>
+        </a>
+      </div>
+      <!-- User Info -->
+      <div class="hidden md:block md:mt-auto w-full">
+        <div class="px-6 py-3 border-t border-slate-800">
+          <p class="text-sm font-semibold text-white sidebar-text">Budi Ariadi</p>
+          <p class="text-[11px] text-slate-500 sidebar-text">TATA KELOLA</p>
+        </div>
+        <a href="index.html" title="Keluar" class="flex items-center md:items-start gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          <span class="sidebar-text">Keluar</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="p-4 md:p-8">
+      
+      <!-- KPI Cards (Mendatar) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        
+        <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+          <p class="text-sm font-semibold text-slate-500 mb-1">Total Penjualan Bulan Ini</p>
+          <h3 class="text-2xl font-bold text-slate-900">Rp 420.000.000</h3>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden">
+          <div class="absolute right-0 top-0 w-2 h-full bg-rose-500"></div>
+          <p class="text-sm font-semibold text-slate-500 mb-1">Total Piutang Aktif</p>
+          <h3 class="text-2xl font-bold text-slate-900">Rp 50.000.000</h3>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+           <p class="text-sm font-semibold text-slate-500 mb-1">Total Konsumen</p>
+           <h3 class="text-2xl font-bold text-slate-900">124 <span class="text-sm font-medium text-emerald-600 ml-1">+12 Baru</span></h3>
+        </div>
+
+      </div>
+
+      <!-- Chart Simulation Card (Mendatar) -->
+      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-8">
+        <div class="flex items-center justify-between mb-6">
+          <h4 class="font-bold text-slate-900 text-lg">Grafik Penjualan Mingguan</h4>
+          <button class="text-sm text-emerald-600 font-semibold hover:underline">Lihat Laporan Detail</button>
+        </div>
+        <div class="h-48 w-full bg-slate-50 rounded-lg flex items-end justify-between p-4 px-8 border border-slate-100">
+           <!-- Placeholder bars -->
+           <div class="w-12 bg-emerald-100 rounded-t h-1/3 hover:bg-emerald-200 transition-colors tooltip cursor-pointer relative group"></div>
+           <div class="w-12 bg-emerald-100 rounded-t h-1/2 hover:bg-emerald-200 transition-colors cursor-pointer"></div>
+           <div class="w-12 bg-emerald-600 rounded-t h-full cursor-pointer relative shadow-[0_0_15px_rgba(5,150,105,0.3)]"><span class="absolute -top-7 font-bold text-slate-700 text-xs hidden md:block w-full text-center">Rp 40M</span></div>
+           <div class="w-12 bg-emerald-100 rounded-t h-2/3 hover:bg-emerald-200 transition-colors cursor-pointer"></div>
+           <div class="w-12 bg-emerald-100 rounded-t h-1/4 hover:bg-emerald-200 transition-colors cursor-pointer hidden md:block"></div>
+        </div>
+      </div>
+
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

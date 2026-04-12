@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bon Penjualan - Operasional Keuangan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } }
+      }
+    </script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+      .filter-btn.active { background-color: #059669; color: #fff; border-color: #059669; }
+      @media print { nav, header, .no-print { display: none !important; } body { padding: 0 !important; margin: 0 !important; } #view-detail { padding: 0 !important; max-width: 100% !important; } .bg-white { box-shadow: none !important; border: none !important; } }
+    </style>
+  </head>
+  <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
+    
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3"><h2 id="page-title" class="text-xl font-bold text-slate-900">Bon Penjualan</h2></div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Operasional</span>
+        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">O</div>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
+      <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
+          <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
+        </div>
+        <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+      <div class="flex md:flex-col md:w-full w-max md:space-y-1">
+        <a href="dashboard.html" title="Dashboard" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span></a>
+        <a href="bon.html" title="Bon Penjualan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Bon Penjualan</span></a>
+        <a href="pembayaran.html" title="Pembayaran" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pembayaran</span></a>
+        <a href="laporan.html" title="Laporan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Laporan</span></a>
+        <a href="master.html" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span></a>
+        <a href="histori.html" title="Histori Aktivitas" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Histori Aktivitas</span></a>
+      </div>
+      <!-- User Info -->
+      <div class="hidden md:block md:mt-auto w-full">
+        <div class="px-6 py-3 border-t border-slate-800">
+          <p class="text-sm font-semibold text-white sidebar-text">Budi Ariadi</p>
+          <p class="text-[11px] text-slate-500 sidebar-text">TATA KELOLA</p>
+        </div>
+        <a href="index.html" title="Keluar" class="flex items-center gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full"><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg><span class="sidebar-text">Keluar</span></a>
+      </div>
+    </nav>
+
+    <!-- ============================================== -->
+    <!-- VIEW 1: LIST HISTORI BON                       -->
+    <!-- ============================================== -->
+    <main id="view-list" class="p-4 md:p-8 max-w-6xl mx-auto">
+      <div class="flex flex-col sm:flex-row gap-3 mb-4">
+        <div class="relative flex-1">
+          <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <input id="searchInput" type="text" placeholder="Cari No Faktur atau Nama Konsumen..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+        </div>
+        <button id="btn-buat-bon" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors shadow-lg shadow-emerald-600/20 flex items-center gap-2 shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Buat Bon Baru
+        </button>
+      </div>
+      <div class="flex flex-wrap gap-2 mb-5 items-center">
+        <span class="text-xs font-semibold text-slate-500 mr-1">Filter:</span>
+        <button data-filter="hari-ini" class="filter-btn active text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Hari Ini</button>
+        <button data-filter="kemarin" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Kemarin</button>
+        <button data-filter="minggu-ini" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Minggu Ini</button>
+        <button data-filter="bulan-ini" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Bulan Ini</button>
+        <div class="flex items-center gap-1 ml-1">
+          <input id="filterDateFrom" type="date" class="border border-slate-200 rounded px-2 py-1 text-xs outline-emerald-500">
+          <span class="text-xs text-slate-400">s/d</span>
+          <input id="filterDateTo" type="date" class="border border-slate-200 rounded px-2 py-1 text-xs outline-emerald-500">
+          <button data-filter="range" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Tampilkan</button>
+        </div>
+      </div>
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm"><p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Jumlah Bon</p><h3 id="summary-count" class="text-2xl font-bold text-slate-900">0</h3></div>
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm"><p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Total Penjualan</p><h3 id="summary-total" class="text-2xl font-bold text-slate-900">Rp 0</h3></div>
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden"><div class="absolute right-0 top-0 w-1.5 h-full bg-rose-500 rounded-r"></div><p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Piutang</p><h3 id="summary-piutang" class="text-2xl font-bold text-rose-600">Rp 0</h3></div>
+        <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden"><div class="absolute right-0 top-0 w-1.5 h-full bg-emerald-500 rounded-r"></div><p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Lunas</p><h3 id="summary-lunas" class="text-2xl font-bold text-emerald-700">Rp 0</h3></div>
+      </div>
+      <!-- Table -->
+      <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-600">
+            <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+              <tr><th class="px-2 py-2 border-r border-slate-100 w-10 text-center">No</th><th class="px-2 py-2 border-r border-slate-100 w-24">Tanggal</th><th class="px-2 py-2 border-r border-slate-100 w-24">No Faktur</th><th class="px-2 py-2 border-r border-slate-100 text-center">Jml Item</th><th class="px-2 py-2 border-r border-slate-100 text-right">Neto (kg)</th><th class="px-2 py-2 border-r border-slate-100">Konsumen</th><th class="px-2 py-2 border-r border-slate-100">Staf</th><th class="px-2 py-2 border-r border-slate-100 text-right">Total (Rp)</th><th class="px-2 py-2 border-r border-slate-100 text-center">Status</th><th class="px-2 py-2 text-center">Aksi</th></tr>
+            </thead>
+            <tbody id="bon-table-body"></tbody>
+          </table>
+        </div>
+        <div id="empty-state" class="hidden p-12 text-center text-slate-400">
+          <svg class="w-16 h-16 mx-auto mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <p class="font-semibold text-lg mb-1">Belum Ada Bon</p><p class="text-sm">Tidak ditemukan data bon untuk filter ini.</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- ============================================== -->
+    <!-- VIEW 2: FORM BUAT / EDIT BON                   -->
+    <!-- ============================================== -->
+    <main id="view-form" class="p-4 md:p-8 max-w-5xl mx-auto hidden">
+      <button id="btn-kembali-form" class="no-print flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-800 mb-4 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>Kembali ke Daftar Bon
+      </button>
+      <h3 id="form-title" class="text-xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-2">Tambah Bon Penjualan Baru</h3>
+      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6">
+        <h4 class="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider">Info Header</h4>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal</label><input id="form-tanggal" type="date" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"></div>
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">No Bon</label><input id="form-no-bon" type="text" placeholder="BN-001" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"></div>
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Konsumen</label><select id="form-konsumen" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"><option value="">-- Pilih --</option><option>Bapak Budi</option><option>Ibu Siti</option><option>H. Ahmad</option><option>Toko Makmur</option></select></div>
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Staf Ops / Supir</label><select id="form-staf" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"><option>Heri</option><option>Joko</option><option>Dimas</option></select></div>
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">PIC Marketing</label><select id="form-marketing" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"><option>Andi</option><option>Budi M.</option></select></div>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6 pb-2" id="items-container">
+        <div class="flex justify-between items-center mb-4">
+          <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Detail Item Ayam</h4>
+          <button id="add-item-btn" class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded hover:bg-emerald-100">+ Tambah Item</button>
+        </div>
+        <div class="item-row border border-slate-100 rounded-lg p-4 bg-slate-50 mb-4 relative">
+          <button class="delete-item-btn absolute top-2 right-2 text-slate-400 hover:text-rose-500 hidden"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+          <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mb-2">
+            <div class="col-span-2 md:col-span-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Jml Ayam</label><input type="number" class="calc-input jml-ayam w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500" value=""></div>
+            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Bruto (Kg)</label><input type="number" step="0.01" class="calc-input berat-bruto w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500" value=""></div>
+            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Br. Kotak</label><select class="calc-input berat-kotak w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500"><option value="0.64">0,64 Kg (1)</option><option value="1.28">1,28 Kg (2)</option><option value="1.92">1,92 Kg (3)</option><option value="2.56">2,56 Kg (4)</option><option value="3.2">3,20 Kg (5)</option><option value="3.84">3,84 Kg (6)</option><option value="4.48">4,48 Kg (7)</option><option value="5.12">5,12 Kg (8)</option><option value="5.76">5,76 Kg (9)</option><option value="6.4">6,40 Kg (10)</option><option value="7.04">7,04 Kg (11)</option><option value="7.68">7,68 Kg (12)</option><option value="8.32">8,32 Kg (13)</option><option value="8.96">8,96 Kg (14)</option><option value="9.6">9,60 Kg (15)</option><option value="10.24">10,24 Kg (16)</option><option value="10.88">10,88 Kg (17)</option><option value="11.52">11,52 Kg (18)</option><option value="12.16">12,16 Kg (19)</option><option value="12.8">12,80 Kg (20)</option></select></div>
+            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ukuran</label><select class="ukuran-select w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500"><option>B</option><option>K</option><option>K/PK</option><option>PK</option><option>JK</option><option>JK/PK</option><option>JB</option><option>JB/PK</option><option>KTB</option><option>KTN</option><option>TB</option><option>TK</option></select></div>
+            <div class="col-span-2 md:col-span-2"><label class="block text-xs font-semibold text-slate-500 mb-1">Harga Satuan (Rp)</label><input type="number" class="calc-input harga-satuan w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500 font-medium" value=""></div>
+          </div>
+          <div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-200">
+            <div class="text-xs font-semibold text-slate-500">Netto: <span class="netto-display text-slate-900 font-bold ml-1 text-sm">0.00 kg</span></div>
+            <div class="text-xs font-semibold text-slate-500">Subtotal: <span class="subtotal-display text-emerald-700 font-bold ml-1 text-base">Rp 0</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm relative overflow-hidden">
+        <div class="mb-6"><label class="block text-xs font-semibold text-slate-500 mb-1">Keterangan Bon (Opsional)</label><input id="form-keterangan" type="text" placeholder="Tuliskan catatan khusus..." class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"></div>
+        <div class="flex flex-col md:flex-row justify-between items-end md:items-center border-t border-slate-200 pt-6">
+          <div class="mb-4 md:mb-0"><span class="inline-block bg-rose-100 text-rose-700 text-xs font-bold px-2 py-1 rounded-sm mb-1">STATUS: BELUM LUNAS (PIUTANG)</span><h4 class="font-bold text-slate-500 text-sm">TOTAL KESELURUHAN</h4></div>
+          <h2 id="grand-total-display" class="text-3xl font-bold text-slate-900 tracking-tight">Rp 0</h2>
+        </div>
+        <button id="btn-simpan-bon" class="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-lg shadow-emerald-600/30">Simpan Bon Penjualan</button>
+      </div>
+    </main>
+
+    <!-- ============================================== -->
+    <!-- VIEW 3: DETAIL BON (Tampilan Faktur)           -->
+    <!-- ============================================== -->
+    <main id="view-detail" class="p-4 md:p-8 max-w-4xl mx-auto hidden">
+      <button id="btn-kembali-detail" class="no-print flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-800 mb-4 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>Kembali ke Daftar Bon
+      </button>
+
+      <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        
+        <!-- ---- Faktur Header ---- -->
+        <div class="p-6 md:p-8 border-b-2 border-dashed border-slate-200">
+          <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <div class="w-10 h-10 bg-emerald-600 rounded flex items-center justify-center"><span class="text-white font-bold text-sm">TG</span></div>
+                <div>
+                  <h3 class="text-xl font-bold text-slate-900 tracking-tight leading-tight">BON PENJUALAN</h3>
+                  <p class="text-[11px] font-semibold text-emerald-700 leading-tight">CV Global Putra Swasembada</p>
+                </div>
+              </div>
+              <p class="text-[10px] text-slate-400 pl-12">Distributor Ayam Potong Pekanbaru</p>
+            </div>
+            <div class="text-right sm:text-right">
+              <p class="text-3xl font-bold text-emerald-600 tracking-tight" id="detail-id-big"></p>
+              <div id="detail-status-badge" class="mt-1"></div>
+            </div>
+          </div>
+
+          <!-- Info Grid -->
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-3 bg-slate-50 rounded-lg p-4 border border-slate-100">
+            <div><p class="text-[10px] font-bold text-slate-400 uppercase">Tanggal</p><p id="detail-tanggal" class="text-sm font-semibold text-slate-800"></p></div>
+            <div><p class="text-[10px] font-bold text-slate-400 uppercase">Nama Konsumen</p><p id="detail-konsumen" class="text-sm font-semibold text-slate-800"></p></div>
+            <div><p class="text-[10px] font-bold text-slate-400 uppercase">No Bon</p><p id="detail-id" class="text-sm font-semibold text-slate-800"></p></div>
+            <div><p class="text-[10px] font-bold text-slate-400 uppercase">Staf Operasional</p><p id="detail-staf" class="text-sm font-semibold text-slate-800"></p></div>
+            <div><p class="text-[10px] font-bold text-slate-400 uppercase">PIC Marketing</p><p id="detail-marketing" class="text-sm font-semibold text-slate-800"></p></div>
+            <div id="detail-keterangan-wrap"><p class="text-[10px] font-bold text-slate-400 uppercase">Keterangan</p><p id="detail-keterangan" class="text-sm text-slate-700 italic"></p></div>
+          </div>
+        </div>
+
+        <!-- ---- Tabel Item Detail ---- -->
+        <div class="p-6 md:px-8">
+          <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Detail Item Barang</h4>
+          <div class="overflow-x-auto border border-slate-200 rounded-lg">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-800 text-white text-xs">
+                <tr>
+                  <th class="px-3 py-2.5 text-center w-10">No</th>
+                  <th class="px-3 py-2.5 text-right">Jml Ayam</th>
+                  <th class="px-3 py-2.5 text-center">Ukuran</th>
+                  <th class="px-3 py-2.5 text-right">Bruto (Kg)</th>
+                  <th class="px-3 py-2.5 text-right">Kotak (Kg)</th>
+                  <th class="px-3 py-2.5 text-right font-bold">Netto (Kg)</th>
+                  <th class="px-3 py-2.5 text-right">Harga/Kg</th>
+                  <th class="px-3 py-2.5 text-right font-bold">Jumlah (Rp)</th>
+                </tr>
+              </thead>
+              <tbody id="detail-items-body"></tbody>
+              <tfoot class="bg-slate-50 font-bold border-t-2 border-slate-300">
+                <tr>
+                  <td colspan="4" class="px-3 py-3 text-right text-slate-500 text-xs uppercase">Totalan</td>
+                  <td id="detail-foot-kotak" class="px-3 py-3 text-right text-slate-600"></td>
+                  <td id="detail-foot-netto" class="px-3 py-3 text-right text-slate-800"></td>
+                  <td class="px-3 py-3"></td>
+                  <td id="detail-foot-jumlah" class="px-3 py-3 text-right text-emerald-700 text-base"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- ---- Footer Total Besar ---- -->
+        <div class="p-6 md:px-8 border-t-2 border-dashed border-slate-200">
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="text-center sm:text-left">
+              <p class="text-xs text-slate-400 font-semibold uppercase">Grand Total Tagihan</p>
+              <h2 id="detail-total" class="text-4xl font-bold text-slate-900 tracking-tight"></h2>
+            </div>
+            <div class="no-print flex flex-wrap gap-2">
+              <button id="btn-edit-bon" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>Edit
+              </button>
+              <button id="btn-download-pdf" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>Download PDF
+              </button>
+              <button id="btn-batal-detail" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-5 py-2.5 rounded-lg text-sm transition-colors">Kembali</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ============================================== -->
+    <!-- JAVASCRIPT ENGINE                              -->
+    <!-- ============================================== -->
+    <script>
+    (function() {
+      const STORAGE_KEY = 'polikas_bon_data_v2';
+      let editingBonIndex = -1;
+
+      function getAllBons() { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+      function saveAllBons(bons) { localStorage.setItem(STORAGE_KEY, JSON.stringify(bons)); }
+
+      // Migrate from old key if exists
+      (function migrate() {
+        const oldKey = 'polikas_bon_data';
+        const old = localStorage.getItem(oldKey);
+        if (old && !localStorage.getItem(STORAGE_KEY)) {
+          const bons = JSON.parse(old).map(b => {
+            if (!b.items) b.items = [{ jmlAyam: 0, bruto: 0, kotak: 6.2, ukuran: 'B (Besar)', harga: 0, netto: 0, jumlah: b.total }];
+            return b;
+          });
+          saveAllBons(bons);
+        }
+      })();
+
+      function seedDemoData() {
+        if (getAllBons().length > 0) return;
+        const today = new Date().toISOString().split('T')[0];
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+        const threeDays = new Date(Date.now() - 3*86400000).toISOString().split('T')[0];
+        const lastWeek = new Date(Date.now() - 8*86400000).toISOString().split('T')[0];
+        const demos = [
+          { id:'BN-001', tanggal:today, konsumen:'Bapak Budi', staf:'Heri', marketing:'Andi', total:1876000, status:'PIUTANG', keterangan:'',
+            items:[{jmlAyam:50,bruto:100,kotak:6.4,ukuran:'B',harga:20000,netto:93.6,jumlah:1872000}] },
+          { id:'BN-002', tanggal:today, konsumen:'Ibu Siti', staf:'Joko', marketing:'Andi', total:3500000, status:'PIUTANG', keterangan:'Kirim pagi',
+            items:[{jmlAyam:80,bruto:180,kotak:12.8,ukuran:'K',harga:21000,netto:167.2,jumlah:3511200},{jmlAyam:10,bruto:20,kotak:0.64,ukuran:'PK',harga:18000,netto:19.36,jumlah:348480}] },
+          { id:'BN-003', tanggal:today, konsumen:'H. Ahmad', staf:'Heri', marketing:'Budi M.', total:2100000, status:'LUNAS', keterangan:'',
+            items:[{jmlAyam:60,bruto:112,kotak:6.4,ukuran:'B',harga:19800,netto:105.6,jumlah:2090880}] },
+          { id:'BN-004', tanggal:yesterday, konsumen:'Toko Makmur', staf:'Dimas', marketing:'Andi', total:5250000, status:'PIUTANG', keterangan:'',
+            items:[{jmlAyam:100,bruto:260,kotak:12.8,ukuran:'JB',harga:21200,netto:247.2,jumlah:5240640}] },
+          { id:'BN-005', tanggal:yesterday, konsumen:'Bapak Budi', staf:'Heri', marketing:'Andi', total:980000, status:'LUNAS', keterangan:'',
+            items:[{jmlAyam:25,bruto:52,kotak:6.4,ukuran:'K/PK',harga:21400,netto:45.6,jumlah:975840}] },
+          { id:'BN-006', tanggal:threeDays, konsumen:'Ibu Siti', staf:'Joko', marketing:'Budi M.', total:4300000, status:'PIUTANG', keterangan:'Urgent',
+            items:[{jmlAyam:90,bruto:220,kotak:12.8,ukuran:'JK',harga:20700,netto:207.2,jumlah:4289040}] },
+          { id:'BN-007', tanggal:lastWeek, konsumen:'H. Ahmad', staf:'Dimas', marketing:'Andi', total:7800000, status:'LUNAS', keterangan:'',
+            items:[{jmlAyam:150,bruto:390,kotak:12.8,ukuran:'JB/PK',harga:20700,netto:377.2,jumlah:7808040}] },
+        ];
+        saveAllBons(demos);
+      }
+      seedDemoData();
+
+      // ==============================
+      // VIEWS
+      // ==============================
+      const viewList=document.getElementById('view-list'), viewForm=document.getElementById('view-form'), viewDetail=document.getElementById('view-detail'), pageTitle=document.getElementById('page-title');
+      function hideAll(){viewList.classList.add('hidden');viewForm.classList.add('hidden');viewDetail.classList.add('hidden');}
+
+      function showListView(){hideAll();viewList.classList.remove('hidden');pageTitle.textContent='Bon Penjualan';editingBonIndex=-1;renderTable();}
+
+      function showFormView(isEdit){
+        hideAll();viewForm.classList.remove('hidden');
+        const t=document.getElementById('form-title'),btn=document.getElementById('btn-simpan-bon');
+        if(isEdit){pageTitle.textContent='Edit Bon';t.textContent='Edit Data Bon Penjualan';btn.textContent='Simpan Perubahan';}
+        else{
+          pageTitle.textContent='Buat Bon Baru';t.textContent='Tambah Bon Penjualan Baru';btn.textContent='Simpan Bon Penjualan';
+          editingBonIndex=-1;
+          document.getElementById('form-tanggal').value=new Date().toISOString().split('T')[0];
+          document.getElementById('form-no-bon').value='BN-'+String(getAllBons().length+1).padStart(3,'0');
+          document.getElementById('form-no-bon').readOnly=false;
+          document.getElementById('form-konsumen').selectedIndex=0;
+          document.getElementById('form-staf').selectedIndex=0;
+          document.getElementById('form-marketing').selectedIndex=0;
+          document.getElementById('form-keterangan').value='';
+          const c=document.getElementById('items-container');
+          c.querySelectorAll('.item-row').forEach((r,i)=>{if(i>0)r.remove();});
+          const fr=c.querySelector('.item-row');
+          if(fr){fr.querySelector('.jml-ayam').value='';fr.querySelector('.berat-bruto').value='';fr.querySelector('.harga-satuan').value='';fr.querySelector('.delete-item-btn').classList.add('hidden');}
+        }
+        calculateGrandTotal();
+      }
+
+      function showDetailView(idx){
+        hideAll();viewDetail.classList.remove('hidden');pageTitle.textContent='Detail Bon';
+        const bons=getAllBons(),bon=bons[idx];
+        if(!bon){showListView();return;}
+        editingBonIndex=idx;
+
+        document.getElementById('detail-id-big').textContent=bon.id;
+        document.getElementById('detail-id').textContent=bon.id;
+        document.getElementById('detail-tanggal').textContent=new Date(bon.tanggal).toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+        document.getElementById('detail-konsumen').textContent=bon.konsumen;
+        document.getElementById('detail-staf').textContent=bon.staf;
+        document.getElementById('detail-marketing').textContent=bon.marketing;
+        const kw=document.getElementById('detail-keterangan-wrap'),ke=document.getElementById('detail-keterangan');
+        if(bon.keterangan){kw.style.display='';ke.textContent=bon.keterangan;}else{kw.style.display='none';}
+
+        const sb=document.getElementById('detail-status-badge');
+        sb.innerHTML=bon.status==='LUNAS'
+          ?'<span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">✓ LUNAS</span>'
+          :'<span class="inline-flex items-center gap-1 bg-rose-100 text-rose-700 text-xs font-bold px-3 py-1 rounded-full">● PIUTANG</span>';
+
+        // Render items table
+        const items=bon.items||[];
+        let totalKotak=0,totalNetto=0,totalJumlah=0;
+        const tbody=document.getElementById('detail-items-body');
+        tbody.innerHTML=items.map((it,i)=>{
+          const n=it.netto||(it.bruto-it.kotak);
+          const j=it.jumlah||(n*it.harga);
+          totalKotak+=it.kotak;totalNetto+=n;totalJumlah+=j;
+          return `<tr class="border-b border-slate-100 ${i%2===1?'bg-slate-50':''}">
+            <td class="px-3 py-2.5 text-center text-slate-400">${i+1}</td>
+            <td class="px-3 py-2.5 text-right">${it.jmlAyam} ekor</td>
+            <td class="px-3 py-2.5 text-center"><span class="bg-slate-200 text-slate-700 text-xs font-bold px-2 py-0.5 rounded">${it.ukuran}</span></td>
+            <td class="px-3 py-2.5 text-right">${it.bruto.toFixed(1)}</td>
+            <td class="px-3 py-2.5 text-right text-slate-500">${it.kotak.toFixed(1)}</td>
+            <td class="px-3 py-2.5 text-right font-semibold">${n.toFixed(2)}</td>
+            <td class="px-3 py-2.5 text-right">${it.harga.toLocaleString('id-ID')}</td>
+            <td class="px-3 py-2.5 text-right font-semibold">${j.toLocaleString('id-ID')}</td>
+          </tr>`;
+        }).join('');
+
+        document.getElementById('detail-foot-kotak').textContent=totalKotak.toFixed(1);
+        document.getElementById('detail-foot-netto').textContent=totalNetto.toFixed(2);
+        document.getElementById('detail-foot-jumlah').textContent='Rp '+totalJumlah.toLocaleString('id-ID');
+        document.getElementById('detail-total').textContent='Rp '+bon.total.toLocaleString('id-ID');
+      }
+
+      // ==============================
+      // BUTTONS
+      // ==============================
+      document.getElementById('btn-buat-bon').addEventListener('click',()=>showFormView(false));
+      document.getElementById('btn-kembali-form').addEventListener('click',showListView);
+      document.getElementById('btn-kembali-detail').addEventListener('click',showListView);
+      document.getElementById('btn-batal-detail').addEventListener('click',showListView);
+
+      document.getElementById('btn-download-pdf').addEventListener('click',()=>{
+        const bon = getAllBons()[editingBonIndex];
+        if(!bon) return;
+        const origTitle = document.title;
+        document.title = 'Bon_' + bon.id + '_' + bon.konsumen.replace(/\s+/g,'_');
+        window.print();
+        document.title = origTitle;
+      });
+
+      document.getElementById('btn-edit-bon').addEventListener('click',()=>{
+        if(editingBonIndex<0)return;
+        const bon=getAllBons()[editingBonIndex];
+        showFormView(true);
+        document.getElementById('form-tanggal').value=bon.tanggal;
+        document.getElementById('form-no-bon').value=bon.id;
+        document.getElementById('form-no-bon').readOnly=true;
+        setSelectValue('form-konsumen',bon.konsumen);
+        setSelectValue('form-staf',bon.staf);
+        setSelectValue('form-marketing',bon.marketing);
+        document.getElementById('form-keterangan').value=bon.keterangan||'';
+
+        // Populate items
+        const container=document.getElementById('items-container');
+        container.querySelectorAll('.item-row').forEach((r,i)=>{if(i>0)r.remove();});
+        const items=bon.items||[];
+        items.forEach((it,i)=>{
+          let row;
+          if(i===0){row=container.querySelector('.item-row');}
+          else{row=container.querySelector('.item-row').cloneNode(true);container.appendChild(row);attachCalcListeners(row);}
+          row.querySelector('.jml-ayam').value=it.jmlAyam;
+          row.querySelector('.berat-bruto').value=it.bruto;
+          setSelectValueEl(row.querySelector('.berat-kotak'),String(it.kotak));
+          setSelectValueEl(row.querySelector('.ukuran-select'),it.ukuran);
+          row.querySelector('.harga-satuan').value=it.harga;
+          row.querySelector('.delete-item-btn').classList.toggle('hidden',items.length<=1);
+        });
+        calculateGrandTotal();
+      });
+
+      function setSelectValue(id,val){const s=document.getElementById(id);for(let i=0;i<s.options.length;i++)if(s.options[i].text===val||s.options[i].value===val){s.selectedIndex=i;return;}}
+      function setSelectValueEl(s,val){for(let i=0;i<s.options.length;i++)if(s.options[i].text===val||s.options[i].value===val){s.selectedIndex=i;return;}}
+
+      // ==============================
+      // FILTERS
+      // ==============================
+      let activeFilter='hari-ini';
+      const filterButtons=document.querySelectorAll('.filter-btn');
+      filterButtons.forEach(btn=>{btn.addEventListener('click',()=>{filterButtons.forEach(b=>b.classList.remove('active'));btn.classList.add('active');activeFilter=btn.dataset.filter;renderTable();});});
+      function getFilterDateRange(){
+        const now=new Date(),ts=now.toISOString().split('T')[0];let f,t;
+        switch(activeFilter){
+          case'hari-ini':f=t=ts;break;
+          case'kemarin':{const y=new Date(now);y.setDate(y.getDate()-1);f=t=y.toISOString().split('T')[0];break;}
+          case'minggu-ini':{const d=now.getDay(),diff=now.getDate()-d+(d===0?-6:1),m=new Date(now);m.setDate(diff);f=m.toISOString().split('T')[0];t=ts;break;}
+          case'bulan-ini':f=ts.substring(0,8)+'01';t=ts;break;
+          case'range':f=document.getElementById('filterDateFrom').value||ts;t=document.getElementById('filterDateTo').value||ts;break;
+          default:f=t=ts;
+        }return{from:f,to:t};
+      }
+      document.getElementById('searchInput').addEventListener('input',()=>renderTable());
+
+      // ==============================
+      // RENDER TABLE
+      // ==============================
+      function renderTable(){
+        const bons=getAllBons(),{from,to}=getFilterDateRange(),q=document.getElementById('searchInput').value.trim().toLowerCase();
+        const filtered=bons.map((b,i)=>({...b,_idx:i})).filter(b=>{
+          return(b.tanggal>=from&&b.tanggal<=to)&&(!q||b.id.toLowerCase().includes(q)||b.konsumen.toLowerCase().includes(q));
+        });
+        document.getElementById('summary-count').textContent=filtered.length;
+        document.getElementById('summary-total').textContent='Rp '+filtered.reduce((s,b)=>s+b.total,0).toLocaleString('id-ID');
+        document.getElementById('summary-piutang').textContent='Rp '+filtered.filter(b=>b.status==='PIUTANG').reduce((s,b)=>s+b.total,0).toLocaleString('id-ID');
+        document.getElementById('summary-lunas').textContent='Rp '+filtered.filter(b=>b.status==='LUNAS').reduce((s,b)=>s+b.total,0).toLocaleString('id-ID');
+
+        const tbody=document.getElementById('bon-table-body'),empty=document.getElementById('empty-state');
+        if(!filtered.length){tbody.innerHTML='';empty.classList.remove('hidden');return;}
+        empty.classList.add('hidden');
+        tbody.innerHTML=filtered.map((b,i)=>{
+          const sc=b.status==='LUNAS'?'bg-emerald-100 text-emerald-800':'bg-rose-100 text-rose-700';
+          const fd=new Date(b.tanggal).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+          const itemsCount = b.items ? b.items.length : 0;
+          const totalNetto = b.items ? b.items.reduce((s, it) => s + (it.netto || (it.bruto - it.kotak)), 0) : 0;
+          return`<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer" data-idx="${b._idx}">
+            <td class="px-2 py-2 border-r border-slate-100 text-center text-slate-400">${i+1}</td>
+            <td class="px-2 py-2 border-r border-slate-100 whitespace-nowrap text-xs">${fd}</td>
+            <td class="px-2 py-2 border-r border-slate-100 font-bold text-slate-800 text-xs">${b.id}</td>
+            <td class="px-2 py-2 border-r border-slate-100 text-center text-slate-700 font-medium">${itemsCount}</td>
+            <td class="px-2 py-2 border-r border-slate-100 text-right text-slate-700 font-medium">${totalNetto.toFixed(2)}</td>
+            <td class="px-2 py-2 border-r border-slate-100">${b.konsumen}</td>
+            <td class="px-2 py-2 border-r border-slate-100 text-slate-500">${b.staf}</td>
+            <td class="px-2 py-2 border-r border-slate-100 text-right font-semibold">${b.total.toLocaleString('id-ID')}</td>
+            <td class="px-2 py-2 border-r border-slate-100 text-center"><span class="text-[10px] font-bold px-2 py-1 rounded ${sc}">${b.status}</span></td>
+            <td class="px-2 py-2 text-center"><button class="btn-detail text-emerald-600 hover:underline text-[11px] font-semibold" data-idx="${b._idx}">Detail</button></td>
+          </tr>`;
+        }).join('');
+
+        tbody.querySelectorAll('tr[data-idx]').forEach(tr=>{
+          tr.addEventListener('dblclick',()=>showDetailView(+tr.dataset.idx));
+        });
+        tbody.querySelectorAll('.btn-detail').forEach(btn=>{
+          btn.addEventListener('click',e=>{e.stopPropagation();showDetailView(+btn.dataset.idx);});
+        });
+      }
+
+      // ==============================
+      // CALC ENGINE
+      // ==============================
+      function calculateRow(row){
+        const br=parseFloat(row.querySelector('.berat-bruto')?.value)||0;
+        const kt=parseFloat(row.querySelector('.berat-kotak')?.value)||0;
+        const hr=parseFloat(row.querySelector('.harga-satuan')?.value)||0;
+        const nt=Math.max(0,br-kt),st=nt*hr;
+        const ne=row.querySelector('.netto-display'),se=row.querySelector('.subtotal-display');
+        if(ne)ne.innerText=nt.toFixed(2)+' kg';
+        if(se)se.innerText='Rp '+st.toLocaleString('id-ID');
+        return st;
+      }
+      function calculateGrandTotal(){
+        let t=0;document.querySelectorAll('#items-container .item-row').forEach(r=>{t+=calculateRow(r);});
+        const e=document.getElementById('grand-total-display');if(e)e.innerText='Rp '+t.toLocaleString('id-ID');
+      }
+      function attachCalcListeners(row){
+        row.querySelectorAll('.calc-input').forEach(input=>{input.addEventListener('input',calculateGrandTotal);input.addEventListener('change',calculateGrandTotal);});
+        const d=row.querySelector('.delete-item-btn');
+        if(d)d.addEventListener('click',()=>{if(document.querySelectorAll('#items-container .item-row').length>1){row.remove();calculateGrandTotal();}});
+      }
+      document.querySelectorAll('#items-container .item-row').forEach(attachCalcListeners);
+
+      document.getElementById('add-item-btn').addEventListener('click',()=>{
+        const c=document.getElementById('items-container'),tpl=c.querySelector('.item-row'),nr=tpl.cloneNode(true);
+        nr.querySelector('.jml-ayam').value='';nr.querySelector('.berat-bruto').value='';nr.querySelector('.harga-satuan').value='';
+        nr.querySelector('.delete-item-btn').classList.remove('hidden');
+        c.appendChild(nr);attachCalcListeners(nr);
+        c.querySelectorAll('.item-row').forEach(r=>r.querySelector('.delete-item-btn').classList.remove('hidden'));
+        calculateGrandTotal();
+      });
+
+      // ==============================
+      // SAVE / UPDATE
+      // ==============================
+      document.getElementById('btn-simpan-bon').addEventListener('click',()=>{
+        const tgl=document.getElementById('form-tanggal').value,nb=document.getElementById('form-no-bon').value.trim();
+        const ks=document.getElementById('form-konsumen').value,st=document.getElementById('form-staf').value;
+        const mk=document.getElementById('form-marketing').value,kt=document.getElementById('form-keterangan').value;
+        if(!nb||!ks||ks==='--Pilih--'||ks===''){alert('Harap isi No Bon dan pilih Konsumen.');return;}
+
+        // Collect items
+        const items=[];let total=0;
+        document.querySelectorAll('#items-container .item-row').forEach(row=>{
+          const jml=parseInt(row.querySelector('.jml-ayam').value)||0;
+          const bruto=parseFloat(row.querySelector('.berat-bruto').value)||0;
+          const kotak=parseFloat(row.querySelector('.berat-kotak').value)||0;
+          const ukuran=row.querySelector('.ukuran-select').value;
+          const harga=parseFloat(row.querySelector('.harga-satuan').value)||0;
+          const netto=Math.max(0,bruto-kotak);
+          const jumlah=netto*harga;
+          items.push({jmlAyam:jml,bruto,kotak,ukuran,harga,netto,jumlah});
+          total+=jumlah;
+        });
+        if(total<=0){alert('Total tagihan tidak boleh 0.');return;}
+
+        const bons=getAllBons();
+        if(editingBonIndex>=0){
+          Object.assign(bons[editingBonIndex],{tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,keterangan:kt,items});
+          saveAllBons(bons);document.getElementById('form-no-bon').readOnly=false;
+        }else{
+          bons.push({id:nb,tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,status:'PIUTANG',keterangan:kt,items});
+          saveAllBons(bons);
+        }
+        activeFilter='hari-ini';filterButtons.forEach(b=>b.classList.remove('active'));document.querySelector('[data-filter="hari-ini"]').classList.add('active');
+        showListView();
+      });
+
+      showListView();
+    })();
+    </script>
+    <script src="app.js"></script>
+  </body>
+</html>
