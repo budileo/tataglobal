@@ -549,7 +549,7 @@
              
              const sc = getStatusConfig(b.status, paid, (b.total - pot));
 
-             return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer" onclick="showFormView(${b._idx})">
+             return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer group" data-idx="${b._idx}">
                <td class="px-2 py-2 border-r border-slate-100 text-center font-medium">${i+1}</td>
                <td class="px-2 py-2 border-r border-slate-100 text-xs">${b.tanggal}</td>
                <td class="px-2 py-2 border-r border-slate-100 font-bold text-slate-700 text-xs">${b.id}</td>
@@ -560,7 +560,7 @@
                <td class="px-2 py-2 border-r border-slate-100 text-center font-bold text-slate-500 text-xs">${hist.length}x</td>
                <td class="px-2 py-2 border-r border-slate-100 text-right font-black text-slate-900 text-xs">${(sisa < 0 ? 0 : sisa).toLocaleString('id-ID')}</td>
                <td class="px-2 py-2 border-r border-slate-100 text-center"><span class="px-2 py-1 rounded text-[10px] uppercase font-black ${sc.cls}">${sc.str}</span></td>
-               <td class="px-2 py-2 text-center no-print"><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black px-3 py-1.5 rounded transition-colors uppercase shadow-sm">Bayar</button></td>
+               <td class="px-2 py-2 text-center no-print text-xs"><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black px-3 py-1.5 rounded transition-colors uppercase shadow-sm btn-bayar" data-idx="${b._idx}">Bayar</button></td>
              </tr>`;
            }).join('');
 
@@ -607,7 +607,7 @@
            empty.classList.add('hidden');
 
            tbody.innerHTML = filteredHistory.map((h, i) => `
-              <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer" onclick="showFormView(${h.bonIdx})">
+              <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer group" data-idx="${h.bonIdx}">
                  <td class="px-2 py-2 border-r border-slate-100 font-medium text-center font-medium">${i+1}</td>
                  <td class="px-2 py-2 border-r border-slate-100 text-xs">${h.tglBayar}<br><span class="text-[10px] text-slate-400 font-bold">${h.jam}</span></td>
                  <td class="px-2 py-2 border-r border-slate-100 text-xs">${h.konsumen}</td>
@@ -616,10 +616,21 @@
                  <td class="px-2 py-2 border-r border-slate-100 text-right font-bold text-rose-600 bg-rose-50 text-xs">${h.potongTrans.toLocaleString('id-ID')}</td>
                  <td class="px-2 py-2 border-r border-slate-100 text-right font-bold text-emerald-700 bg-emerald-50 text-xs">${h.bayarTrans.toLocaleString('id-ID')}</td>
                  <td class="px-2 py-2 border-r border-slate-100 text-right font-black text-slate-900 text-xs">${(h.sisa < 0 ? 0 : h.sisa).toLocaleString('id-ID')}</td>
-                 <td class="px-2 py-2 text-center no-print text-xs"><button class="text-emerald-600 hover:underline font-bold uppercase">Detail</button></td>
+                 <td class="px-2 py-2 text-center no-print text-xs"><button class="text-emerald-600 hover:underline font-bold uppercase btn-bayar" data-idx="${h.bonIdx}">Detail</button></td>
               </tr>
            `).join('');
         }
+
+        // AKHIR renderTable: Tambahkan Listeners (PENTING!)
+        tbody.querySelectorAll('tr[data-idx]').forEach(tr => {
+           tr.addEventListener('click', () => showFormView(+tr.dataset.idx));
+        });
+        tbody.querySelectorAll('.btn-bayar').forEach(btn => {
+           btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              showFormView(+btn.dataset.idx);
+           });
+        });
       }
 
       function updateSummary(filtered) {
