@@ -17,7 +17,7 @@ https://github.com/budileo/tataglobal
 
 Token GITHUB
 ------------------------------------
-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
+
 
 
 DETAIL APLIKASI
