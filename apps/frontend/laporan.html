@@ -14,6 +14,7 @@
       @media print {
          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
          @page { size: portrait; margin: 15mm; }
+         .print\:landscape { @page { size: landscape; } }
          .print\:grid-cols-2 { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
          .print\:gap-8 { gap: 2rem !important; }
          .print\:border-black { border-color: #000 !important; }
@@ -251,6 +252,49 @@
                 </table>
              </div>
           </div>
+
+          <!-- 4. MODE: AYAM (LAPORAN PENJUALAN AYAM) -->
+          <div id="container-ayam" class="mode-container hidden">
+             <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                   <p class="text-xs font-bold text-emerald-800 uppercase mb-1">Total Penjualan Ayam</p>
+                   <h3 id="det-ayam-total-kg" class="text-2xl font-black text-emerald-700">0 Kg</h3>
+                </div>
+             </div>
+
+             <div class="mb-8">
+                <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-4 uppercase text-[13px] tracking-widest">1. Laporan Jumlah Ayam Terjual</h3>
+                <div class="overflow-x-auto">
+                   <table class="w-full text-left text-xs text-slate-600 border-collapse border border-slate-200">
+                      <thead>
+                         <tr class="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold uppercase">
+                            <th class="px-3 py-2 border-r border-slate-200">Ukuran Ayam</th>
+                            <th class="px-3 py-2 text-right">Jumlah (Kg)</th>
+                         </tr>
+                      </thead>
+                      <tbody id="tbody-ayam-ukuran"></tbody>
+                   </table>
+                </div>
+             </div>
+
+             <div>
+                <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-4 uppercase text-[13px] tracking-widest">2. Penjualan Ayam ke Pelanggan</h3>
+                <div class="overflow-x-auto">
+                   <table class="w-full text-left text-[11px] text-slate-600 border-collapse border border-slate-200">
+                      <thead>
+                         <tr class="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold uppercase">
+                            <th class="px-2 py-2 border-r border-slate-200 w-8 text-center">No</th>
+                            <th class="px-2 py-2 border-r border-slate-200">Nama Konsumen</th>
+                            <th class="px-2 py-2 border-r border-slate-200 text-center w-24">Kode Bon</th>
+                            <th class="px-2 py-2 border-r border-slate-200 text-right w-24">Ayam KG</th>
+                            <th class="px-2 py-2">Detail Ukuran</th>
+                         </tr>
+                      </thead>
+                      <tbody id="tbody-ayam-pelanggan"></tbody>
+                   </table>
+                </div>
+             </div>
+          </div>
       </div>
 
     </main>
@@ -371,6 +415,7 @@
                             <button class="btn-det bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="penerimaan" data-date="${row.date}">Penerimaan</button>
                             <button class="btn-det bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="potongan" data-date="${row.date}">Potongan</button>
                             <button class="btn-det bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="piutang" data-date="${row.date}">Piutang</button>
+                            <button class="btn-det bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="ayam" data-date="${row.date}">Ayam</button>
                         </div>
                     </td>
                 `;
@@ -406,6 +451,11 @@
             document.getElementById('det-title').textContent = 'RINCIAN PIUTANG HARIAN';
             document.getElementById('container-piutang').classList.remove('hidden');
             renderDetailPiutang(dateStr);
+         } else if (mode === 'ayam') {
+            document.getElementById('det-title').textContent = 'LAPORAN PENJUALAN AYAM HARIAN';
+            document.getElementById('container-ayam').classList.remove('hidden');
+            document.body.classList.add('print:landscape');
+            renderDetailAyam(dateStr);
          }
       }
 
@@ -605,9 +655,78 @@
          });
       }
 
+      function renderDetailAyam(dateStr) {
+         const bons = getAllBons();
+         const dailyBons = bons.filter(b => b.tanggal === dateStr);
+         
+         let totalKg = 0;
+         const mapUkuran = {}; // { size: kg }
+         const pelangganData = []; // { name, id, kg, details: string }
+
+         dailyBons.forEach(b => {
+            let bonKg = 0;
+            const itemsByUkuran = {};
+            
+            (b.items || []).forEach(it => {
+               const kg = (it.netto || 0);
+               const uk = (it.ukuran || 'TDK DIKETAHUI').toUpperCase();
+               
+               totalKg += kg;
+               bonKg += kg;
+               mapUkuran[uk] = (mapUkuran[uk] || 0) + kg;
+               itemsByUkuran[uk] = (itemsByUkuran[uk] || 0) + kg;
+            });
+
+            const detailsArr = Object.keys(itemsByUkuran).map(u => `${u}: ${itemsByUkuran[u].toFixed(2)}kg`);
+            pelangganData.push({
+               konsumen: b.konsumen,
+               id: b.id,
+               kg: bonKg,
+               details: detailsArr.join(', ')
+            });
+         });
+
+         // 1. Update summary
+         document.getElementById('det-ayam-total-kg').textContent = totalKg.toLocaleString('id-ID', {minimumFractionDigits:2}) + ' Kg';
+
+         // 2. Render Ukuran Table (Sorted by Kg DESC)
+         const tbodyUkuran = document.getElementById('tbody-ayam-ukuran');
+         tbodyUkuran.innerHTML = '';
+         const sortedUkuran = Object.keys(mapUkuran).map(u => ({ ukuran: u, kg: mapUkuran[u] })).sort((a, b) => b.kg - a.kg);
+         
+         sortedUkuran.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-slate-200 text-[12px]";
+            tr.innerHTML = `
+               <td class="px-3 py-2 border-r border-slate-200 font-bold">${item.ukuran}</td>
+               <td class="px-3 py-2 text-right font-semibold">${item.kg.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
+            `;
+            tbodyUkuran.appendChild(tr);
+         });
+
+         // 3. Render Pelanggan Table (Sorted by Kg DESC)
+         const tbodyPelanggan = document.getElementById('tbody-ayam-pelanggan');
+         tbodyPelanggan.innerHTML = '';
+         const sortedPelanggan = pelangganData.sort((a, b) => b.kg - a.kg);
+         
+         sortedPelanggan.forEach((p, i) => {
+            const tr = document.createElement('tr');
+            tr.className = "border-b border-slate-200 hover:bg-slate-50";
+            tr.innerHTML = `
+               <td class="px-2 py-2 border-r border-slate-200 text-center font-medium">${i+1}</td>
+               <td class="px-2 py-2 border-r border-slate-200 font-bold text-slate-800">${p.konsumen}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-center font-semibold text-blue-600">${p.id}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right font-bold text-slate-900">${p.kg.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
+               <td class="px-2 py-2 italic text-slate-500">${p.details}</td>
+            `;
+            tbodyPelanggan.appendChild(tr);
+         });
+      }
+
       document.getElementById('btn-back-detail').addEventListener('click', () => {
          document.getElementById('view-detail').classList.add('hidden');
          document.getElementById('view-rekap').classList.remove('hidden');
+         document.body.classList.remove('print:landscape'); // Reset landscape
       });
 
       // Filter events
