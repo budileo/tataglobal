@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Master Data - Operasional Keuangan</title>
+    <title>Pengaturan - TATA GLOBAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = { theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } } }
@@ -15,8 +15,15 @@
   </head>
   <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
     
+    <!-- Top Header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between">
-      <h2 class="text-xl font-bold text-slate-900">Master Data</h2>
+      <div class="flex items-center gap-3">
+        <h2 id="page-title" class="text-xl font-bold text-slate-900">Pengaturan Sistem</h2>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Sistem</span>
+        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">S</div>
+      </div>
     </header>
 
     <!-- Sidebar Section -->
@@ -58,7 +65,7 @@
         </a>
 
         <!-- Master Data -->
-        <a href="master.html" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0">
+        <a href="master.html" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
           <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
           <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span>
         </a>
@@ -82,68 +89,23 @@
         </a>
 
         <!-- Pengaturan -->
-        <a href="setting.html" title="Pengaturan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+        <a href="setting.html" title="Pengaturan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0">
           <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
           <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pengaturan</span>
         </a>
       </div>
 
-      <!-- User Info -->
-      <div class="hidden md:block md:mt-auto w-full">
-        <div class="px-6 py-3 border-t border-slate-800">
-          <p class="text-sm font-semibold text-white sidebar-text">Budi Ariadi</p>
-          <p class="text-[11px] text-slate-500 sidebar-text">TATA KELOLA</p>
-        </div>
-        <a href="index.html" title="Keluar" class="flex items-center md:items-start gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-          <span class="sidebar-text">Keluar</span>
-        </a>
-      </div>
+      <!-- Logout -->
+      <a href="index.html" title="Keluar" class="hidden md:flex items-center md:items-start gap-3 px-6 py-4 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        <span class="sidebar-text">Keluar</span>
+      </a>
     </nav>
 
     <!-- Main Content -->
-    <main class="p-4 md:p-8 max-w-5xl mx-auto">
-      
-      <!-- Tabel/Data Section -->
-      <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
-         <!-- Toolbar -->
-         <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-4 bg-slate-50">
-            <h3 class="font-bold text-slate-800">Master Konsumen</h3>
-            <button class="bg-emerald-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-emerald-700">+ Konsumen Baru</button>
-         </div>
-
-         <!-- Tabe Mendatar Clean -->
-         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-600">
-               <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
-                  <tr>
-                     <th class="px-4 py-3 border-r border-slate-100 w-12 text-center">No</th>
-                     <th class="px-4 py-3 border-r border-slate-100">Nama Konsumen</th>
-                     <th class="px-4 py-3 border-r border-slate-100">No Telepon</th>
-                     <th class="px-4 py-3 border-r border-slate-100">Limit Piutang (Rp)</th>
-                     <th class="px-4 py-3 text-center">Aksi</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                     <td class="px-4 py-3 border-r border-slate-100 text-center">1</td>
-                     <td class="px-4 py-3 border-r border-slate-100 font-bold text-slate-800">Bapak Budi</td>
-                     <td class="px-4 py-3 border-r border-slate-100">0812-4455-8899</td>
-                     <td class="px-4 py-3 border-r border-slate-100">5.000.000</td>
-                     <td class="px-4 py-3 text-center"><button class="text-emerald-600 hover:underline">Edit</button></td>
-                  </tr>
-                  <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                     <td class="px-4 py-3 border-r border-slate-100 text-center">2</td>
-                     <td class="px-4 py-3 border-r border-slate-100 font-bold text-slate-800">Ibu Siti</td>
-                     <td class="px-4 py-3 border-r border-slate-100">0811-3322-1144</td>
-                     <td class="px-4 py-3 border-r border-slate-100">1.000.000</td>
-                     <td class="px-4 py-3 text-center"><button class="text-emerald-600 hover:underline">Edit</button></td>
-                  </tr>
-               </tbody>
-            </table>
-         </div>
-      </div>
-
+    <main class="p-4 md:p-8 max-w-5xl mx-auto text-center py-20">
+      <h1 class="text-4xl font-black text-slate-800 mb-4">HALAMAN PENGATURAN</h1>
+      <p class="text-slate-500">Fitur ini sedang dalam tahap pengembangan.</p>
     </main>
 
     <script src="app.js"></script>
