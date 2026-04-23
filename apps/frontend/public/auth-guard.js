@@ -93,8 +93,9 @@ const AuthGuard = (function() {
 
   function requireAuth() {
     const user = getCurrentUser();
-    const page = window.location.pathname.split('/').pop() || 'index.html';
-    if (page === 'index.html' || page === 'join.html' || page === '') return;
+    const page = window.location.pathname.split('/').pop() || '';
+    const publicPages = ['index.html', 'index', 'join.html', 'join', ''];
+    if (publicPages.includes(page)) return true;
     if (!user) { window.location.href = 'index.html'; return false; }
     if (user.status !== 'active') { window.location.href = 'index.html'; return false; }
     return true;
