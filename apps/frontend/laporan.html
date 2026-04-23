@@ -68,7 +68,7 @@
         </a>
 
         <!-- Master Data -->
-        <a href="#" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+        <a href="master.html" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
           <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
           <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span>
         </a>
@@ -331,9 +331,9 @@
          const bons = getAllBons();
          const byDate = {};
 
-         bons.forEach(b => {
+         bons.filter(b => !b.isVoid).forEach(b => {
             // Receipt records
-            (b.historiBayar || []).forEach(h => {
+            (b.historiBayar || []).filter(h => !h.isVoid).forEach(h => {
                 const d = h.tanggal;
                 if(!d) return;
                 if(!byDate[d]) byDate[d] = {
@@ -409,9 +409,9 @@
          } else {
             rekapData.forEach((row, i) => {
                 let piutangHariIni = 0;
-                bons.forEach(b => {
+                bons.filter(b => !b.isVoid).forEach(b => {
                    if(b.tanggal === row.date) {
-                      const totalPaidAtDate = (b.historiBayar || []).filter(h => h.tanggal <= row.date).reduce((s, h) => s + (h.nominal || 0) + (h.totalPotongan || 0), 0);
+                      const totalPaidAtDate = (b.historiBayar || []).filter(h => !h.isVoid && h.tanggal <= row.date).reduce((s, h) => s + (h.nominal || 0) + (h.totalPotongan || 0), 0);
                       const sisa = b.total - totalPaidAtDate;
                       if(sisa > 0) piutangHariIni += sisa;
                    }
@@ -507,8 +507,8 @@
          let piutangHariIni = 0;
          let piutangLama = 0;
 
-         bons.forEach(b => {
-            const paidAtDate = (b.historiBayar || []).filter(h => h.tanggal <= dateStr).reduce((s, h) => s + (h.nominal || 0) + (h.totalPotongan || 0), 0);
+         bons.filter(b => !b.isVoid).forEach(b => {
+            const paidAtDate = (b.historiBayar || []).filter(h => !h.isVoid && h.tanggal <= dateStr).reduce((s, h) => s + (h.nominal || 0) + (h.totalPotongan || 0), 0);
             const sisa = b.total - paidAtDate;
             if(sisa > 0) {
                if(b.tanggal === dateStr) piutangHariIni += sisa;
@@ -523,7 +523,7 @@
 
       function renderDetailPotongan(dateStr) {
          const bons = getAllBons();
-         const dailyBons = bons.filter(b => b.tanggal === dateStr);
+         const dailyBons = bons.filter(b => !b.isVoid && b.tanggal === dateStr);
          const tbody = document.getElementById('tbody-det-potongan');
          tbody.innerHTML = '';
 
@@ -535,7 +535,7 @@
          // 1. Group by Collector
          const grouped = {};
          dailyBons.forEach(b => {
-             const hist = (b.historiBayar || []);
+             const hist = (b.historiBayar || []).filter(h => !h.isVoid);
              const collector = hist.length > 0 ? hist[0].kolektor : (b.kolektor || 'TANPA MARKETING');
              if(!grouped[collector]) grouped[collector] = [];
              grouped[collector].push(b);
@@ -550,7 +550,7 @@
             tbody.appendChild(headerTr);
 
             grouped[marketing].forEach((b, i) => {
-               const hist = b.historiBayar || [];
+               const hist = (b.historiBayar || []).filter(h => !h.isVoid);
                const paid = hist.reduce((s, h) => s + (h.nominal || 0), 0);
                const pot = hist.reduce((acc, h) => {
                   const p = h.potongan || {};
@@ -596,7 +596,7 @@
             });
 
             // Group Footer (Total Potongan per Marketing)
-            const sumGroupPot = grouped[marketing].reduce((s, b) => s + (b.historiBayar||[]).reduce((s2,h)=>s2+(h.totalPotongan||0),0), 0);
+            const sumGroupPot = grouped[marketing].reduce((s, b) => s + (b.historiBayar||[]).filter(h=>!h.isVoid).reduce((s2,h)=>s2+(h.totalPotongan||0),0), 0);
             const footerTr = document.createElement('tr');
             footerTr.className = "bg-slate-100 font-black border-y-2 border-slate-400 text-slate-900";
             footerTr.innerHTML = `
@@ -614,8 +614,8 @@
          tbody.innerHTML = '';
 
          // 1. Ambil data faktur sampai tanggal laporan yang MASIH ADA PIUTANG
-         const unpaidBons = bons.filter(b => b.tanggal <= dateStr).map(b => {
-             const hist = (b.historiBayar || []).filter(h => h.tanggal <= dateStr);
+         const unpaidBons = bons.filter(b => !b.isVoid && b.tanggal <= dateStr).map(b => {
+             const hist = (b.historiBayar || []).filter(h => !h.isVoid && h.tanggal <= dateStr);
              const paid = hist.reduce((s, h) => s + (h.nominal || 0), 0);
              const pot = hist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
              const sisa = b.total - pot - paid;
@@ -675,7 +675,7 @@
 
       function renderDetailAyam(dateStr) {
          const bons = getAllBons();
-         const dailyBons = bons.filter(b => b.tanggal === dateStr);
+         const dailyBons = bons.filter(b => !b.isVoid && b.tanggal === dateStr);
          
          let totalKg = 0;
          const mapUkuran = {}; // { size: kg }
