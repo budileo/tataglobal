@@ -1,113 +1,566 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pencarian - TATA GLOBAL</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = { theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } } }
-    </script>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-      body { font-family: 'Inter', sans-serif; }
-    </style>
-  </head>
-  <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pencarian Global - TATA GLOBAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } } }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .search-input-focus {
+       box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+       border-color: #10b981;
+    }
     
-    <!-- Top Header -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between">
+    .category-section {
+       animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+       from { opacity: 0; transform: translateY(10px); }
+       to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300 min-h-screen flex flex-col">
+
+  <!-- Top Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between shrink-0">
+    <div class="flex items-center gap-3">
+      <h2 id="page-title" class="text-xl font-bold text-slate-900">Pencarian Data Global</h2>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Operasional</span>
+      <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">P</div>
+    </div>
+  </header>
+
+  <!-- Sidebar Section -->
+  <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
+    <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
       <div class="flex items-center gap-3">
-        <h2 id="page-title" class="text-xl font-bold text-slate-900">Pencarian Data</h2>
+        <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
+        <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
       </div>
-      <div class="flex items-center gap-4">
-        <span class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Operasional</span>
-        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">P</div>
-      </div>
-    </header>
+      <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </div>
 
-    <!-- Sidebar Section -->
-    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
+    <div class="flex md:flex-col md:w-full w-max md:space-y-1">
+      <a href="dashboard.html" title="Dashboard" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span></a>
+      <a href="bon.html" title="Bon Penjualan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Bon Penjualan</span></a>
+      <a href="pembayaran.html" title="Pembayaran" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pembayaran</span></a>
+      <a href="laporan.html" title="Laporan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Laporan</span></a>
+      <a href="master.html" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span></a>
+      <a href="histori.html" title="Histori Aktivitas" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Histori Aktivitas</span></a>
+      <a href="void.html" title="Void" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Void</span></a>
       
-      <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
-          <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
-        </div>
-        <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </button>
-      </div>
+      <a href="pencarian.html" title="Pencarian" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0 shadow-[0_0_15px_rgba(16,185,129,0.5)]"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pencarian</span></a>
+      <a href="setting.html" title="Pengaturan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pengaturan</span></a>
+    </div>
 
-      <div class="flex md:flex-col md:w-full w-max md:space-y-1">
-        <!-- Dashboard -->
-        <a href="dashboard.html" title="Dashboard" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span>
-        </a>
-        
-        <!-- Bon Penjualan -->
-        <a href="bon.html" title="Bon Penjualan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Bon Penjualan</span>
-        </a>
+    <!-- User -->
+    <a href="index.html" title="Keluar" class="hidden md:flex items-center md:items-start gap-3 px-6 py-4 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full mt-auto">
+      <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+      <span class="sidebar-text">Keluar</span>
+    </a>
+  </nav>
 
-        <!-- Pembayaran -->
-        <a href="pembayaran.html" title="Pembayaran & Potongan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pembayaran</span>
-        </a>
+  <!-- Main Content -->
+  <main class="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full transition-all duration-300">
+     
+    <!-- Header Hero -->
+    <div class="text-center mb-8 pt-8">
+       <div class="inline-flex items-center justify-center p-3 rounded-full bg-emerald-100 text-emerald-600 mb-4 shadow-lg shadow-emerald-200">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+       </div>
+       <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-2 tracking-tight">Eksplorasi Data Real-time</h1>
+       <p class="text-slate-500 font-medium max-w-xl mx-auto text-sm">Cari histori bon, aktivitas marketing, jejak pembayaran, dan rekap tagihan konsumen secara terpadu.</p>
+    </div>
 
-        <!-- Laporan -->
-        <a href="laporan.html" title="Laporan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Laporan</span>
-        </a>
+    <!-- Search & Filter Controls -->
+    <div class="bg-white p-2 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 mb-8 max-w-4xl mx-auto flex flex-col md:flex-row gap-2 sticky top-[76px] z-20">
+       <div class="relative flex-1">
+          <svg class="w-6 h-6 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <input type="text" id="global-search" class="w-full pl-12 pr-4 py-4 text-slate-800 bg-slate-50 border-none rounded-xl text-lg font-bold placeholder:font-medium placeholder:text-slate-400 outline-none transition-all focus:bg-white" placeholder="Ketik Konsumen, No Bon, atau Marketing...">
+       </div>
+       <div class="h-px w-full md:w-px md:h-14 bg-slate-100 my-1 md:my-0"></div>
+       <div class="flex items-center gap-2 px-2 overflow-x-auto snap-x py-1">
+          <svg class="w-5 h-5 text-slate-400 ml-1 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          <select id="filter-range" class="bg-transparent text-sm font-bold text-slate-600 outline-none cursor-pointer py-3 shrink-0">
+             <option value="all">Semua Waktu</option>
+             <option value="hari-ini">Hari Ini</option>
+             <option value="minggu-ini">Minggu Ini</option>
+             <option value="bulan-ini">Bulan Ini</option>
+             <option value="custom">Range Kustom</option>
+          </select>
+          <div id="custom-date-container" class="hidden items-center bg-slate-100 px-2 rounded-lg shrink-0 h-10 border border-slate-200">
+             <input type="datetime-local" id="filter-start" class="bg-transparent text-xs outline-none font-bold text-slate-700 w-[130px]">
+             <span class="px-1 text-slate-400">-</span>
+             <input type="datetime-local" id="filter-end" class="bg-transparent text-xs outline-none font-bold text-slate-700 w-[130px]">
+          </div>
+       </div>
+    </div>
 
-        <!-- Master Data -->
-        <a href="master.html" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span>
-        </a>
+    <!-- Summary / Rekap Global -->
+    <div id="rekap-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 hidden">
+       <div class="bg-gradient-to-br from-blue-50 to-white p-5 rounded-2xl border border-blue-100 shadow-sm">
+          <p class="text-xs font-bold text-blue-500 uppercase tracking-widest mb-1">Total Bon Ditemukan</p>
+          <h3 id="stat-total-bon" class="text-3xl font-black text-blue-900 tracking-tight">0</h3>
+          <p id="stat-nominal-bon" class="text-sm font-semibold text-blue-600 mt-1">Rp 0</p>
+       </div>
+       <div class="bg-gradient-to-br from-emerald-50 to-white p-5 rounded-2xl border border-emerald-100 shadow-sm">
+          <p class="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-1">Total Pembayaran</p>
+          <h3 id="stat-total-bayar" class="text-3xl font-black text-emerald-900 tracking-tight">Rp 0</h3>
+          <p id="stat-jml-bayar" class="text-sm font-semibold text-emerald-600 mt-1">0 Transaksi</p>
+       </div>
+       <div class="bg-gradient-to-br from-rose-50 to-white p-5 rounded-2xl border border-rose-100 shadow-sm">
+          <p class="text-xs font-bold text-rose-500 uppercase tracking-widest mb-1">Piutang / Sisa</p>
+          <h3 id="stat-total-piutang" class="text-3xl font-black text-rose-900 tracking-tight">Rp 0</h3>
+       </div>
+    </div>
 
-        <!-- Histori Aktivitas -->
-        <a href="histori.html" title="Histori Aktivitas" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Histori Aktivitas</span>
-        </a>
+    <!-- Info Status Pencarian -->
+    <div id="search-status" class="text-center text-slate-400 font-medium mb-12 py-10 mt-10">
+       <p>Mulai ketikkan kata kunci untuk mencari data otomatis.</p>
+    </div>
 
-        <!-- Void -->
-        <a href="void.html" title="Void" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Void</span>
-        </a>
+    <!-- Categories Result / Layouting -->
+    <div id="result-container" class="space-y-12 hidden">
+       <!-- Result: Konsumen -->
+       <div id="result-konsumen" class="category-section hidden">
+          <div class="flex items-center gap-3 mb-6">
+             <div class="bg-indigo-100 text-indigo-700 p-2 rounded-lg"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div>
+             <h3 class="text-2xl font-black text-slate-800">Ditemukan di Konsumen</h3>
+          </div>
+          <div id="list-konsumen" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+       </div>
 
-        <!-- Pencarian -->
-        <a href="pencarian.html" title="Pencarian" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pencarian</span>
-        </a>
+       <!-- Result: Bon -->
+       <div id="result-bon" class="category-section hidden">
+          <div class="flex items-center gap-3 mb-6">
+             <div class="bg-blue-100 text-blue-700 p-2 rounded-lg"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
+             <h3 class="text-2xl font-black text-slate-800">Ditemukan di BON Penjualan</h3>
+          </div>
+          <div class="overflow-hidden bg-white border border-slate-200 rounded-xl shadow-sm">
+             <table class="w-full text-left text-sm text-slate-600 block sm:table overflow-x-auto min-w-full">
+               <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200">
+                 <tr><th class="px-5 py-3">Waktu</th><th class="px-5 py-3">No Faktur</th><th class="px-5 py-3">Konsumen</th><th class="px-5 py-3 text-right">Nominal</th><th class="px-5 py-3 text-center">Status</th><th class="px-5 py-3 text-right">Sisa Piutang</th></tr>
+               </thead>
+               <tbody id="list-bon" class="divide-y divide-slate-100"></tbody>
+             </table>
+          </div>
+       </div>
 
-        <!-- Pengaturan -->
-        <a href="setting.html" title="Pengaturan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pengaturan</span>
-        </a>
-      </div>
+       <!-- Result: Pembayaran -->
+       <div id="result-pembayaran" class="category-section hidden">
+          <div class="flex items-center gap-3 mb-6">
+             <div class="bg-emerald-100 text-emerald-700 p-2 rounded-lg"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+             <h3 class="text-2xl font-black text-slate-800">Ditemukan di Riwayat Pembayaran</h3>
+          </div>
+          <div class="overflow-hidden bg-white border border-slate-200 rounded-xl shadow-sm">
+             <table class="w-full text-left text-sm text-slate-600 block sm:table overflow-x-auto min-w-full">
+               <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200">
+                 <tr><th class="px-5 py-3">Waktu Bayar</th><th class="px-5 py-3">ID Pembayaran</th><th class="px-5 py-3">Utk. Faktur</th><th class="px-5 py-3">Cara Bayar</th><th class="px-5 py-3 text-right">Potongan</th><th class="px-5 py-3 text-right">Terbayar</th></tr>
+               </thead>
+               <tbody id="list-pembayaran" class="divide-y divide-slate-100"></tbody>
+             </table>
+          </div>
+       </div>
 
-      <!-- Logout -->
-      <a href="index.html" title="Keluar" class="hidden md:flex items-center md:items-start gap-3 px-6 py-4 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
-        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-        <span class="sidebar-text">Keluar</span>
-      </a>
-    </nav>
+       <!-- Result: Marketing -->
+       <div id="result-marketing" class="category-section hidden">
+          <div class="flex items-center gap-3 mb-6">
+             <div class="bg-amber-100 text-amber-700 p-2 rounded-lg"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></div>
+             <h3 class="text-2xl font-black text-slate-800">Dilihat dari Kolektor / Marketing</h3>
+          </div>
+          <div id="list-marketing" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+       </div>
 
-    <!-- Main Content -->
-    <main class="p-4 md:p-8 max-w-5xl mx-auto text-center py-20">
-      <h1 class="text-4xl font-black text-slate-800 mb-4">HALAMAN PENCARIAN</h1>
-      <p class="text-slate-500">Fitur ini sedang dalam tahap pengembangan.</p>
-    </main>
+    </div>
+  </main>
 
-    <script src="app.js"></script>
-  </body>
+  <script>
+    // --- Data Management & Utilities ---
+    const STORAGE_KEY = 'polikas_bon_data_v2';
+    const formatRp = (num) => 'Rp ' + (num || 0).toLocaleString('id-ID');
+
+    // Utility: Format Timestamp & Relative
+    function enrichWithTimestamp(bons) {
+       // Loop through bons, create deterministic timestamps if none exists
+       bons.forEach((b, i) => {
+          // Fake timestamp for bon based on its tanggal + some determinism
+          if(!b._ts) {
+              const dParts = b.tanggal.split('-');
+              // Use index to distribute time so they aren't all exactly 00:00:00
+              const h = 8 + (i % 10);
+              const m = 15 + (i % 40);
+              b._ts = new Date(dParts[0], dParts[1]-1, dParts[2], h, m, 0).getTime();
+          }
+
+          // Fake timestamp for history based on id PY-XXXXX if possible, else random
+          if(b.historiBayar) {
+             b.historiBayar.forEach((h, j) => {
+                if(!h._ts) {
+                   if(h.id && h.id.startsWith('PY-')) {
+                       let ts = parseInt(h.id.replace('PY-', ''));
+                       if(!isNaN(ts) && ts > 1000000) h._ts = ts;
+                   }
+                   if(!h._ts) {
+                       const hdP = h.tanggal.split('-');
+                       let hour = 12;
+                       if(h.waktu === 'Pagi') hour = 9; else if (h.waktu === 'Sore') hour = 16; else if (h.waktu === 'Malam') hour = 20;
+                       h._ts = new Date(hdP[0], hdP[1]-1, hdP[2], hour, j*5, 0).getTime();
+                   }
+                }
+             });
+          }
+       });
+       return bons;
+    }
+
+    function timeAgo(ts) {
+       const seconds = Math.floor((new Date() - ts) / 1000);
+       let interval = seconds / 31536000;
+       if (interval > 1) return Math.floor(interval) + " tahun lalu";
+       interval = seconds / 2592000;
+       if (interval > 1) return Math.floor(interval) + " bulan lalu";
+       interval = seconds / 86400;
+       if (interval > 1) { const d = Math.floor(interval); return d === 1 ? "kemarin" : d + " hari lalu"; }
+       interval = seconds / 3600;
+       if (interval > 1) return Math.floor(interval) + " jam lalu";
+       interval = seconds / 60;
+       if (interval > 1) return Math.floor(interval) + " menit lalu";
+       return "Baru saja";
+    }
+
+    function formatFullDate(ts) {
+       const d = new Date(ts);
+       const datePart = d.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'});
+       const timePart = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+       return `${datePart} ${timePart}`;
+    }
+
+    // --- Data Preparation Engine ---
+    let dbBons = [];
+    let _konsumenIdx = {};
+    let _marketingIdx = {};
+    let _bonList = [];
+    let _pembayaranList = [];
+
+    function initData() {
+       let raw = [];
+       try { raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e){}
+       dbBons = enrichWithTimestamp(raw);
+       
+       buildIndex(dbBons);
+    }
+
+    function buildIndex(bons) {
+       _konsumenIdx = {};
+       _marketingIdx = {};
+       _bonList = [];
+       _pembayaranList = [];
+
+       bons.forEach(bon => {
+           // Prep BON
+           const hist = bon.historiBayar || [];
+           const potTotal = hist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
+           const paidTotal = hist.reduce((s, h) => s + (h.nominal || 0), 0);
+           const sisa = (bon.total - potTotal) - paidTotal;
+
+           const bonObj = {
+               ...bon,
+               _paid: paidTotal,
+               _pot: potTotal,
+               _sisa: sisa > 0 ? sisa : 0
+           };
+           _bonList.push(bonObj);
+
+           // Prep Pembayaran
+           hist.forEach(h => {
+               _pembayaranList.push({
+                   ...h,
+                   _bonId: bon.id,
+                   _konsumen: bon.konsumen
+               });
+           });
+
+           // Prep Konsumen
+           const kKey = (bon.konsumen || '').trim().toLowerCase();
+           if(kKey) {
+              if(!_konsumenIdx[kKey]) {
+                 _konsumenIdx[kKey] = { nama: bon.konsumen, listBon: [], tsTerbaru: 0, totalBon: 0, totalPiutang: 0, totalBayar: 0, marketingSet: new Set() };
+              }
+              const kNode = _konsumenIdx[kKey];
+              kNode.listBon.push(bonObj);
+              kNode.totalBon += bonObj.total;
+              kNode.totalBayar += bonObj._paid;
+              kNode.totalPiutang += bonObj._sisa;
+              kNode.marketingSet.add(bon.marketing);
+              if(bon._ts > kNode.tsTerbaru) kNode.tsTerbaru = bon._ts;
+              
+              // Pay attention to payments for ts
+              hist.forEach(h => { if(h._ts > kNode.tsTerbaru) kNode.tsTerbaru = h._ts; });
+           }
+
+           // Prep Marketing
+           const mKey = (bon.marketing || '').trim().toLowerCase();
+           if(mKey) {
+              if(!_marketingIdx[mKey]) {
+                 _marketingIdx[mKey] = { nama: bon.marketing, totalBon: 0, totalBayar: 0, totalPiutang: 0, tsTerbaru: 0, bonCount: 0 };
+              }
+              const mNode = _marketingIdx[mKey];
+              mNode.bonCount++;
+              mNode.totalBon += bonObj.total;
+              mNode.totalBayar += bonObj._paid;
+              mNode.totalPiutang += bonObj._sisa;
+              if(bon._ts > mNode.tsTerbaru) mNode.tsTerbaru = bon._ts;
+              hist.forEach(h => { if(h._ts > mNode.tsTerbaru) mNode.tsTerbaru = h._ts; });
+           }
+       });
+       
+       // Sort defaults: time desc
+       _bonList.sort((a,b) => b._ts - a._ts);
+       _pembayaranList.sort((a,b) => b._ts - a._ts);
+    }
+
+    // --- Search & Filter Logic ---
+    function doSearch() {
+       const query = document.getElementById('global-search').value.trim().toLowerCase();
+       const rangeMode = document.getElementById('filter-range').value;
+       
+       const container = document.getElementById('result-container');
+       const statusBox = document.getElementById('search-status');
+       const rekap = document.getElementById('rekap-container');
+
+       // If empty search AND all time, do not crowd the UI unless instructed. 
+       // Often a global search acts like Google -> empty = no result. But for local app, showing everything is good initially.
+       // Let's show everything if they hit enter or filter, but if purely empty state, maybe guide them.
+       // We'll just show everything.
+       
+       statusBox.style.display = 'none';
+       container.classList.remove('hidden');
+       rekap.classList.remove('hidden');
+
+       // Resolve Date filters
+       let filterStartTs = 0;
+       let filterEndTs = Number.MAX_SAFE_INTEGER;
+       const now = new Date();
+       
+       if(rangeMode === 'hari-ini'){
+         const s = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+         filterStartTs = s.getTime();
+         filterEndTs = s.getTime() + 86399999;
+       } else if(rangeMode === 'minggu-ini') {
+         const d = now.getDay(), diff = now.getDate() - d + (d === 0 ? -6 : 1);
+         const s = new Date(now.getFullYear(), now.getMonth(), diff);
+         filterStartTs = s.getTime();
+         filterEndTs = now.getTime() + 86399999;
+       } else if (rangeMode === 'bulan-ini') {
+         const s = new Date(now.getFullYear(), now.getMonth(), 1);
+         filterStartTs = s.getTime();
+         const e = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+         filterEndTs = e.getTime();
+       } else if (rangeMode === 'custom') {
+         const fs = document.getElementById('filter-start').value;
+         const fe = document.getElementById('filter-end').value;
+         if(fs) filterStartTs = new Date(fs).getTime();
+         if(fe) filterEndTs = new Date(fe).getTime();
+       }
+
+       const isInRange = (ts) => ts >= filterStartTs && ts <= filterEndTs;
+       const matchesQ = (str) => !query || (str && str.toLowerCase().includes(query));
+
+       // Filter Arrays
+       const resBon = _bonList.filter(b => isInRange(b._ts) && (matchesQ(b.id) || matchesQ(b.konsumen) || matchesQ(b.marketing)));
+       const resPay = _pembayaranList.filter(p => isInRange(p._ts) && (matchesQ(p.id) || matchesQ(p._bonId) || matchesQ(p._konsumen) || matchesQ(p.kolektor)));
+       
+       // Filter Konsolidasi (Konsumen & Marketing) - based on their latest act or name
+       const resKon = Object.values(_konsumenIdx).filter(k => (isInRange(k.tsTerbaru) && matchesQ(k.nama)) || (matchesQ(k.nama) && !query /* show all if no q */)).sort((a,b)=>b.tsTerbaru - a.tsTerbaru);
+       const resMar = Object.values(_marketingIdx).filter(m => isInRange(m.tsTerbaru) && matchesQ(m.nama)).sort((a,b)=>b.tsTerbaru - a.tsTerbaru);
+
+       // However, consumer / marketing total stats should reflect the range technically?
+       // For UI simplicity and speed, consumer stat is usually lifetime or currently indexed. 
+       // We'll just show them as is.
+
+       // Calculate Aggregates
+       let sTolBon = 0, sTolPay = 0, sTolPiut = 0;
+       // We sum from Bon list to avoid double counting
+       resBon.forEach(b => { sTolBon += b.total; sTolPiut += b._sisa; });
+       resPay.forEach(p => { sTolPay += p.nominal; });
+
+       document.getElementById('stat-total-bon').textContent = resBon.length;
+       document.getElementById('stat-nominal-bon').textContent = formatRp(sTolBon);
+       document.getElementById('stat-total-bayar').textContent = formatRp(sTolPay);
+       document.getElementById('stat-jml-bayar').textContent = resPay.length + ' Transaksi';
+       document.getElementById('stat-total-piutang').textContent = formatRp(sTolPiut);
+
+       // Render Categories
+       renderKonsumen(resKon, query);
+       renderBon(resBon);
+       renderPembayaran(resPay);
+       renderMarketing(resMar, query);
+    }
+
+    function renderKonsumen(list, isQuerying) {
+       const wrap = document.getElementById('result-konsumen');
+       const box = document.getElementById('list-konsumen');
+       if(!list.length) { wrap.classList.add('hidden'); return; }
+       wrap.classList.remove('hidden');
+
+       box.innerHTML = list.map(k => `
+         <div class="bg-white border text-left border-slate-200 rounded-xl p-5 hover:shadow-lg transition-all border-l-4 border-l-indigo-500">
+           <div class="flex justify-between items-start mb-3">
+             <h4 class="text-lg font-black text-slate-800 uppercase">${k.nama}</h4>
+             <div class="text-right">
+                <span class="block text-xs font-bold text-slate-400">${formatFullDate(k.tsTerbaru)}</span>
+                <span class="block text-[10px] font-black text-indigo-500">${timeAgo(k.tsTerbaru)}</span>
+             </div>
+           </div>
+           
+           <div class="grid grid-cols-2 gap-3 mb-4 rounded-lg bg-slate-50 p-3 border border-slate-100">
+              <div><p class="text-[10px] font-bold text-slate-400 uppercase">Total Piutang</p><p class="text-sm font-black text-rose-600">${formatRp(k.totalPiutang)}</p></div>
+              <div><p class="text-[10px] font-bold text-slate-400 uppercase">Riwayat Bon</p><p class="text-sm font-bold text-slate-700">${k.listBon.length} Transaksi</p></div>
+              <div><p class="text-[10px] font-bold text-slate-400 uppercase">Total Bayar</p><p class="text-sm font-black text-emerald-600">${formatRp(k.totalBayar)}</p></div>
+              <div><p class="text-[10px] font-bold text-slate-400 uppercase">PIC Marketing</p><p class="text-sm font-semibold text-slate-600 truncate">${Array.from(k.marketingSet).join(', ')}</p></div>
+           </div>
+         </div>
+       `).join('');
+    }
+
+    function renderBon(list) {
+       const wrap = document.getElementById('result-bon');
+       const box = document.getElementById('list-bon');
+       if(!list.length) { wrap.classList.add('hidden'); return; }
+       wrap.classList.remove('hidden');
+
+       box.innerHTML = list.map(b => {
+          let stat = 'bg-rose-100 text-rose-700 font-black';
+          if(b.status === 'LUNAS') stat = 'bg-emerald-100 text-emerald-800 font-black';
+          else if(b.status === 'SEBAGIAN') stat = 'bg-amber-100 text-amber-800 font-black';
+          
+          return `<tr class="hover:bg-slate-50 transition-colors">
+            <td class="px-5 py-4">
+              <span class="block text-xs font-semibold text-slate-800">${formatFullDate(b._ts)}</span>
+              <span class="block text-[10px] font-bold text-slate-400 mt-0.5">${timeAgo(b._ts)}</span>
+            </td>
+            <td class="px-5 py-4"><span class="font-bold text-slate-700 text-sm">${b.id}</span></td>
+            <td class="px-5 py-4"><span class="text-sm font-semibold">${b.konsumen}</span><br><span class="text-[10px] text-slate-400 font-bold uppercase">${b.marketing}</span></td>
+            <td class="px-5 py-4 text-right font-black text-slate-800">${formatRp(b.total)}</td>
+            <td class="px-5 py-4 text-center"><span class="px-2 py-1 rounded text-[10px] uppercase ${stat}">${b.status}</span></td>
+            <td class="px-5 py-4 text-right font-bold text-rose-600">${b._sisa === 0 ? '-' : formatRp(b._sisa)}</td>
+          </tr>`;
+       }).join('');
+    }
+
+    function renderPembayaran(list) {
+       const wrap = document.getElementById('result-pembayaran');
+       const box = document.getElementById('list-pembayaran');
+       if(!list.length) { wrap.classList.add('hidden'); return; }
+       wrap.classList.remove('hidden');
+
+       box.innerHTML = list.map(p => `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="px-5 py-4">
+              <span class="block text-xs font-semibold text-slate-800">${formatFullDate(p._ts)}</span>
+              <span class="block text-[10px] font-bold text-emerald-500 mt-0.5">${timeAgo(p._ts)}</span>
+            </td>
+            <td class="px-5 py-4"><span class="font-mono text-xs font-bold text-slate-500">${p.id || '-'}</span></td>
+            <td class="px-5 py-4"><span class="font-bold text-slate-700 text-sm hover:underline cursor-pointer">${p._bonId}</span><br><span class="text-[10px] text-slate-400 font-bold">${p._konsumen}</span></td>
+            <td class="px-5 py-4"><span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-semibold">${p.caraBayar || 'Kasir'}</span></td>
+            <td class="px-5 py-4 text-right font-bold text-rose-500">${p.totalPotongan > 0 ? formatRp(p.totalPotongan) : '-'}</td>
+            <td class="px-5 py-4 text-right font-black text-emerald-600 text-base bg-emerald-50">${formatRp(p.nominal)}</td>
+          </tr>
+       `).join('');
+    }
+
+    function renderMarketing(list, isQuerying) {
+       const wrap = document.getElementById('result-marketing');
+       const box = document.getElementById('list-marketing');
+       if(!list.length) { wrap.classList.add('hidden'); return; }
+       wrap.classList.remove('hidden');
+
+       box.innerHTML = list.map(m => `
+         <div class="bg-white border text-left border-slate-200 rounded-xl p-5 hover:shadow-lg transition-all border-l-4 border-l-amber-500">
+           <div class="flex justify-between items-start mb-3">
+             <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-amber-100 flex justify-center items-center font-bold text-amber-700">${m.nama.substring(0,1)}</div>
+                <h4 class="text-sm font-black text-slate-800 uppercase">${m.nama}</h4>
+             </div>
+             <div class="text-right">
+                <span class="block text-[10px] font-black text-amber-500">${timeAgo(m.tsTerbaru)}</span>
+             </div>
+           </div>
+           <div class="flex justify-between items-center text-xs font-semibold text-slate-600 mb-2 border-b border-slate-100 pb-2">
+             <span>Histori Jual (Bon)</span>
+             <span class="font-bold text-slate-800">${m.bonCount}x</span>
+           </div>
+           <div class="flex justify-between items-center text-xs font-semibold text-slate-600 mb-2 border-b border-slate-100 pb-2">
+             <span>Nilai Penjualan</span>
+             <span class="font-black text-blue-600">${formatRp(m.totalBon)}</span>
+           </div>
+           <div class="flex justify-between items-center text-xs font-semibold text-slate-600">
+             <span>Piutang Tertagih</span>
+             <span class="font-black text-rose-600">${formatRp(m.totalPiutang)}</span>
+           </div>
+         </div>
+       `).join('');
+    }
+
+    // --- Init App ---
+    document.addEventListener('DOMContentLoaded', () => {
+       initData();
+       
+       const sInput = document.getElementById('global-search');
+       const sSelect = document.getElementById('filter-range');
+       
+       sInput.addEventListener('input', () => {
+          if(sInput.value.length >= 0) doSearch(); // immediate search
+       });
+       sInput.addEventListener('focus', () => {
+          sInput.parentElement.classList.add('search-input-focus');
+          sInput.parentElement.classList.replace('border-none', 'border');
+       });
+       sInput.addEventListener('blur', () => {
+          sInput.parentElement.classList.remove('search-input-focus');
+          sInput.parentElement.classList.replace('border', 'border-none');
+       });
+
+       sSelect.addEventListener('change', (e) => {
+          document.getElementById('custom-date-container').classList.toggle('hidden', e.target.value !== 'custom');
+          doSearch();
+       });
+       document.getElementById('filter-start').addEventListener('change', doSearch);
+       document.getElementById('filter-end').addEventListener('change', doSearch);
+
+       // Initial run to show all
+       doSearch();
+
+       // Sidebar Toggle
+       document.getElementById('toggleMenuBtn').addEventListener('click', () => {
+          const sidebar = document.getElementById('sidebar');
+          const isCollapsed = sidebar.classList.contains('md:w-20');
+          const main = document.getElementById('main-wrapper');
+          if (isCollapsed) {
+             sidebar.classList.remove('md:w-20');
+             sidebar.classList.add('md:w-64');
+             main.classList.remove('md:pl-20');
+             main.classList.add('md:pl-64');
+             document.querySelectorAll('.sidebar-text').forEach(el => el.classList.remove('md:hidden'));
+          } else {
+             sidebar.classList.remove('md:w-64');
+             sidebar.classList.add('md:w-20');
+             main.classList.remove('md:pl-64');
+             main.classList.add('md:pl-20');
+             document.querySelectorAll('.sidebar-text').forEach(el => el.classList.add('md:hidden'));
+          }
+       });
+    });
+  </script>
+</body>
 </html>
