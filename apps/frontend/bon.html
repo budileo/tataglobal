@@ -184,9 +184,12 @@
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal</label><input id="form-tanggal" type="date" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"></div>
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">No Bon</label><input id="form-no-bon" type="text" placeholder="BN-001" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"></div>
-          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Konsumen</label><select id="form-konsumen" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"><option value="">-- Pilih --</option><option>Bapak Budi</option><option>Ibu Siti</option><option>H. Ahmad</option><option>Toko Makmur</option></select></div>
-          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Staf Ops / Supir</label><select id="form-staf" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"><option>Heri</option><option>Joko</option><option>Dimas</option></select></div>
-          <div><label class="block text-xs font-semibold text-slate-500 mb-1">PIC Marketing</label><select id="form-marketing" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"><option>Andi</option><option>Budi M.</option></select></div>
+           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Konsumen</label>
+              <input list="konsumen-list" id="form-konsumen" autocomplete="off" placeholder="Ketik nama konsumen..." class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500">
+              <datalist id="konsumen-list"></datalist>
+           </div>
+           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Staf Ops / Supir</label><select id="form-staf" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"><option value="">-- Pilih --</option></select></div>
+           <div><label class="block text-xs font-semibold text-slate-500 mb-1">PIC Marketing</label><select id="form-marketing" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"><option value="">-- Pilih --</option></select></div>
         </div>
       </div>
       <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6 pb-2" id="items-container">
@@ -336,30 +339,8 @@
       })();
 
       function seedDemoData() {
-        if (getAllBons().length > 0) return;
-        const today = new Date().toISOString().split('T')[0];
-        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-        const threeDays = new Date(Date.now() - 3*86400000).toISOString().split('T')[0];
-        const lastWeek = new Date(Date.now() - 8*86400000).toISOString().split('T')[0];
-        const demos = [
-          { id:'BN-001', tanggal:today, konsumen:'Bapak Budi', staf:'Heri', marketing:'Andi', total:1876000, status:'PIUTANG', keterangan:'',
-            items:[{jmlAyam:50,bruto:100,kotak:6.4,ukuran:'B',harga:20000,netto:93.6,jumlah:1872000}] },
-          { id:'BN-002', tanggal:today, konsumen:'Ibu Siti', staf:'Joko', marketing:'Andi', total:3500000, status:'PIUTANG', keterangan:'Kirim pagi',
-            items:[{jmlAyam:80,bruto:180,kotak:12.8,ukuran:'K',harga:21000,netto:167.2,jumlah:3511200},{jmlAyam:10,bruto:20,kotak:0.64,ukuran:'PK',harga:18000,netto:19.36,jumlah:348480}] },
-          { id:'BN-003', tanggal:today, konsumen:'H. Ahmad', staf:'Heri', marketing:'Budi M.', total:2100000, status:'LUNAS', keterangan:'',
-            items:[{jmlAyam:60,bruto:112,kotak:6.4,ukuran:'B',harga:19800,netto:105.6,jumlah:2090880}] },
-          { id:'BN-004', tanggal:yesterday, konsumen:'Toko Makmur', staf:'Dimas', marketing:'Andi', total:5250000, status:'PIUTANG', keterangan:'',
-            items:[{jmlAyam:100,bruto:260,kotak:12.8,ukuran:'JB',harga:21200,netto:247.2,jumlah:5240640}] },
-          { id:'BN-005', tanggal:yesterday, konsumen:'Bapak Budi', staf:'Heri', marketing:'Andi', total:980000, status:'LUNAS', keterangan:'',
-            items:[{jmlAyam:25,bruto:52,kotak:6.4,ukuran:'K/PK',harga:21400,netto:45.6,jumlah:975840}] },
-          { id:'BN-006', tanggal:threeDays, konsumen:'Ibu Siti', staf:'Joko', marketing:'Budi M.', total:4300000, status:'PIUTANG', keterangan:'Urgent',
-            items:[{jmlAyam:90,bruto:220,kotak:12.8,ukuran:'JK',harga:20700,netto:207.2,jumlah:4289040}] },
-          { id:'BN-007', tanggal:lastWeek, konsumen:'H. Ahmad', staf:'Dimas', marketing:'Andi', total:7800000, status:'LUNAS', keterangan:'',
-            items:[{jmlAyam:150,bruto:390,kotak:12.8,ukuran:'JB/PK',harga:20700,netto:377.2,jumlah:7808040}] },
-        ];
-        saveAllBons(demos);
+        // Dummy data removed per user request to test master data
       }
-      seedDemoData();
 
       // ==============================
       // VIEWS
@@ -379,9 +360,16 @@
           document.getElementById('form-tanggal').value=new Date().toISOString().split('T')[0];
           document.getElementById('form-no-bon').value='BN-'+String(getAllBons().length+1).padStart(3,'0');
           document.getElementById('form-no-bon').readOnly=false;
-          document.getElementById('form-konsumen').selectedIndex=0;
-          document.getElementById('form-staf').selectedIndex=0;
-          document.getElementById('form-marketing').selectedIndex=0;
+
+          // Load Master Data
+          const dtKons=JSON.parse(localStorage.getItem('tata_master_konsumen')||'[]');
+          const dtMar=JSON.parse(localStorage.getItem('tata_master_marketing')||'[]');
+          const dtOps=JSON.parse(localStorage.getItem('tata_master_operasional')||'[]');
+          document.getElementById('konsumen-list').innerHTML=dtKons.map(x=>`<option value="${x.nama}">`).join('');
+          document.getElementById('form-staf').innerHTML='<option value="">-- Pilih --</option>'+dtOps.map(x=>`<option value="${x.nama}">${x.nama}</option>`).join('');
+          document.getElementById('form-marketing').innerHTML='<option value="">-- Pilih --</option>'+dtMar.map(x=>`<option value="${x.nama}">${x.nama}</option>`).join('');
+
+          document.getElementById('form-konsumen').value='';
           document.getElementById('form-keterangan').value='';
           const c=document.getElementById('items-container');
           c.querySelectorAll('.item-row').forEach((r,i)=>{if(i>0)r.remove();});
@@ -469,7 +457,15 @@
         document.getElementById('form-tanggal').value=bon.tanggal;
         document.getElementById('form-no-bon').value=bon.id;
         document.getElementById('form-no-bon').readOnly=true;
-        setSelectValue('form-konsumen',bon.konsumen);
+        // Populate items
+          const dtKons=JSON.parse(localStorage.getItem('tata_master_konsumen')||'[]');
+          const dtMar=JSON.parse(localStorage.getItem('tata_master_marketing')||'[]');
+          const dtOps=JSON.parse(localStorage.getItem('tata_master_operasional')||'[]');
+          document.getElementById('konsumen-list').innerHTML=dtKons.map(x=>`<option value="${x.nama}">`).join('');
+          document.getElementById('form-staf').innerHTML='<option value="">-- Pilih --</option>'+dtOps.map(x=>`<option value="${x.nama}">${x.nama}</option>`).join('');
+          document.getElementById('form-marketing').innerHTML='<option value="">-- Pilih --</option>'+dtMar.map(x=>`<option value="${x.nama}">${x.nama}</option>`).join('');
+
+        document.getElementById('form-konsumen').value=bon.konsumen || '';
         setSelectValue('form-staf',bon.staf);
         setSelectValue('form-marketing',bon.marketing);
         document.getElementById('form-keterangan').value=bon.keterangan||'';

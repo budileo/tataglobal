@@ -102,50 +102,307 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="p-4 md:p-8 max-w-5xl mx-auto">
+    <main class="p-4 md:p-8 max-w-5xl mx-auto space-y-6">
       
-      <!-- Tabel/Data Section -->
-      <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
-         <!-- Toolbar -->
-         <div class="p-4 border-b border-slate-100 flex flex-wrap justify-between items-center gap-4 bg-slate-50">
-            <h3 class="font-bold text-slate-800">Master Konsumen</h3>
-            <button class="bg-emerald-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-emerald-700">+ Konsumen Baru</button>
-         </div>
+      <!-- Tab Navigation -->
+      <div class="flex overflow-x-auto gap-2 border-b border-slate-200 pb-2 snap-x">
+         <button id="tab-konsumen" class="tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-emerald-50 text-emerald-700 font-bold border-b-2 border-emerald-600 transition-all">Data Konsumen</button>
+         <button id="tab-marketing" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Data Marketing</button>
+         <button id="tab-operasional" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Staf Operasional</button>
+      </div>
 
-         <!-- Tabe Mendatar Clean -->
-         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-600">
-               <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
-                  <tr>
-                     <th class="px-4 py-3 border-r border-slate-100 w-12 text-center">No</th>
-                     <th class="px-4 py-3 border-r border-slate-100">Nama Konsumen</th>
-                     <th class="px-4 py-3 border-r border-slate-100">No Telepon</th>
-                     <th class="px-4 py-3 border-r border-slate-100">Limit Piutang (Rp)</th>
-                     <th class="px-4 py-3 text-center">Aksi</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                     <td class="px-4 py-3 border-r border-slate-100 text-center">1</td>
-                     <td class="px-4 py-3 border-r border-slate-100 font-bold text-slate-800">Bapak Budi</td>
-                     <td class="px-4 py-3 border-r border-slate-100">0812-4455-8899</td>
-                     <td class="px-4 py-3 border-r border-slate-100">5.000.000</td>
-                     <td class="px-4 py-3 text-center"><button class="text-emerald-600 hover:underline">Edit</button></td>
-                  </tr>
-                  <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                     <td class="px-4 py-3 border-r border-slate-100 text-center">2</td>
-                     <td class="px-4 py-3 border-r border-slate-100 font-bold text-slate-800">Ibu Siti</td>
-                     <td class="px-4 py-3 border-r border-slate-100">0811-3322-1144</td>
-                     <td class="px-4 py-3 border-r border-slate-100">1.000.000</td>
-                     <td class="px-4 py-3 text-center"><button class="text-emerald-600 hover:underline">Edit</button></td>
-                  </tr>
-               </tbody>
-            </table>
-         </div>
+      <!-- Tab Content: Konsumen -->
+      <div id="content-konsumen" class="tab-content relative">
+        <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+           <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
+              <div class="flex items-center gap-3">
+                 <h3 class="font-bold text-slate-800">Master Konsumen</h3>
+                 <span id="count-konsumen" class="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0 Data</span>
+              </div>
+              <div class="flex items-center gap-2 w-full md:w-auto">
+                 <div class="relative flex-1 md:w-64">
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="search-konsumen" placeholder="Cari konsumen..." class="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded text-sm focus:outline-emerald-500">
+                 </div>
+                 <button onclick="openModal('konsumen')" class="bg-emerald-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-emerald-700 shrink-0 shadow-lg shadow-emerald-600/20">+ Tambah</button>
+              </div>
+           </div>
+           <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-600 whitespace-nowrap">
+                 <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                    <tr>
+                       <th class="px-4 py-3 border-r border-slate-100 w-12 text-center">No</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Nama Konsumen</th>
+                       <th class="px-4 py-3 border-r border-slate-100">No Telepon</th>
+                       <th class="px-4 py-3 border-r border-slate-100">No WA</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Alamat Lengkap</th>
+                       <th class="px-4 py-3 text-center">Aksi</th>
+                    </tr>
+                 </thead>
+                 <tbody id="table-konsumen" class="divide-y divide-slate-100"></tbody>
+              </table>
+              <div id="empty-konsumen" class="hidden p-8 text-center text-slate-400"><p class="font-medium text-sm">Belum ada data konsumen.</p></div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Marketing -->
+      <div id="content-marketing" class="tab-content hidden relative">
+        <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+           <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
+              <div class="flex items-center gap-3">
+                 <h3 class="font-bold text-slate-800">Kolektor / Marketing</h3>
+                 <span id="count-marketing" class="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0 Data</span>
+              </div>
+              <div class="flex items-center gap-2 w-full md:w-auto">
+                 <div class="relative flex-1 md:w-64">
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="search-marketing" placeholder="Cari marketing..." class="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded text-sm focus:outline-emerald-500">
+                 </div>
+                 <button onclick="openModal('marketing')" class="bg-blue-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-blue-700 shrink-0 shadow-lg shadow-blue-600/20">+ Tambah</button>
+              </div>
+           </div>
+           <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-600 whitespace-nowrap">
+                 <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                    <tr>
+                       <th class="px-4 py-3 border-r border-slate-100 w-12 text-center">No</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Nama Marketing</th>
+                       <th class="px-4 py-3 border-r border-slate-100">No Telepon</th>
+                       <th class="px-4 py-3 border-r border-slate-100">No WA</th>
+                       <th class="px-4 py-3 text-center w-24">Aksi</th>
+                    </tr>
+                 </thead>
+                 <tbody id="table-marketing" class="divide-y divide-slate-100"></tbody>
+              </table>
+              <div id="empty-marketing" class="hidden p-8 text-center text-slate-400"><p class="font-medium text-sm">Belum ada data marketing.</p></div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Operasional -->
+      <div id="content-operasional" class="tab-content hidden relative">
+        <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+           <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
+              <div class="flex items-center gap-3">
+                 <h3 class="font-bold text-slate-800">Staf Operasional / Ekspedisi</h3>
+                 <span id="count-operasional" class="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0 Data</span>
+              </div>
+              <div class="flex items-center gap-2 w-full md:w-auto">
+                 <div class="relative flex-1 md:w-64">
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="search-operasional" placeholder="Cari staf..." class="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded text-sm focus:outline-emerald-500">
+                 </div>
+                 <button onclick="openModal('operasional')" class="bg-amber-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-amber-700 shrink-0 shadow-lg shadow-amber-600/20">+ Tambah</button>
+              </div>
+           </div>
+           <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-600 whitespace-nowrap">
+                 <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                    <tr>
+                       <th class="px-4 py-3 border-r border-slate-100 w-12 text-center">No</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Nama Staf</th>
+                       <th class="px-4 py-3 border-r border-slate-100">No Telepon</th>
+                       <th class="px-4 py-3 border-r border-slate-100">No WA</th>
+                       <th class="px-4 py-3 text-center w-24">Aksi</th>
+                    </tr>
+                 </thead>
+                 <tbody id="table-operasional" class="divide-y divide-slate-100"></tbody>
+              </table>
+              <div id="empty-operasional" class="hidden p-8 text-center text-slate-400"><p class="font-medium text-sm">Belum ada data staf operasional.</p></div>
+           </div>
+        </div>
       </div>
 
     </main>
 
-    <script src="app.js"></script>
+    <!-- Modal Form (Unified) -->
+    <div id="modal-form" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity">
+       <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300" id="modal-content">
+          <div class="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+             <h3 id="modal-title" class="font-bold text-slate-800 text-lg">Tambah Data</h3>
+             <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+          </div>
+          <div class="p-6 space-y-4">
+             <input type="hidden" id="form-tipe">
+             <input type="hidden" id="form-id">
+             <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Lengkap *</label>
+                <input id="input-nama" type="text" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 focus:bg-white transition-colors" required>
+             </div>
+             <div class="grid grid-cols-2 gap-4">
+                <div>
+                   <label class="block text-xs font-semibold text-slate-500 mb-1">No. Telepon</label>
+                   <input id="input-telp" type="text" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 focus:bg-white transition-colors">
+                </div>
+                <div>
+                   <label class="block text-xs font-semibold text-slate-500 mb-1">No. WhatsApp</label>
+                   <input id="input-wa" type="text" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 focus:bg-white transition-colors">
+                </div>
+             </div>
+             <div id="field-alamat" class="hidden">
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Alamat Lengkap</label>
+                <textarea id="input-alamat" rows="2" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 focus:bg-white transition-colors"></textarea>
+             </div>
+          </div>
+          <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+             <button onclick="closeModal()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">Batal</button>
+             <button onclick="saveData()" class="px-4 py-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors shadow-lg shadow-emerald-600/30">Simpan Data</button>
+          </div>
+       </div>
+    </div>
+
+    <script>
+       const UI_TABS = ['konsumen', 'marketing', 'operasional'];
+       
+       // Helper localstorage
+       function getStore(type) { return JSON.parse(localStorage.getItem('tata_master_' + type) || '[]'); }
+       function setStore(type, data) { localStorage.setItem('tata_master_' + type, JSON.stringify(data)); }
+       
+       // State
+       let activeTab = 'konsumen';
+       let db = { konsumen: [], marketing: [], operasional: [] };
+
+       // Initialize
+       function initApp() {
+          UI_TABS.forEach(t => { db[t] = getStore(t); setEvts(t); });
+          renderAll();
+       }
+
+       // Event Listeners for tabs & search
+       function setEvts(type) {
+          // Tab clicks
+          document.getElementById('tab-' + type).addEventListener('click', (e) => {
+             UI_TABS.forEach(t => {
+                document.getElementById('tab-' + t).className = "tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all";
+                document.getElementById('content-' + t).classList.add('hidden');
+             });
+             e.target.className = "tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-emerald-50 text-emerald-700 font-bold border-b-2 border-emerald-600 transition-all";
+             if(type === 'marketing') e.target.classList.replace('text-emerald-700', 'text-blue-700');
+             if(type === 'marketing') e.target.classList.replace('border-emerald-600', 'border-blue-600');
+             if(type === 'marketing') e.target.classList.replace('bg-emerald-50', 'bg-blue-50');
+             
+             if(type === 'operasional') e.target.classList.replace('text-emerald-700', 'text-amber-700');
+             if(type === 'operasional') e.target.classList.replace('border-emerald-600', 'border-amber-600');
+             if(type === 'operasional') e.target.classList.replace('bg-emerald-50', 'bg-amber-50');
+
+             document.getElementById('content-' + type).classList.remove('hidden');
+             activeTab = type;
+          });
+
+          // Search logic
+          document.getElementById('search-' + type).addEventListener('input', (e) => {
+             renderTable(type, e.target.value.toLowerCase());
+          });
+       }
+
+       function renderAll() { UI_TABS.forEach(t => renderTable(t)); }
+       
+       function renderTable(type, query = '') {
+          const list = db[type].filter(item => item.nama.toLowerCase().includes(query) || (item.telp && item.telp.includes(query)));
+          const tbody = document.getElementById('table-' + type);
+          const empty = document.getElementById('empty-' + type);
+          document.getElementById('count-' + type).textContent = list.length + ' Data';
+          
+          if(list.length === 0) {
+             tbody.innerHTML = '';
+             empty.classList.remove('hidden');
+             return;
+          }
+          empty.classList.add('hidden');
+          
+          tbody.innerHTML = list.map((d, i) => {
+             const alamatTd = type === 'konsumen' ? `<td class="px-4 py-3 border-r border-slate-100 max-w-[200px] truncate" title="${d.alamat||'-'}">${d.alamat||'-'}</td>` : '';
+             const color = type === 'konsumen' ? 'emerald' : (type === 'marketing' ? 'blue' : 'amber');
+             return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-400">${i+1}</td>
+                <td class="px-4 py-3 border-r border-slate-100 font-bold text-slate-800 capitalize">${d.nama}</td>
+                <td class="px-4 py-3 border-r border-slate-100 font-mono text-sm">${d.telp || '-'}</td>
+                <td class="px-4 py-3 border-r border-slate-100 font-mono text-sm">${d.wa || '-'}</td>
+                ${alamatTd}
+                <td class="px-4 py-3 text-center">
+                   <button onclick="editData('${type}', '${d.id}')" class="text-${color}-600 hover:underline font-semibold text-xs mr-2">Edit</button>
+                   <button onclick="deleteData('${type}', '${d.id}')" class="text-rose-500 hover:underline font-semibold text-xs">Hapus</button>
+                </td>
+             </tr>`
+          }).join('');
+       }
+
+       // MODAL LOGIC
+       const modal = document.getElementById('modal-form');
+       const modalContent = document.getElementById('modal-content');
+       
+       function openModal(type, editId = null) {
+          const isEdit = editId !== null;
+          document.getElementById('modal-title').textContent = isEdit ? 'Edit Data ' + type : 'Tambah Data ' + type;
+          document.getElementById('form-tipe').value = type;
+          document.getElementById('form-id').value = editId || Date.now().toString();
+          
+          document.getElementById('field-alamat').classList.toggle('hidden', type !== 'konsumen');
+          
+          if(isEdit) {
+             const data = db[type].find(x => x.id === editId);
+             document.getElementById('input-nama').value = data.nama;
+             document.getElementById('input-telp').value = data.telp || '';
+             document.getElementById('input-wa').value = data.wa || '';
+             if(type==='konsumen') document.getElementById('input-alamat').value = data.alamat || '';
+          } else {
+             document.getElementById('input-nama').value = '';
+             document.getElementById('input-telp').value = '';
+             document.getElementById('input-wa').value = '';
+             document.getElementById('input-alamat').value = '';
+          }
+
+          modal.classList.remove('hidden');
+          // slight delay for transition
+          setTimeout(() => {
+             modal.classList.remove('opacity-0');
+             modalContent.classList.remove('scale-95');
+          }, 10);
+       }
+       
+       function closeModal() {
+          modal.classList.add('opacity-0');
+          modalContent.classList.add('scale-95');
+          setTimeout(() => { modal.classList.add('hidden'); }, 300);
+       }
+       
+       function saveData() {
+          const type = document.getElementById('form-tipe').value;
+          const id = document.getElementById('form-id').value;
+          const nama = document.getElementById('input-nama').value.trim();
+          
+          if(!nama) { alert("Nama wajib diisi!"); return; }
+
+          const payload = {
+             id: id,
+             nama: nama,
+             telp: document.getElementById('input-telp').value.trim(),
+             wa: document.getElementById('input-wa').value.trim(),
+             updatedAt: Date.now()
+          };
+          
+          if(type === 'konsumen') payload.alamat = document.getElementById('input-alamat').value.trim();
+
+          const existingIdx = db[type].findIndex(x => x.id === id);
+          if(existingIdx >= 0) db[type][existingIdx] = payload;
+          else db[type].unshift(payload); // insert at top
+
+          setStore(type, db[type]);
+          renderTable(type, document.getElementById('search-' + type).value.toLowerCase());
+          closeModal();
+       }
+       
+       function editData(type, id) { openModal(type, id); }
+       
+       function deleteData(type, id) {
+          if(!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
+          db[type] = db[type].filter(x => x.id !== id);
+          setStore(type, db[type]);
+          renderTable(type, document.getElementById('search-' + type).value.toLowerCase());
+       }
+
+       window.addEventListener('DOMContentLoaded', initApp);
+    </script>
   </body>
 </html>
