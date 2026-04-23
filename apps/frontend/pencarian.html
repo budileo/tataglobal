@@ -323,8 +323,14 @@
     }
 
     // --- Search & Filter Logic ---
-    function doSearch() {
-       const query = document.getElementById('global-search').value.trim().toLowerCase();
+    function doSearch(triggeredByUser = false) {
+        const queryInput = document.getElementById('global-search');
+        const query = queryInput.value.trim().toLowerCase();
+        
+        // Token Guard
+        if (triggeredByUser && typeof AuthGuard !== 'undefined') {
+          if (!AuthGuard.consumeToken('search', 'Pencarian: ' + queryInput.value)) return;
+        }
        const rangeMode = document.getElementById('filter-range').value;
        
        const container = document.getElementById('result-container');
@@ -514,7 +520,7 @@
        
        sInput.addEventListener('keydown', (e) => {
           if(e.key === 'Enter' && sInput.value.trim().length > 0) {
-             doSearch();
+             doSearch(true);
           }
        });
        sInput.addEventListener('focus', () => {
@@ -528,10 +534,10 @@
 
        sSelect.addEventListener('change', (e) => {
           document.getElementById('custom-date-container').classList.toggle('hidden', e.target.value !== 'custom');
-          doSearch();
+          doSearch(true);
        });
-       document.getElementById('filter-start').addEventListener('change', doSearch);
-       document.getElementById('filter-end').addEventListener('change', doSearch);
+       document.getElementById('filter-start').addEventListener('change', () => doSearch(true));
+       document.getElementById('filter-end').addEventListener('change', () => doSearch(true));
 
        // Initial run to show all removed per user request
 
@@ -556,5 +562,7 @@
        });
     });
   </script>
+  <script src="auth-guard.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

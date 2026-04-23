@@ -764,6 +764,8 @@
          // Override status explicitly logic bisnis
          targetBon.status = sc.code === 'L' ? 'LUNAS' : (sc.code === 'S' ? 'SEBAGIAN' : 'PIUTANG');
 
+         // Token Guard: PAYMENT
+         if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('create','Pembayaran '+targetBon.id)) return;
          saveAllBons(bons);
          // Audit Log: PAYMENT
          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'PAYMENT',entityType:'PEMBAYARAN',entityId:targetBon.id,newData:{nominal:newEntry.nominal,totalPotongan:newEntry.totalPotongan,kolektor:newEntry.kolektor,caraBayar:newEntry.caraBayar,statusBon:targetBon.status},isCritical:targetBon.status==='LUNAS',message:'Pembayaran '+targetBon.id+' sebesar Rp '+(newEntry.nominal||0).toLocaleString('id-ID')+' → Status: '+targetBon.status});
@@ -776,6 +778,7 @@
       showListView();
     })();
      </script>
+     <script src="auth-guard.js"></script>
      <script src="activity-logger.js"></script>
      <script src="app.js"></script>
   </body>

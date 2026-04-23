@@ -17,7 +17,8 @@ export default defineConfig({
         histori: resolve(__dirname, 'histori.html'),
         void: resolve(__dirname, 'void.html'),
         pencarian: resolve(__dirname, 'pencarian.html'),
-        setting: resolve(__dirname, 'setting.html')
+        setting: resolve(__dirname, 'setting.html'),
+        join: resolve(__dirname, 'join.html')
       }
     }
   }

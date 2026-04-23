@@ -5,109 +5,343 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pengaturan - TATA GLOBAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = { theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } } }
-    </script>
+    <script>tailwind.config={theme:{extend:{colors:{emerald:{600:'#059669',700:'#047857'},navy:{900:'#0f172a'}}}}}</script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-      body { font-family: 'Inter', sans-serif; }
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      body{font-family:'Inter',sans-serif}
+      .tab-btn.active{border-color:#059669;color:#059669;background:#f0fdf4}
+      .toggle-on{background:#059669}.toggle-off{background:#cbd5e1}
     </style>
   </head>
   <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
-    
-    <!-- Top Header -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between">
+      <h2 class="text-xl font-bold text-slate-900">Pengaturan Sistem</h2>
       <div class="flex items-center gap-3">
-        <h2 id="page-title" class="text-xl font-bold text-slate-900">Pengaturan Sistem</h2>
-      </div>
-      <div class="flex items-center gap-4">
-        <span class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Sistem</span>
-        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">S</div>
+        <span id="dept-token-badge" class="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full">🪙 0 Token</span>
       </div>
     </header>
 
-    <!-- Sidebar Section -->
+    <!-- Sidebar -->
     <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
-      
       <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
-          <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
-        </div>
-        <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </button>
+        <div class="flex items-center gap-3"><div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div><span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span></div>
+        <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
       </div>
-
       <div class="flex md:flex-col md:w-full w-max md:space-y-1">
-        <!-- Dashboard -->
-        <a href="dashboard.html" title="Dashboard" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span>
-        </a>
-        
-        <!-- Bon Penjualan -->
-        <a href="bon.html" title="Bon Penjualan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Bon Penjualan</span>
-        </a>
-
-        <!-- Pembayaran -->
-        <a href="pembayaran.html" title="Pembayaran & Potongan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pembayaran</span>
-        </a>
-
-        <!-- Laporan -->
-        <a href="laporan.html" title="Laporan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Laporan</span>
-        </a>
-
-        <!-- Master Data -->
-        <a href="master.html" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span>
-        </a>
-
-        <!-- Histori Aktivitas -->
-        <a href="histori.html" title="Histori Aktivitas" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Histori Aktivitas</span>
-        </a>
-
-        <!-- Void -->
-        <a href="void.html" title="Void" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Void</span>
-        </a>
-
-        <!-- Pencarian -->
-        <a href="pencarian.html" title="Pencarian" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pencarian</span>
-        </a>
-
-        <!-- Pengaturan -->
-        <a href="setting.html" title="Pengaturan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pengaturan</span>
-        </a>
+        <a href="dashboard.html" title="Dashboard" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span></a>
+        <a href="bon.html" title="Bon" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Bon Penjualan</span></a>
+        <a href="pembayaran.html" title="Pembayaran" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pembayaran</span></a>
+        <a href="laporan.html" title="Laporan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Laporan</span></a>
+        <a href="master.html" title="Master" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span></a>
+        <a href="histori.html" title="Histori" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Histori</span></a>
+        <a href="void.html" title="Void" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Void</span></a>
+        <a href="pencarian.html" title="Pencarian" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pencarian</span></a>
+        <a href="setting.html" title="Setting" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pengaturan</span></a>
       </div>
-
-      <!-- Logout -->
-      <a href="index.html" title="Keluar" class="hidden md:flex items-center md:items-start gap-3 px-6 py-4 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
-        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-        <span class="sidebar-text">Keluar</span>
-      </a>
+      <div class="hidden md:block md:mt-auto w-full">
+        <div class="px-6 py-3 border-t border-slate-800"><p id="sidebar-user-name" class="text-sm font-semibold text-white sidebar-text">-</p><p class="text-[11px] text-slate-500 sidebar-text">TATA KELOLA</p></div>
+        <a href="index.html" title="Keluar" class="flex items-center gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full"><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg><span class="sidebar-text">Keluar</span></a>
+      </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="p-4 md:p-8 max-w-5xl mx-auto text-center py-20">
-      <h1 class="text-4xl font-black text-slate-800 mb-4">HALAMAN PENGATURAN</h1>
-      <p class="text-slate-500">Fitur ini sedang dalam tahap pengembangan.</p>
+    <main class="p-4 md:p-8 max-w-6xl mx-auto space-y-5">
+      <!-- Tabs -->
+      <div class="flex flex-wrap gap-1 border-b border-slate-200">
+        <button data-tab="users" class="tab-btn active text-sm font-bold px-5 py-3 border-b-2 border-transparent transition-all">👤 Data Pengguna</button>
+        <button data-tab="perms" class="tab-btn text-sm font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 transition-all">🔐 Manajemen Menu</button>
+        <button data-tab="topup" class="tab-btn text-sm font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 transition-all">🪙 Isi Token</button>
+        <button data-tab="tarif" class="tab-btn text-sm font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 transition-all">💰 Tarif Token</button>
+      </div>
+
+      <!-- ===================== TAB 1: DATA PENGGUNA ===================== -->
+      <div id="panel-users" class="tab-panel space-y-5">
+        <!-- Invite Section -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <div><h3 class="font-black text-slate-900 text-sm uppercase tracking-widest">Link Pendaftaran Departemen</h3><p class="text-xs text-slate-500 mt-1">Bagikan link ini agar user baru bisa mendaftar ke departemen Anda</p></div>
+          </div>
+          <div class="flex gap-2 items-center">
+            <input id="invite-link-input" type="text" readonly class="flex-1 bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-emerald-700 select-all">
+            <button id="btn-copy-invite" class="bg-slate-900 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors shrink-0">📋 Copy</button>
+          </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div class="p-4 bg-slate-50 border-b border-slate-100 flex items-center gap-3"><div class="w-1.5 h-6 bg-emerald-500 rounded-full"></div><h4 class="font-black text-slate-800 uppercase tracking-widest text-xs">Daftar Pengguna</h4></div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 uppercase tracking-wider text-[10px]"><tr><th class="px-3 py-2.5 w-8">#</th><th class="px-3 py-2.5">Nama</th><th class="px-3 py-2.5">Username</th><th class="px-3 py-2.5">Role</th><th class="px-3 py-2.5">Status</th><th class="px-3 py-2.5">Tgl Daftar</th><th class="px-3 py-2.5 text-center">Aksi</th></tr></thead><tbody id="users-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== TAB 2: MANAJEMEN MENU ===================== -->
+      <div id="panel-perms" class="tab-panel hidden">
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div class="p-4 bg-slate-50 border-b border-slate-100"><h4 class="font-black text-slate-800 uppercase tracking-widest text-xs">Matriks Hak Akses Per User</h4><p class="text-[10px] text-slate-500 mt-1">Centang = user punya akses. Biru = override dari default role.</p></div>
+          <div class="overflow-x-auto"><table class="w-full text-[10px]"><thead id="perms-thead" class="bg-slate-100 font-bold uppercase tracking-wider text-slate-500"></thead><tbody id="perms-tbody"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- ===================== TAB 3: ISI TOKEN ===================== -->
+      <div id="panel-topup" class="tab-panel hidden space-y-5">
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-black text-sm uppercase tracking-widest text-slate-800 mb-4">Isi Token Departemen</h3>
+              <div class="bg-amber-50 rounded-xl p-4 border border-amber-200 mb-4">
+                <p class="text-xs font-bold text-amber-700 uppercase tracking-widest">Saldo Saat Ini</p>
+                <p id="topup-balance" class="text-3xl font-black text-amber-900 mt-1">0</p>
+                <p id="topup-dept-name" class="text-xs text-amber-600 font-semibold mt-1">-</p>
+              </div>
+              <div class="space-y-3">
+                <div><label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Jumlah Token</label><input id="topup-amount" type="number" min="1" value="100" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-emerald-400"></div>
+                <div><label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Catatan (opsional)</label><input id="topup-note" type="text" placeholder="Alasan top-up..." class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-400"></div>
+                <button id="btn-topup" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg text-sm uppercase tracking-wider">🪙 ISI TOKEN</button>
+              </div>
+            </div>
+            <div>
+              <h3 class="font-black text-sm uppercase tracking-widest text-slate-800 mb-4">Riwayat Token</h3>
+              <div class="max-h-[400px] overflow-y-auto space-y-2" id="topup-history"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== TAB 4: TARIF TOKEN ===================== -->
+      <div id="panel-tarif" class="tab-panel hidden">
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div class="p-4 bg-slate-50 border-b border-slate-100"><h4 class="font-black text-slate-800 uppercase tracking-widest text-xs">Tarif Token Per Aktivitas</h4><p class="text-[10px] text-slate-500 mt-1">Setiap aksi dalam aplikasi membutuhkan token. Ubah biaya sesuai kebutuhan.</p></div>
+          <div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-50 font-bold text-slate-500 border-b text-xs uppercase"><tr><th class="px-4 py-3 text-left">Kode Aksi</th><th class="px-4 py-3 text-left">Deskripsi</th><th class="px-4 py-3 text-center w-32">Biaya (Token)</th><th class="px-4 py-3 text-center w-24">Aksi</th></tr></thead><tbody id="tarif-tbody"></tbody></table></div>
+        </div>
+      </div>
     </main>
 
+    <script src="auth-guard.js"></script>
+    <script src="activity-logger.js"></script>
+    <script>
+    (function(){
+      const user = AuthGuard.getCurrentUser();
+      const PERM_LABELS = {
+        'dashboard.view':'Dashboard','bon.create':'Buat BON','bon.update':'Edit BON','bon.delete':'Hapus BON',
+        'pembayaran.create':'Pembayaran','laporan.view':'Laporan','void.approve':'Void',
+        'search.view':'Pencarian','master_data.manage':'Master Data','history.view':'Histori','setting.manage':'Setting'
+      };
+      const ALL_PERMS = Object.keys(PERM_LABELS);
+
+      // Sidebar user name
+      if(user) document.getElementById('sidebar-user-name').textContent = user.name;
+
+      // Update token badge
+      function updateTokenBadge(){
+        const dept = AuthGuard.getUserDepartment();
+        document.getElementById('dept-token-badge').textContent = '🪙 ' + (dept?dept.tokenBalance:0) + ' Token';
+      }
+      updateTokenBadge();
+
+      // ========== TAB SWITCHING ==========
+      const tabs = document.querySelectorAll('.tab-btn');
+      const panels = document.querySelectorAll('.tab-panel');
+      tabs.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          tabs.forEach(b=>{b.classList.remove('active');b.classList.add('text-slate-400')});
+          btn.classList.add('active');btn.classList.remove('text-slate-400');
+          panels.forEach(p=>p.classList.add('hidden'));
+          document.getElementById('panel-'+btn.dataset.tab).classList.remove('hidden');
+          if(btn.dataset.tab==='users') renderUsers();
+          if(btn.dataset.tab==='perms') renderPerms();
+          if(btn.dataset.tab==='topup') renderTopup();
+          if(btn.dataset.tab==='tarif') renderTarif();
+        });
+      });
+
+      // ========== TAB 1: USERS ==========
+      function renderUsers(){
+        const dept = AuthGuard.getUserDepartment();
+        if(dept){
+          const base = window.location.origin + window.location.pathname.replace('setting.html','join.html');
+          document.getElementById('invite-link-input').value = base + '?t=' + dept.inviteCode;
+        }
+        const users = AuthGuard.getUsers();
+        const tbody = document.getElementById('users-tbody');
+        tbody.innerHTML = users.map((u,i)=>{
+          const statusCfg = {active:{cls:'bg-emerald-100 text-emerald-700',txt:'Active'},pending:{cls:'bg-amber-100 text-amber-700',txt:'Pending'},suspended:{cls:'bg-rose-100 text-rose-700',txt:'Suspended'}};
+          const sc = statusCfg[u.status]||statusCfg.pending;
+          const roleCls = {OWNER:'bg-purple-100 text-purple-700',MANAGER:'bg-blue-100 text-blue-700',STAFF:'bg-slate-100 text-slate-600'};
+          const isOwner = u.role==='OWNER';
+          return `<tr class="border-b border-slate-100 hover:bg-slate-50 text-xs">
+            <td class="px-3 py-2.5 font-medium text-slate-400">${i+1}</td>
+            <td class="px-3 py-2.5"><span class="font-bold text-slate-800">${u.name}</span><br><span class="text-[10px] text-slate-400">${u.email}</span></td>
+            <td class="px-3 py-2.5 font-semibold">${u.username}</td>
+            <td class="px-3 py-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-black ${roleCls[u.role]||''}">${u.role}</span></td>
+            <td class="px-3 py-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${sc.cls}">${sc.txt}</span></td>
+            <td class="px-3 py-2.5 text-slate-500">${new Date(u.createdAt).toLocaleDateString('id-ID')}</td>
+            <td class="px-3 py-2.5 text-center">${isOwner?'<span class="text-[10px] text-slate-300">-</span>':`
+              <div class="flex gap-1 justify-center flex-wrap">
+                ${u.status==='pending'?`<button class="btn-activate bg-emerald-600 text-white px-2 py-1 rounded text-[10px] font-bold" data-id="${u.id}">Aktifkan</button>`:''}
+                ${u.status==='active'?`<button class="btn-suspend bg-rose-500 text-white px-2 py-1 rounded text-[10px] font-bold" data-id="${u.id}">Suspend</button>`:''}
+                ${u.status==='suspended'?`<button class="btn-activate bg-emerald-600 text-white px-2 py-1 rounded text-[10px] font-bold" data-id="${u.id}">Reaktif</button>`:''}
+                <select class="sel-role border border-slate-200 rounded px-1 py-0.5 text-[10px] font-bold" data-id="${u.id}">
+                  <option value="STAFF" ${u.role==='STAFF'?'selected':''}>STAFF</option>
+                  <option value="MANAGER" ${u.role==='MANAGER'?'selected':''}>MANAGER</option>
+                  <option value="OWNER" ${u.role==='OWNER'?'selected':''}>OWNER</option>
+                </select>
+              </div>`}</td></tr>`;
+        }).join('');
+
+        // Event: Activate
+        tbody.querySelectorAll('.btn-activate').forEach(btn=>{btn.addEventListener('click',()=>{
+          const users=AuthGuard.getUsers();const u=users.find(x=>x.id===btn.dataset.id);if(!u)return;
+          const oldStatus=u.status;u.status='active';AuthGuard.saveUsers(users);
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'USER',entityId:u.id,oldData:{status:oldStatus},newData:{status:'active'},isCritical:true,message:'User '+u.name+' diaktifkan'});
+          renderUsers();
+        })});
+        // Event: Suspend
+        tbody.querySelectorAll('.btn-suspend').forEach(btn=>{btn.addEventListener('click',()=>{
+          if(!confirm('Suspend user ini?'))return;
+          const users=AuthGuard.getUsers();const u=users.find(x=>x.id===btn.dataset.id);if(!u)return;
+          u.status='suspended';AuthGuard.saveUsers(users);
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'USER',entityId:u.id,oldData:{status:'active'},newData:{status:'suspended'},isCritical:true,message:'User '+u.name+' di-suspend'});
+          renderUsers();
+        })});
+        // Event: Role change
+        tbody.querySelectorAll('.sel-role').forEach(sel=>{sel.addEventListener('change',()=>{
+          const users=AuthGuard.getUsers();const u=users.find(x=>x.id===sel.dataset.id);if(!u)return;
+          const oldRole=u.role;u.role=sel.value;AuthGuard.saveUsers(users);
+          AuthGuard.resetUserPermissions(u.id);
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'USER',entityId:u.id,oldData:{role:oldRole},newData:{role:sel.value},isCritical:true,message:'Role '+u.name+' diubah dari '+oldRole+' → '+sel.value});
+          renderUsers();
+        })});
+      }
+
+      // Copy invite link
+      document.getElementById('btn-copy-invite').addEventListener('click',()=>{
+        const inp=document.getElementById('invite-link-input');inp.select();
+        navigator.clipboard.writeText(inp.value).then(()=>{
+          const btn=document.getElementById('btn-copy-invite');btn.textContent='✅ Copied!';setTimeout(()=>btn.textContent='📋 Copy',2000);
+        });
+      });
+
+      // ========== TAB 2: PERMISSIONS MATRIX ==========
+      function renderPerms(){
+        const users = AuthGuard.getUsers().filter(u=>u.status==='active');
+        const thead = document.getElementById('perms-thead');
+        const tbody = document.getElementById('perms-tbody');
+        thead.innerHTML = `<tr><th class="px-2 py-2 text-left">User</th><th class="px-2 py-2 text-left">Role</th>${ALL_PERMS.map(p=>`<th class="px-1 py-2 text-center w-16 leading-tight">${PERM_LABELS[p]}</th>`).join('')}<th class="px-2 py-2 text-center">Reset</th></tr>`;
+
+        // Get role defaults for comparison
+        const rolePerms = JSON.parse(localStorage.getItem('tata_role_permissions')||'[]');
+
+        tbody.innerHTML = users.map(u=>{
+          const userPerms = AuthGuard.getUserPermissions(u.id);
+          const roleEntry = rolePerms.find(r=>r.role===u.role);
+          const defaults = roleEntry?roleEntry.permissions:[];
+          const isOverridden = AuthGuard.hasOverride(u.id);
+
+          return `<tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="px-2 py-2 font-bold text-slate-800">${u.name}</td>
+            <td class="px-2 py-2"><span class="px-1.5 py-0.5 rounded text-[9px] font-black ${u.role==='OWNER'?'bg-purple-100 text-purple-700':u.role==='MANAGER'?'bg-blue-100 text-blue-700':'bg-slate-100 text-slate-600'}">${u.role}</span></td>
+            ${ALL_PERMS.map(p=>{
+              const has = userPerms.includes(p);
+              const isDefault = defaults.includes(p);
+              const cellBg = (has && isOverridden && has!==isDefault)?'bg-blue-50':'';
+              return `<td class="px-1 py-2 text-center ${cellBg}"><input type="checkbox" class="perm-cb accent-emerald-600" data-uid="${u.id}" data-perm="${p}" ${has?'checked':''} ${u.role==='OWNER'?'disabled':''}></td>`;
+            }).join('')}
+            <td class="px-2 py-2 text-center">${u.role!=='OWNER'?`<button class="btn-reset-perm bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-1 rounded text-[9px] font-bold" data-uid="${u.id}">Reset</button>`:'-'}</td>
+          </tr>`;
+        }).join('');
+
+        // Checkbox change -> save override
+        tbody.querySelectorAll('.perm-cb').forEach(cb=>{cb.addEventListener('change',()=>{
+          const uid=cb.dataset.uid;
+          // Collect all checked perms for this user
+          const checkboxes = tbody.querySelectorAll(`.perm-cb[data-uid="${uid}"]`);
+          const perms=[];checkboxes.forEach(c=>{if(c.checked)perms.push(c.dataset.perm)});
+          AuthGuard.setUserPermissions(uid,perms);
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'PERMISSION',entityId:uid,newData:{permissions:perms},isCritical:true,message:'Permission user diubah'});
+          renderPerms();
+        })});
+
+        // Reset button
+        tbody.querySelectorAll('.btn-reset-perm').forEach(btn=>{btn.addEventListener('click',()=>{
+          AuthGuard.resetUserPermissions(btn.dataset.uid);
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'PERMISSION',entityId:btn.dataset.uid,message:'Permission di-reset ke default role',isCritical:true});
+          renderPerms();
+        })});
+      }
+
+      // ========== TAB 3: ISI TOKEN ==========
+      function renderTopup(){
+        const dept = AuthGuard.getUserDepartment();
+        if(!dept) return;
+        document.getElementById('topup-balance').textContent = dept.tokenBalance.toLocaleString('id-ID');
+        document.getElementById('topup-dept-name').textContent = dept.name;
+
+        const history = AuthGuard.getTokenHistory(dept.id);
+        const container = document.getElementById('topup-history');
+        if(!history.length){
+          container.innerHTML='<p class="text-center text-slate-400 text-sm py-8">Belum ada riwayat token.</p>';
+          return;
+        }
+        container.innerHTML = history.slice(0,50).map(h=>{
+          const isTopup = h.type==='topup';
+          return `<div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isTopup?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'} font-black text-sm">${isTopup?'+':'−'}</div>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-slate-800 truncate">${h.description}</p>
+              <p class="text-[10px] text-slate-400">${h.userName} • ${new Date(h.createdAt).toLocaleString('id-ID')}</p>
+            </div>
+            <div class="text-right shrink-0">
+              <p class="font-black ${isTopup?'text-emerald-700':'text-rose-600'}">${isTopup?'+':''} ${h.amount}</p>
+              <p class="text-[10px] text-slate-400">Sisa: ${h.balanceAfter}</p>
+            </div>
+          </div>`;
+        }).join('');
+        updateTokenBadge();
+      }
+
+      document.getElementById('btn-topup').addEventListener('click',()=>{
+        const dept = AuthGuard.getUserDepartment();if(!dept)return;
+        const amount = parseInt(document.getElementById('topup-amount').value)||0;
+        if(amount<=0){alert('Masukkan jumlah token yang valid.');return;}
+        const note = document.getElementById('topup-note').value.trim()||'Top-up token';
+        const newBalance = AuthGuard.topUpToken(dept.id, amount, note, user?user.id:'');
+        if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'CREATE',entityType:'TOKEN',entityId:dept.id,newData:{amount,note,balanceAfter:newBalance},isCritical:true,message:'Top-up '+amount+' token ke '+dept.name});
+        document.getElementById('topup-amount').value='100';document.getElementById('topup-note').value='';
+        renderTopup();
+        alert('✅ Berhasil menambahkan '+amount+' token!');
+      });
+
+      // ========== TAB 4: TARIF TOKEN ==========
+      function renderTarif(){
+        const tarifs = AuthGuard.getTokenTarif();
+        document.getElementById('tarif-tbody').innerHTML = tarifs.map(t=>{
+          return `<tr class="border-b border-slate-100 hover:bg-slate-50">
+            <td class="px-4 py-3 font-bold text-slate-800 uppercase text-xs tracking-wider">${t.code}</td>
+            <td class="px-4 py-3 text-slate-600">${t.label}</td>
+            <td class="px-4 py-3 text-center"><input type="number" min="0" class="tarif-input w-16 text-center bg-slate-50 border-2 border-slate-200 rounded-lg py-1 font-black text-sm focus:outline-none focus:border-emerald-400" data-code="${t.code}" value="${t.cost}"></td>
+            <td class="px-4 py-3 text-center"><button class="btn-save-tarif bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-xs font-bold transition-colors" data-code="${t.code}">Simpan</button></td>
+          </tr>`;
+        }).join('');
+
+        document.querySelectorAll('.btn-save-tarif').forEach(btn=>{btn.addEventListener('click',()=>{
+          const code=btn.dataset.code;
+          const inp=document.querySelector(`.tarif-input[data-code="${code}"]`);
+          const newCost=parseInt(inp.value)||0;
+          const tarifs=AuthGuard.getTokenTarif();
+          const t=tarifs.find(x=>x.code===code);
+          if(t){const old=t.cost;t.cost=newCost;AuthGuard.saveTokenTarif(tarifs);
+            if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'TOKEN_TARIF',entityId:code,oldData:{cost:old},newData:{cost:newCost},isCritical:true,message:'Tarif '+code+' diubah dari '+old+' → '+newCost});
+            alert('✅ Tarif '+code+' disimpan: '+newCost+' token');
+          }
+        })});
+      }
+
+      // Init
+      renderUsers();
+    })();
+    </script>
     <script src="app.js"></script>
   </body>
 </html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar - TATA GLOBAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } } }</script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex items-center justify-center p-4">
+    
+    <div class="bg-white p-8 sm:p-10 rounded-2xl border border-slate-100 shadow-lg max-w-md w-full mx-auto">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <div class="w-14 h-14 bg-emerald-600 rounded-xl mx-auto mb-4 flex items-center justify-center">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+        </div>
+        <h1 class="text-2xl font-black text-slate-900 mb-1">Daftar Akun</h1>
+        <p id="dept-info" class="text-sm text-slate-500">Memvalidasi kode invite...</p>
+      </div>
+
+      <!-- Invalid invite -->
+      <div id="invalid-state" class="hidden text-center py-8">
+        <div class="w-16 h-16 bg-rose-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+          <svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </div>
+        <h2 class="text-lg font-bold text-rose-700 mb-2">Kode Invite Tidak Valid</h2>
+        <p class="text-sm text-slate-500">Link pendaftaran ini tidak valid atau sudah tidak berlaku.<br>Hubungi Owner untuk mendapatkan link baru.</p>
+        <a href="index.html" class="inline-block mt-6 text-emerald-600 font-semibold text-sm hover:underline">← Kembali ke Login</a>
+      </div>
+
+      <!-- Success state -->
+      <div id="success-state" class="hidden text-center py-8">
+        <div class="w-16 h-16 bg-emerald-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+          <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <h2 class="text-lg font-bold text-emerald-700 mb-2">Pendaftaran Berhasil! 🎉</h2>
+        <p class="text-sm text-slate-500">Akun Anda telah dibuat dengan status <strong class="text-amber-600">PENDING</strong>.<br>Tunggu Owner mengaktivasi akun Anda sebelum bisa login.</p>
+        <a href="index.html" class="inline-block mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-lg transition-colors shadow-lg">Ke Halaman Login</a>
+      </div>
+
+      <!-- Register form -->
+      <form id="registerForm" class="hidden space-y-4">
+        <div id="errorMsg" class="hidden p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg text-center font-medium"></div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1.5">Nama Lengkap</label>
+          <input id="inputName" type="text" placeholder="Nama lengkap Anda" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white text-sm font-semibold" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1.5">Email</label>
+          <input id="inputEmail" type="email" placeholder="email@contoh.com" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white text-sm font-semibold" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1.5">Username</label>
+          <input id="inputUsername" type="text" placeholder="Username untuk login" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white text-sm font-semibold" required>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1.5">Password</label>
+          <input id="inputPassword" type="password" placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white text-sm font-semibold" required>
+        </div>
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition-colors shadow-lg shadow-emerald-600/30 text-sm uppercase tracking-wider mt-2">Daftar Sekarang</button>
+        <p class="text-center text-xs text-slate-400 mt-3">Sudah punya akun? <a href="index.html" class="text-emerald-600 font-semibold hover:underline">Login</a></p>
+      </form>
+    </div>
+
+    <script src="auth-guard.js"></script>
+    <script src="activity-logger.js"></script>
+    <script>
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const inviteCode = params.get('t') || '';
+      const dept = AuthGuard.getDeptByInviteCode(inviteCode);
+
+      if (!dept) {
+        document.getElementById('invalid-state').classList.remove('hidden');
+        document.getElementById('dept-info').textContent = 'Kode invite tidak ditemukan.';
+        return;
+      }
+
+      document.getElementById('dept-info').innerHTML = 'Bergabung dengan departemen <strong class="text-emerald-700">' + dept.name + '</strong>';
+      document.getElementById('registerForm').classList.remove('hidden');
+
+      document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const name = document.getElementById('inputName').value.trim();
+        const email = document.getElementById('inputEmail').value.trim();
+        const username = document.getElementById('inputUsername').value.trim();
+        const password = document.getElementById('inputPassword').value;
+        const errorBox = document.getElementById('errorMsg');
+
+        if (!name || !email || !username || !password) {
+          errorBox.textContent = 'Semua field wajib diisi.';
+          errorBox.classList.remove('hidden');
+          return;
+        }
+        if (password.length < 4) {
+          errorBox.textContent = 'Password minimal 4 karakter.';
+          errorBox.classList.remove('hidden');
+          return;
+        }
+
+        const result = await AuthGuard.registerUser(inviteCode, name, email, username, password);
+        if (!result.success) {
+          errorBox.textContent = result.message;
+          errorBox.classList.remove('hidden');
+          return;
+        }
+
+        document.getElementById('registerForm').classList.add('hidden');
+        document.getElementById('success-state').classList.remove('hidden');
+      });
+    })();
+    </script>
+  </body>
+</html>

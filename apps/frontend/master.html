@@ -374,6 +374,12 @@
           
           if(!nama) { alert("Nama wajib diisi!"); return; }
 
+          // Token Guard
+          const isNew = !db[type].some(x => x.id === id);
+          const actionCode = isNew ? 'create' : 'update';
+          const actionMsg = (isNew ? 'Tambah ' : 'Edit ') + type + ': ' + nama;
+          if (typeof AuthGuard !== 'undefined' && !AuthGuard.consumeToken(actionCode, actionMsg)) return;
+
           const payload = {
              id: id,
              nama: nama,
@@ -404,5 +410,7 @@
 
        window.addEventListener('DOMContentLoaded', initApp);
     </script>
+    <script src="auth-guard.js"></script>
+    <script src="app.js"></script>
   </body>
 </html>

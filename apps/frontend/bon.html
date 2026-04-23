@@ -742,11 +742,15 @@
           }
           // Jika belum ada pembayaran, status tetap seperti semula
 
+          // Token Guard: UPDATE
+          if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('update','Edit BON '+existing.id)) return;
           saveAllBons(bons);document.getElementById('form-no-bon').readOnly=false;
           // Audit Log: UPDATE
           if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'BON',entityId:existing.id,oldData:{total:oldBonSnapshot.total,konsumen:oldBonSnapshot.konsumen,status:oldBonSnapshot.status,tanggal:oldBonSnapshot.tanggal},newData:{total:existing.total,konsumen:existing.konsumen,status:existing.status,tanggal:existing.tanggal},isCritical:ActivityLogger.isCriticalChange(oldBonSnapshot,existing),message:'Update BON '+existing.id+' oleh user'});
         }else{
           const newBon = {id:nb,tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,status:'PIUTANG',keterangan:kt,items};
+          // Token Guard: CREATE
+          if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('create','Buat BON '+nb)) return;
           bons.push(newBon);
           saveAllBons(bons);
           // Audit Log: CREATE
@@ -759,6 +763,7 @@
       showListView();
     })();
     </script>
+    <script src="auth-guard.js"></script>
     <script src="activity-logger.js"></script>
     <script src="app.js"></script>
   </body>

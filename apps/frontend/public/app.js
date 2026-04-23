@@ -1,10 +1,35 @@
 // app.js
 document.addEventListener('DOMContentLoaded', () => {
+  // 1. Auth Guard Check
+  if (typeof AuthGuard !== 'undefined') {
+    if (!AuthGuard.requireAuth()) return;
+    AuthGuard.applySidebarPermissions();
+  }
+
   const sidebar = document.getElementById('sidebar');
   const toggleBtn = document.getElementById('toggleMenuBtn');
   const mainWrapper = document.getElementById('main-wrapper');
   
   if (sidebar && toggleBtn && mainWrapper) {
+    // Inject Token Badge if not present
+    if (typeof AuthGuard !== 'undefined' && !document.getElementById('sidebar-token-info')) {
+      const dept = AuthGuard.getUserDepartment();
+      const tokenDiv = document.createElement('div');
+      tokenDiv.id = 'sidebar-token-info';
+      tokenDiv.className = 'px-6 py-2 border-t border-slate-800 sidebar-text';
+      tokenDiv.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="text-amber-500 font-black text-xs">🪙</span>
+          <span class="text-[10px] font-bold text-slate-400">SALDO TOKEN:</span>
+        </div>
+        <div class="text-xs font-black text-amber-500 mt-0.5">${dept ? dept.tokenBalance.toLocaleString('id-ID') : 0} Token</div>
+      `;
+      // Insert before logout
+      const logoutLink = sidebar.querySelector('a[href="index.html"]');
+      if (logoutLink) sidebar.insertBefore(tokenDiv, logoutLink.parentElement);
+      else sidebar.appendChild(tokenDiv);
+    }
+
     toggleBtn.addEventListener('click', () => {
       // Logic for Desktop (Width Toggle)
       const isDesktop = window.innerWidth >= 768;
@@ -27,11 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
           document.querySelectorAll('.sidebar-text').forEach(el => el.classList.add('md:hidden'));
         }
       } else {
-        // Logic for Mobile (Translate Toggle - if sidebar is used as a drawer)
-        // Note: Currently sidebar is bottom navigation on mobile. 
-        // If users want to hide it, we could toggle translateY.
-        // But based on user feedback, "on off" usually refers to the desktop sidebar state.
-        // We will implement a simple transform toggle for mobile just in case.
+        // Logic for Mobile (Translate Toggle)
         if (sidebar.style.transform === 'translateY(100%)') {
           sidebar.style.transform = 'translateY(0)';
         } else {

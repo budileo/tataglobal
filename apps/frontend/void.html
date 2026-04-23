@@ -426,6 +426,8 @@
           else bon.status = 'PIUTANG';
         }
 
+        // Token Guard: VOID
+        if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('void','VOID data')) { pendingVoid=null; return; }
         saveAllBons(bons);
         modal.classList.add('hidden'); modal.classList.remove('flex');
         pendingVoid = null;
@@ -500,6 +502,7 @@
       renderVoidHistory();
     })();
     </script>
+    <script src="auth-guard.js"></script>
     <script src="activity-logger.js"></script>
     <script src="app.js"></script>
   </body>

@@ -758,10 +758,17 @@
       document.getElementById('rekap-end').addEventListener('change', calculateRekap);
 
       // Print events
-      document.getElementById('btn-print-rekap').addEventListener('click', () => window.print());
-      document.getElementById('btn-print-detail').addEventListener('click', () => window.print());
+      const handlePrint = () => {
+        if (typeof AuthGuard !== 'undefined') {
+          if (!AuthGuard.consumeToken('download', 'Cetak Laporan')) return;
+        }
+        window.print();
+      };
+      document.getElementById('btn-print-rekap').addEventListener('click', handlePrint);
+      document.getElementById('btn-print-detail').addEventListener('click', handlePrint);
 
      </script>
+     <script src="auth-guard.js"></script>
      <script src="app.js"></script>
   </body>
 </html>
