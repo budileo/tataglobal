@@ -765,6 +765,8 @@
          targetBon.status = sc.code === 'L' ? 'LUNAS' : (sc.code === 'S' ? 'SEBAGIAN' : 'PIUTANG');
 
          saveAllBons(bons);
+         // Audit Log: PAYMENT
+         if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'PAYMENT',entityType:'PEMBAYARAN',entityId:targetBon.id,newData:{nominal:newEntry.nominal,totalPotongan:newEntry.totalPotongan,kolektor:newEntry.kolektor,caraBayar:newEntry.caraBayar,statusBon:targetBon.status},isCritical:targetBon.status==='LUNAS',message:'Pembayaran '+targetBon.id+' sebesar Rp '+(newEntry.nominal||0).toLocaleString('id-ID')+' → Status: '+targetBon.status});
          
          alert('Pembayaran berhasil disimpan!');
          showListView();
@@ -774,6 +776,7 @@
       showListView();
     })();
      </script>
+     <script src="activity-logger.js"></script>
      <script src="app.js"></script>
   </body>
 </html>

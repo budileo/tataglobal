@@ -402,6 +402,8 @@
           bon.voidReason = reason;
           bon.status = 'VOID';
           addAuditLog('VOID BON', bon.id, bon.konsumen, bon.total, reason);
+          // Audit Trail
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'VOID',entityType:'BON',entityId:bon.id,oldData:{total:bon.total,konsumen:bon.konsumen,status:'PIUTANG'},newData:{status:'VOID'},isCritical:true,message:'VOID BON '+bon.id+' — Alasan: '+reason});
 
         } else if (pendingVoid.type === 'bayar') {
           const bon = bons[pendingVoid.bonIdx];
@@ -410,6 +412,8 @@
           pay.voidAt = new Date().toISOString();
           pay.voidReason = reason;
           addAuditLog('VOID BAYAR', bon.id, bon.konsumen, pay.nominal, reason);
+          // Audit Trail
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'VOID',entityType:'PEMBAYARAN',entityId:bon.id,oldData:{nominal:pay.nominal,kolektor:pay.kolektor,tanggal:pay.tanggal},newData:{status:'VOID'},isCritical:true,message:'VOID Pembayaran '+bon.id+' Rp '+(pay.nominal||0).toLocaleString('id-ID')+' — Alasan: '+reason});
 
           // Auto-sync BON status
           const activeHist = (bon.historiBayar||[]).filter(h=>!h.isVoid);
@@ -496,6 +500,7 @@
       renderVoidHistory();
     })();
     </script>
+    <script src="activity-logger.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

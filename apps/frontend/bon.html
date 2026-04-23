@@ -725,6 +725,7 @@
 
         if(editingBonIndex>=0){
           const existing = bons[editingBonIndex];
+          const oldBonSnapshot = JSON.parse(JSON.stringify(existing));
           Object.assign(existing,{tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,keterangan:kt,items});
 
           // === AUTO-SYNC STATUS berdasarkan pembayaran ===
@@ -742,9 +743,14 @@
           // Jika belum ada pembayaran, status tetap seperti semula
 
           saveAllBons(bons);document.getElementById('form-no-bon').readOnly=false;
+          // Audit Log: UPDATE
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'BON',entityId:existing.id,oldData:{total:oldBonSnapshot.total,konsumen:oldBonSnapshot.konsumen,status:oldBonSnapshot.status,tanggal:oldBonSnapshot.tanggal},newData:{total:existing.total,konsumen:existing.konsumen,status:existing.status,tanggal:existing.tanggal},isCritical:ActivityLogger.isCriticalChange(oldBonSnapshot,existing),message:'Update BON '+existing.id+' oleh user'});
         }else{
-          bons.push({id:nb,tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,status:'PIUTANG',keterangan:kt,items});
+          const newBon = {id:nb,tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,status:'PIUTANG',keterangan:kt,items};
+          bons.push(newBon);
           saveAllBons(bons);
+          // Audit Log: CREATE
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'CREATE',entityType:'BON',entityId:nb,newData:{total,konsumen:ks,tanggal:tgl,staf:st,marketing:mk},message:'Buat BON baru '+nb+' untuk '+ks});
         }
         activeFilter='hari-ini';filterButtons.forEach(b=>b.classList.remove('active'));document.querySelector('[data-filter="hari-ini"]').classList.add('active');
         showListView();
@@ -753,6 +759,7 @@
       showListView();
     })();
     </script>
+    <script src="activity-logger.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

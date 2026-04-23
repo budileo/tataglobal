@@ -56,23 +56,21 @@
       </form>
     </div>
 
-    <!-- Script Validasi Login Dummy -->
+    <script src="activity-logger.js"></script>
     <script>
       document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Mencegah reload halaman
-        
+        e.preventDefault();
         const user = document.getElementById('usernameInput').value;
         const pass = document.getElementById('passwordInput').value;
         const errorBox = document.getElementById('errorMsg');
         
-        // Cek kredensial default permintaan user (budileo / 12345)
         if(user === 'budileo' && pass === '12345') {
           errorBox.classList.add('hidden');
-          // Jika sukses, lempar ke dashboard
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'LOGIN',entityType:'USER',entityId:user,status:'success',message:'Login berhasil dari browser'});
           window.location.href = 'dashboard.html';
         } else {
-          // Jika gagal, tampilkan pesan error
           errorBox.classList.remove('hidden');
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'LOGIN',entityType:'USER',entityId:user||'(kosong)',status:'failed',message:'Login gagal — username/password salah',isCritical:true});
         }
       });
     </script>
