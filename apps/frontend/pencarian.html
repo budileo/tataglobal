@@ -73,14 +73,7 @@
   <!-- Main Content -->
   <main class="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full transition-all duration-300">
      
-    <!-- Header Hero -->
-    <div class="text-center mb-8 pt-8">
-       <div class="inline-flex items-center justify-center p-3 rounded-full bg-emerald-100 text-emerald-600 mb-4 shadow-lg shadow-emerald-200">
-          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-       </div>
-       <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-2 tracking-tight">Eksplorasi Data Real-time</h1>
-       <p class="text-slate-500 font-medium max-w-xl mx-auto text-sm">Cari histori bon, aktivitas marketing, jejak pembayaran, dan rekap tagihan konsumen secara terpadu.</p>
-    </div>
+    <!-- Header Hero removed per user request -->
 
     <!-- Search & Filter Controls -->
     <div class="bg-white p-2 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 mb-8 max-w-4xl mx-auto flex flex-col md:flex-row gap-2 sticky top-[76px] z-20">
@@ -519,8 +512,10 @@
        const sInput = document.getElementById('global-search');
        const sSelect = document.getElementById('filter-range');
        
-       sInput.addEventListener('input', () => {
-          if(sInput.value.length >= 0) doSearch(); // immediate search
+       sInput.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter' && sInput.value.trim().length > 0) {
+             doSearch();
+          }
        });
        sInput.addEventListener('focus', () => {
           sInput.parentElement.classList.add('search-input-focus');
@@ -538,8 +533,7 @@
        document.getElementById('filter-start').addEventListener('change', doSearch);
        document.getElementById('filter-end').addEventListener('change', doSearch);
 
-       // Initial run to show all
-       doSearch();
+       // Initial run to show all removed per user request
 
        // Sidebar Toggle
        document.getElementById('toggleMenuBtn').addEventListener('click', () => {
