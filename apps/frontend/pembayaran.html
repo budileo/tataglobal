@@ -257,7 +257,7 @@
         <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider border-b border-slate-100 pb-2 mb-4">Data Pembayaran Saat Ini</h4>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Tgl Pembayaran</label><input id="inp-tgl-bayar" type="date" class="w-full border border-slate-200 rounded px-3 py-2"></div>
-          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Kolektor Marketing</label><select id="inp-kolektor" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option>--Pilih--</option><option>Andi</option><option>Budi M.</option></select></div>
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Kolektor Marketing</label><select id="inp-kolektor" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option value="">--Pilih--</option></select></div>
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Cara Bayar</label><select id="inp-cara-bayar" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option>Kasir</option><option>Marketing</option><option>Transfer</option></select></div>
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Waktu Bayar</label><select id="inp-waktu-bayar" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option>Pagi</option><option>Siang</option><option>Sore</option><option>Malam</option></select></div>
         </div>
@@ -377,7 +377,11 @@
         
         // Reset Inputs
         document.getElementById('inp-tgl-bayar').value = new Date().toISOString().split('T')[0];
-        document.getElementById('inp-kolektor').selectedIndex = 0;
+        
+        // Load Master Data untuk Kolektor
+        const dtMar = JSON.parse(localStorage.getItem('tata_master_marketing') || '[]');
+        document.getElementById('inp-kolektor').innerHTML = '<option value="">--Pilih--</option>' + dtMar.map(x => `<option value="${x.nama}">${x.nama}</option>`).join('');
+        document.getElementById('inp-kolektor').value = '';
         document.getElementById('inp-cara-bayar').selectedIndex = 0;
         document.getElementById('inp-waktu-bayar').selectedIndex = 0;
         document.querySelectorAll('.potongan-calc').forEach(el => el.value = 0);
@@ -716,7 +720,7 @@
          const cara = document.getElementById('inp-cara-bayar').value;
          const waktu = document.getElementById('inp-waktu-bayar').value;
 
-         if(!tglBayar || kol === '--Pilih--' || !kol) { alert('Harap isi Tanggal dan Kolektor.'); return; }
+         if(!tglBayar || kol === '--Pilih--' || kol === '' || !kol) { alert('Harap isi Tanggal dan Kolektor.'); return; }
 
          const potHarga = parseFloat(document.getElementById('pot-harga').value)||0;
          const potMati = parseFloat(document.getElementById('pot-mati').value)||0;
