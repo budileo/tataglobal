@@ -178,7 +178,16 @@
       <button id="btn-kembali-form" class="no-print flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-800 mb-4 transition-colors">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>Kembali ke Daftar Bon
       </button>
-      <h3 id="form-title" class="text-xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-2">Tambah Bon Penjualan Baru</h3>
+      <h3 id="form-title" class="text-xl font-bold text-slate-900 mb-4 border-b border-slate-200 pb-2">Tambah Bon Penjualan Baru</h3>
+      <!-- Payment Warning Banner -->
+      <div id="payment-warning-banner" class="hidden mb-4 bg-amber-50 border-2 border-amber-300 rounded-xl p-4 flex items-start gap-3">
+         <svg class="w-6 h-6 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.268 16.5C2.498 17.333 3.46 19 5 19z"></path></svg>
+         <div>
+            <p class="text-sm font-bold text-amber-800">⚠️ Bon ini sudah memiliki histori pembayaran</p>
+            <p id="payment-warning-detail" class="text-xs text-amber-700 mt-1"></p>
+            <p class="text-xs text-amber-600 mt-1 italic">Total tagihan baru tidak boleh lebih kecil dari total pembayaran + potongan yang sudah tercatat.</p>
+         </div>
+      </div>
       <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6">
         <h4 class="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider">Info Header</h4>
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -370,6 +379,7 @@
           document.getElementById('form-marketing').innerHTML='<option value="">-- Pilih --</option>'+dtMar.map(x=>`<option value="${x.nama}">${x.nama}</option>`).join('');
 
           document.getElementById('form-konsumen').value='';
+          document.getElementById('payment-warning-banner').classList.add('hidden');
           document.getElementById('form-keterangan').value='';
           const c=document.getElementById('items-container');
           c.querySelectorAll('.item-row').forEach((r,i)=>{if(i>0)r.remove();});
@@ -469,6 +479,21 @@
         setSelectValue('form-staf',bon.staf);
         setSelectValue('form-marketing',bon.marketing);
         document.getElementById('form-keterangan').value=bon.keterangan||'';
+
+        // Show/hide payment warning banner
+        const editHist = bon.historiBayar || [];
+        const warnBanner = document.getElementById('payment-warning-banner');
+        if(editHist.length > 0) {
+          let wPaid = 0, wPot = 0;
+          editHist.forEach(h => { wPaid += (h.nominal||0); wPot += (h.totalPotongan||0); });
+          warnBanner.classList.remove('hidden');
+          document.getElementById('payment-warning-detail').textContent =
+            editHist.length + 'x pembayaran tercatat. Total Terbayar: Rp ' + wPaid.toLocaleString('id-ID') +
+            ' | Total Potongan: Rp ' + wPot.toLocaleString('id-ID') +
+            ' | Batas min. tagihan baru: Rp ' + (wPaid + wPot).toLocaleString('id-ID');
+        } else {
+          warnBanner.classList.add('hidden');
+        }
 
         // Populate items
         const container=document.getElementById('items-container');
@@ -681,8 +706,41 @@
         if(total<=0){alert('Total tagihan tidak boleh 0.');return;}
 
         const bons=getAllBons();
+
+        // === VALIDASI: Cek pembayaran yang sudah masuk ===
         if(editingBonIndex>=0){
-          Object.assign(bons[editingBonIndex],{tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,keterangan:kt,items});
+          const existing = bons[editingBonIndex];
+          const hist = existing.historiBayar || [];
+          if(hist.length > 0) {
+            let totalPaid = 0, totalPot = 0;
+            hist.forEach(h => { totalPaid += (h.nominal||0); totalPot += (h.totalPotongan||0); });
+            const totalSetor = totalPaid + totalPot; // nominal + potongan sudah diklaim
+
+            if(total < totalSetor) {
+              alert('⚠️ GAGAL SIMPAN\n\nTotal tagihan baru (Rp ' + total.toLocaleString('id-ID') + ') tidak boleh lebih kecil dari total pembayaran + potongan yang sudah tercatat (Rp ' + totalSetor.toLocaleString('id-ID') + ').\n\nSilakan sesuaikan nominal bon atau batalkan pembayaran terkait terlebih dahulu.');
+              return;
+            }
+          }
+        }
+
+        if(editingBonIndex>=0){
+          const existing = bons[editingBonIndex];
+          Object.assign(existing,{tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,keterangan:kt,items});
+
+          // === AUTO-SYNC STATUS berdasarkan pembayaran ===
+          const hist = existing.historiBayar || [];
+          if(hist.length > 0) {
+            let sumPaid = 0, sumPot = 0;
+            hist.forEach(h => { sumPaid += (h.nominal||0); sumPot += (h.totalPotongan||0); });
+            const tagihanAkhir = total - sumPot;
+            const sisa = tagihanAkhir - sumPaid;
+
+            if(sisa <= 0) existing.status = 'LUNAS';
+            else if(sumPaid > 0) existing.status = 'SEBAGIAN';
+            else existing.status = 'PIUTANG';
+          }
+          // Jika belum ada pembayaran, status tetap seperti semula
+
           saveAllBons(bons);document.getElementById('form-no-bon').readOnly=false;
         }else{
           bons.push({id:nb,tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,status:'PIUTANG',keterangan:kt,items});
