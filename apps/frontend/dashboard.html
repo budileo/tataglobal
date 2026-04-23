@@ -29,8 +29,8 @@
          @apply shadow-lg -translate-y-1 border-emerald-100;
       }
       .kpi-label { @apply text-[11px] uppercase font-extrabold text-slate-400 tracking-widest mb-2 block; }
-      .kpi-value { @apply text-xl font-extrabold text-slate-900 leading-none; }
-      .percentage-badge { @apply text-[10px] font-bold px-2 py-0.5 rounded-full ml-2; }
+      .kpi-value { @apply text-lg lg:text-xl font-extrabold text-slate-900 tracking-tight; word-break: break-all; }
+      .percentage-badge { @apply text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap; }
       
       /* Scrollbar Custom */
       ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -172,18 +172,18 @@
             </div>
          </div>
          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
-            <div class="kpi-card group"><p class="kpi-label">Total Penjualan</p><h3 id="stat-total-jual" class="kpi-value group-hover:text-blue-600 transition-colors">Rp 0</h3></div>
-            <div class="kpi-card"><p class="kpi-label">Jumlah Bon</p><h3 id="stat-jml-bon" class="kpi-value">0</h3></div>
+            <div class="kpi-card group"><p class="kpi-label">Total Penjualan</p><div class="mt-1"><h3 id="stat-total-jual" class="kpi-value group-hover:text-blue-600 transition-colors">Rp 0</h3></div></div>
+            <div class="kpi-card"><p class="kpi-label">Jumlah Bon</p><div class="mt-1"><h3 id="stat-jml-bon" class="kpi-value">0</h3></div></div>
             <div class="kpi-card"><p class="kpi-label">Piutang / Sisa</p>
-               <div class="flex items-center mt-1"><h3 id="stat-piutang" class="kpi-value text-rose-600">Rp 0</h3><span id="stat-piutang-pct" class="percentage-badge bg-rose-100 text-rose-700">0%</span></div>
+               <div class="flex flex-wrap items-center mt-1 gap-2"><h3 id="stat-piutang" class="kpi-value text-rose-600">Rp 0</h3><span id="stat-piutang-pct" class="percentage-badge bg-rose-100 text-rose-700">0%</span></div>
             </div>
             <div class="kpi-card"><p class="kpi-label">Total Penerimaan</p>
-               <div class="flex items-center mt-1"><h3 id="stat-penerimaan" class="kpi-value text-emerald-600">Rp 0</h3><span id="stat-penerimaan-pct" class="percentage-badge bg-emerald-100 text-emerald-700">0%</span></div>
+               <div class="flex flex-wrap items-center mt-1 gap-2"><h3 id="stat-penerimaan" class="kpi-value text-emerald-600">Rp 0</h3><span id="stat-penerimaan-pct" class="percentage-badge bg-emerald-100 text-emerald-700">0%</span></div>
             </div>
             <div class="kpi-card"><p class="kpi-label">Total Lunas</p>
-               <div class="flex items-center mt-1"><h3 id="stat-lunas" class="kpi-value text-blue-800">Rp 0</h3><span id="stat-lunas-pct" class="percentage-badge bg-blue-50 text-blue-700">0%</span></div>
+               <div class="flex flex-wrap items-center mt-1 gap-2"><h3 id="stat-lunas" class="kpi-value text-blue-800">Rp 0</h3><span id="stat-lunas-pct" class="percentage-badge bg-blue-50 text-blue-700">0%</span></div>
             </div>
-            <div class="kpi-card"><p class="kpi-label">Frekuensi Bayar</p><h3 id="stat-xbayar" class="kpi-value">0x</h3></div>
+            <div class="kpi-card"><p class="kpi-label">Frekuensi Bayar</p><div class="mt-1"><h3 id="stat-xbayar" class="kpi-value">0x</h3></div></div>
          </div>
       </div>
 
@@ -222,25 +222,28 @@
                   </div>
                </div>
                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                  <div class="bg-white p-4 rounded-2xl border border-rose-100">
+                   <div class="bg-white p-4 rounded-2xl border border-rose-100 flex flex-col justify-between">
                      <p class="kpi-label">Pot. Harga</p>
-                     <p id="stat-pot-harga" class="text-sm font-black">Rp 0</p>
-                     <div class="mt-1 h-1 w-full bg-slate-100 rounded-full overflow-hidden"><div id="bar-pot-harga" class="bg-rose-500 h-full" style="width:0%"></div></div>
+                     <p id="stat-pot-harga" class="text-sm font-black text-rose-700">Rp 0</p>
+                     <div class="mt-2 h-1 w-full bg-slate-100 rounded-full overflow-hidden"><div id="bar-pot-harga" class="bg-rose-500 h-full" style="width:0%"></div></div>
                   </div>
-                  <div class="bg-white p-4 rounded-2xl border border-rose-100">
+                  <div class="bg-white p-4 rounded-2xl border border-rose-100 flex flex-col justify-between">
                      <p class="kpi-label">Pot. Mati</p>
-                     <div class="flex justify-between items-center"><p id="stat-pot-mati-rp" class="text-sm font-black">Rp 0</p><span id="stat-pot-mati-kg" class="text-[10px] font-black text-rose-500">0 Kg</span></div>
-                     <div class="mt-1 h-1 w-full bg-slate-100 rounded-full overflow-hidden"><div id="bar-pot-mati" class="bg-rose-500 h-full" style="width:0%"></div></div>
+                     <p id="stat-pot-mati-rp" class="text-sm font-black text-rose-700">Rp 0</p>
+                     <p id="stat-pot-mati-kg" class="text-[11px] font-bold text-slate-500 mt-1 whitespace-nowrap">0 Kg (0%)</p>
+                     <div class="mt-2 h-1 w-full bg-slate-100 rounded-full overflow-hidden"><div id="bar-pot-mati" class="bg-rose-500 h-full" style="width:0%"></div></div>
                   </div>
-                  <div class="bg-white p-4 rounded-2xl border border-rose-100">
+                  <div class="bg-white p-4 rounded-2xl border border-rose-100 flex flex-col justify-between">
                      <p class="kpi-label">Pot. Susut</p>
-                     <div class="flex justify-between items-center"><p id="stat-pot-susut-rp" class="text-sm font-black">Rp 0</p><span id="stat-pot-susut-kg" class="text-[10px] font-black text-rose-500">0 Kg</span></div>
-                     <div class="mt-1 h-1 w-full bg-slate-100 rounded-full overflow-hidden"><div id="bar-pot-susut" class="bg-rose-500 h-full" style="width:0%"></div></div>
+                     <p id="stat-pot-susut-rp" class="text-sm font-black text-rose-700">Rp 0</p>
+                     <p id="stat-pot-susut-kg" class="text-[11px] font-bold text-slate-500 mt-1 whitespace-nowrap">0 Kg (0%)</p>
+                     <div class="mt-2 h-1 w-full bg-slate-100 rounded-full overflow-hidden"><div id="bar-pot-susut" class="bg-rose-500 h-full" style="width:0%"></div></div>
                   </div>
-                  <div class="bg-white p-4 rounded-2xl border border-rose-100">
+                  <div class="bg-white p-4 rounded-2xl border border-rose-100 flex flex-col justify-between">
                      <p class="kpi-label">Pot. Pulang</p>
-                     <div class="flex justify-between items-center"><p id="stat-pot-pulang-rp" class="text-sm font-black">Rp 0</p><span id="stat-pot-pulang-kg" class="text-[10px] font-black text-rose-500">0 Kg</span></div>
-                     <div class="mt-1 h-1 w-full bg-slate-100 rounded-full overflow-hidden"><div id="bar-pot-pulang" class="bg-rose-500 h-full" style="width:0%"></div></div>
+                     <p id="stat-pot-pulang-rp" class="text-sm font-black text-rose-700">Rp 0</p>
+                     <p id="stat-pot-pulang-kg" class="text-[11px] font-bold text-slate-500 mt-1 whitespace-nowrap">0 Kg (0%)</p>
+                     <div class="mt-2 h-1 w-full bg-slate-100 rounded-full overflow-hidden"><div id="bar-pot-pulang" class="bg-rose-500 h-full" style="width:0%"></div></div>
                   </div>
                </div>
             </div>
@@ -373,14 +376,16 @@
           let totalAyamKg = 0;
           const ukuranMap = {};
 
-          // CONSUMER SETS
-          const allConsumersSet = new Set();
-          bons.forEach(b => { if(b.konsumen) allConsumersSet.add(b.konsumen.trim()); });
-          const allConsumersEver = Array.from(allConsumersSet);
-
+          // CONSUMER SETS FROM MASTER DATA
+          const masterKons = JSON.parse(localStorage.getItem('tata_master_konsumen')||'[]');
+          
           const activeConsumersSet = new Set();
           filtered.forEach(b => { if(b.konsumen) activeConsumersSet.add(b.konsumen.trim()); });
           const activeConsumersInPeriod = Array.from(activeConsumersSet);
+          
+          // Get unique consumers from master data + trans mix
+          const allConsumersEver = masterKons.map(k => k.nama);
+          const totalBase = Math.max(allConsumersEver.length, activeConsumersInPeriod.length);
 
           filtered.forEach(b => {
              const bTotal = parseFloat(b.total) || 0;
@@ -445,11 +450,11 @@
              document.getElementById('stat-potongan-pct').textContent = getPct(potTotal, totalJual);
              document.getElementById('stat-pot-harga').textContent = formatRp(potHarga);
              document.getElementById('stat-pot-mati-rp').textContent = formatRp(potMatiRp);
-             document.getElementById('stat-pot-mati-kg').textContent = potMatiKg.toFixed(1) + ' Kg';
+             document.getElementById('stat-pot-mati-kg').textContent = potMatiKg.toFixed(1) + ' Kg (' + getPct(potMatiKg, totalAyamKg) + ')';
              document.getElementById('stat-pot-susut-rp').textContent = formatRp(potSusutRp);
-             document.getElementById('stat-pot-susut-kg').textContent = potSusutKg.toFixed(1) + ' Kg';
+             document.getElementById('stat-pot-susut-kg').textContent = potSusutKg.toFixed(1) + ' Kg (' + getPct(potSusutKg, totalAyamKg) + ')';
              document.getElementById('stat-pot-pulang-rp').textContent = formatRp(potPulangRp);
-             document.getElementById('stat-pot-pulang-kg').textContent = potPulangKg.toFixed(1) + ' Kg';
+             document.getElementById('stat-pot-pulang-kg').textContent = potPulangKg.toFixed(1) + ' Kg (' + getPct(potPulangKg, totalAyamKg) + ')';
 
              document.getElementById('bar-pot-harga').style.width = getPct(potHarga, potTotal);
              document.getElementById('bar-pot-mati').style.width = getPct(potMatiRp, potTotal);
@@ -457,7 +462,7 @@
              document.getElementById('bar-pot-pulang').style.width = getPct(potPulangRp, potTotal);
 
              // CONSUMER RENDER
-             const totalKons = allConsumersEver.length;
+             const totalKons = totalBase;
              const aktif = activeConsumersInPeriod.length;
              const pasif = Math.max(0, totalKons - aktif);
              document.getElementById('stat-total-konsumen').textContent = totalKons;
