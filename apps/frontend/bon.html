@@ -544,7 +544,7 @@
       function renderTable(){
         const bons=getAllBons(),{from,to}=getFilterDateRange(),q=document.getElementById('searchInput').value.trim().toLowerCase();
         const filtered=bons.map((b,i)=>({...b,_idx:i})).filter(b=>{
-          return(b.tanggal>=from&&b.tanggal<=to)&&(!q||b.id.toLowerCase().includes(q)||b.konsumen.toLowerCase().includes(q));
+          return !b.isVoid && (b.tanggal>=from&&b.tanggal<=to)&&(!q||b.id.toLowerCase().includes(q)||b.konsumen.toLowerCase().includes(q));
         });
         let sumPenjualan=0, sumKgNetto=0, sumEkor=0, sumTerbayar=0, sumPiutang=0, sumLunas=0, sumXBayar=0, sumPotongan=0;
         let sP_Harga=0, sP_MatiRp=0, sP_MatiKg=0, sP_SusutRp=0, sP_SusutKg=0, sP_PulangRp=0, sP_PulangKg=0;

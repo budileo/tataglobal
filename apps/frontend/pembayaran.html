@@ -550,7 +550,7 @@
            tableHead.innerHTML = `<tr><th class="px-2 py-2 border-r border-slate-100 w-10 text-center text-xs">No</th><th class="px-2 py-2 border-r border-slate-100 w-24 text-xs">Tanggal</th><th class="px-2 py-2 border-r border-slate-100 w-24 text-xs">No Faktur</th><th class="px-2 py-2 border-r border-slate-100 text-xs">Konsumen</th><th class="px-2 py-2 border-r border-slate-100 text-right text-xs">Tagihan Awal</th><th class="px-2 py-2 border-r border-slate-100 text-right bg-rose-50 text-rose-700 text-xs">Ttl Potongan</th><th class="px-2 py-2 border-r border-slate-100 text-right text-xs">Tlh Dibayar</th><th class="px-2 py-2 border-r border-slate-100 text-center text-xs">x Bayar</th><th class="px-2 py-2 border-r border-slate-100 text-right text-xs">Sisa Tagihan</th><th class="px-2 py-2 border-r border-slate-100 text-center text-xs">Status</th><th class="px-2 py-2 text-center no-print text-xs">Aksi</th></tr>`;
            
            const filtered = bons.map((b,i)=>({...b,_idx:i})).filter(b=>{
-             return (b.tanggal>=from && b.tanggal<=to) && (!query || b.id.toLowerCase().includes(query) || b.konsumen.toLowerCase().includes(query));
+             return !b.isVoid && (b.tanggal>=from && b.tanggal<=to) && (!query || b.id.toLowerCase().includes(query) || b.konsumen.toLowerCase().includes(query));
            });
 
            updateSummary(filtered);
@@ -562,7 +562,7 @@
            empty.classList.add('hidden');
 
            tbody.innerHTML = filtered.map((b, i) => {
-             const hist = b.historiBayar || [];
+             const hist = (b.historiBayar || []).filter(h=>!h.isVoid);
              const paid = hist.reduce((s,h)=>s+(h.nominal||0),0);
              const pot = hist.reduce((s,h)=>s+(h.totalPotongan||0),0);
              const sisa = (b.total - pot) - paid;
@@ -590,9 +590,11 @@
            
            let allHistory = [];
            bons.forEach(b => {
+              if(b.isVoid) return;
               let cumulativePaid = 0;
               let cumulativePot = 0;
               (b.historiBayar || []).forEach(h => {
+                 if(h.isVoid) return;
                  cumulativePaid += (h.nominal || 0);
                  cumulativePot += (h.totalPotongan || 0);
                  const sisaSetelahIni = b.total - cumulativePot - cumulativePaid;

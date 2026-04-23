@@ -9,8 +9,9 @@
       tailwind.config = { theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } } }
     </script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
       body { font-family: 'Inter', sans-serif; }
+      .filter-btn.active { background-color: #e11d48; color: #fff; border-color: #e11d48; }
     </style>
   </head>
   <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
@@ -21,14 +22,13 @@
         <h2 id="page-title" class="text-xl font-bold text-slate-900">Void / Pembatalan</h2>
       </div>
       <div class="flex items-center gap-4">
-        <span class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Operasional</span>
-        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">V</div>
+        <span class="text-sm font-semibold text-rose-600 bg-rose-50 px-3 py-1 rounded-full hidden sm:block">⚠ Area Sensitif</span>
+        <div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-700 font-bold">V</div>
       </div>
     </header>
 
     <!-- Sidebar Section -->
     <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
-      
       <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
@@ -38,76 +38,464 @@
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
         </button>
       </div>
-
       <div class="flex md:flex-col md:w-full w-max md:space-y-1">
-        <!-- Dashboard -->
-        <a href="dashboard.html" title="Dashboard" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span>
-        </a>
-        
-        <!-- Bon Penjualan -->
-        <a href="bon.html" title="Bon Penjualan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Bon Penjualan</span>
-        </a>
-
-        <!-- Pembayaran -->
-        <a href="pembayaran.html" title="Pembayaran & Potongan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pembayaran</span>
-        </a>
-
-        <!-- Laporan -->
-        <a href="laporan.html" title="Laporan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Laporan</span>
-        </a>
-
-        <!-- Master Data -->
-        <a href="master.html" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span>
-        </a>
-
-        <!-- Histori Aktivitas -->
-        <a href="histori.html" title="Histori Aktivitas" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Histori Aktivitas</span>
-        </a>
-
-        <!-- Void -->
-        <a href="void.html" title="Void" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Void</span>
-        </a>
-
-        <!-- Pencarian -->
-        <a href="pencarian.html" title="Pencarian" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pencarian</span>
-        </a>
-
-        <!-- Pengaturan -->
-        <a href="setting.html" title="Pengaturan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
-          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pengaturan</span>
+        <a href="dashboard.html" title="Dashboard" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span></a>
+        <a href="bon.html" title="Bon Penjualan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Bon Penjualan</span></a>
+        <a href="pembayaran.html" title="Pembayaran" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pembayaran</span></a>
+        <a href="laporan.html" title="Laporan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Laporan</span></a>
+        <a href="master.html" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span></a>
+        <a href="histori.html" title="Histori" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Histori Aktivitas</span></a>
+        <a href="void.html" title="Void" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Void</span></a>
+        <a href="pencarian.html" title="Pencarian" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pencarian</span></a>
+        <a href="setting.html" title="Pengaturan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pengaturan</span></a>
+      </div>
+      <div class="hidden md:block md:mt-auto w-full">
+        <div class="px-6 py-3 border-t border-slate-800">
+          <p class="text-sm font-semibold text-white sidebar-text">Budi Ariadi</p>
+          <p class="text-[11px] text-slate-500 sidebar-text">TATA KELOLA</p>
+        </div>
+        <a href="index.html" title="Keluar" class="flex items-center md:items-start gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          <span class="sidebar-text">Keluar</span>
         </a>
       </div>
-
-      <!-- Logout -->
-      <a href="index.html" title="Keluar" class="hidden md:flex items-center md:items-start gap-3 px-6 py-4 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
-        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-        <span class="sidebar-text">Keluar</span>
-      </a>
     </nav>
 
     <!-- Main Content -->
-    <main class="p-4 md:p-8 max-w-5xl mx-auto text-center py-20">
-      <h1 class="text-4xl font-black text-slate-800 mb-4">HALAMAN VOID / BATAL</h1>
-      <p class="text-slate-500">Fitur ini sedang dalam tahap pengembangan.</p>
+    <main class="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
+
+      <!-- ==================== -->
+      <!-- SECTION 1: VOID ACTION -->
+      <!-- ==================== -->
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <!-- Tabs -->
+        <div class="flex border-b border-slate-200">
+          <button id="tab-void-bon" class="flex-1 px-6 py-4 text-sm font-bold border-b-2 border-rose-600 text-rose-600 transition-all">VOID BON PENJUALAN</button>
+          <button id="tab-void-bayar" class="flex-1 px-6 py-4 text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-600 transition-all">VOID PEMBAYARAN</button>
+        </div>
+
+        <div class="p-6">
+          <!-- Search BON -->
+          <div class="mb-6">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Cari Berdasarkan No. Bon / Faktur</label>
+            <div class="flex gap-3">
+              <div class="relative flex-1">
+                <svg class="w-5 h-5 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input id="void-search-input" type="text" placeholder="Ketik No. Bon lalu tekan Enter... (contoh: BN-001)" class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 transition-all">
+              </div>
+              <button id="btn-search-void" class="bg-slate-900 hover:bg-rose-600 text-white px-6 py-3 rounded-xl text-sm font-black transition-all shadow-lg active:scale-95 shrink-0">CARI</button>
+            </div>
+          </div>
+
+          <!-- Search Result Area -->
+          <div id="void-result-area" class="hidden">
+            <!-- Filled by JS -->
+          </div>
+
+          <!-- Empty State -->
+          <div id="void-empty-state" class="text-center py-12 text-slate-400">
+            <svg class="w-16 h-16 mx-auto mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <p class="font-bold text-lg mb-1">Masukkan No. Bon untuk Memulai</p>
+            <p class="text-sm">Ketik nomor bon di kolom pencarian di atas, lalu tekan Enter atau klik tombol Cari.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== -->
+      <!-- SECTION 2: RIWAYAT VOID -->
+      <!-- ==================== -->
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-4 bg-slate-50 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-1.5 h-6 bg-rose-500 rounded-full"></div>
+            <h4 class="font-black text-slate-800 uppercase tracking-widest text-xs">Riwayat Data Void</h4>
+          </div>
+          <div class="flex flex-wrap gap-2 items-center">
+            <span class="text-xs font-semibold text-slate-500 mr-1">Filter:</span>
+            <button data-filter="hari-ini" class="filter-btn active text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Hari Ini</button>
+            <button data-filter="kemarin" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Kemarin</button>
+            <button data-filter="minggu-ini" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Minggu Ini</button>
+            <button data-filter="bulan-ini" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Bulan Ini</button>
+            <div class="flex items-center gap-1 ml-1">
+              <input id="voidFilterFrom" type="date" class="border border-slate-200 rounded px-2 py-1 text-xs outline-rose-500">
+              <span class="text-xs text-slate-400">s/d</span>
+              <input id="voidFilterTo" type="date" class="border border-slate-200 rounded px-2 py-1 text-xs outline-rose-500">
+              <button data-filter="range" class="filter-btn text-xs font-semibold px-3 py-1.5 rounded-full border border-slate-200 bg-white text-slate-600">Cari Range</button>
+            </div>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-600">
+            <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+              <tr>
+                <th class="px-3 py-2 text-center text-xs w-10">No</th>
+                <th class="px-3 py-2 text-xs">Waktu Void</th>
+                <th class="px-3 py-2 text-xs">Tipe</th>
+                <th class="px-3 py-2 text-xs">No Faktur</th>
+                <th class="px-3 py-2 text-xs">Konsumen</th>
+                <th class="px-3 py-2 text-xs text-right">Nominal</th>
+                <th class="px-3 py-2 text-xs">Alasan</th>
+              </tr>
+            </thead>
+            <tbody id="void-history-body"></tbody>
+          </table>
+        </div>
+        <div id="void-history-empty" class="hidden p-10 text-center text-slate-400">
+          <p class="font-semibold">Belum ada data void untuk periode ini.</p>
+        </div>
+      </div>
     </main>
 
+    <!-- ==================== -->
+    <!-- MODAL KONFIRMASI VOID -->
+    <!-- ==================== -->
+    <div id="void-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+        <div class="bg-rose-600 px-6 py-4 text-white">
+          <h3 id="modal-title" class="text-lg font-black">Konfirmasi VOID</h3>
+          <p id="modal-subtitle" class="text-sm text-rose-200 mt-1"></p>
+        </div>
+        <div class="p-6 space-y-4">
+          <div id="modal-detail" class="bg-slate-50 rounded-xl p-4 text-sm space-y-2">
+            <!-- Detail filled by JS -->
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Alasan Void <span class="text-rose-500">*</span></label>
+            <textarea id="void-reason" rows="3" placeholder="Tuliskan alasan pembatalan..." class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 transition-all resize-none"></textarea>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 font-semibold">
+            ⚠️ Tindakan ini tidak dapat dibatalkan. Data yang sudah di-VOID akan tercatat di histori audit dan tidak akan muncul lagi di menu BON maupun Pembayaran.
+          </div>
+        </div>
+        <div class="flex gap-3 p-6 pt-0">
+          <button id="btn-cancel-void" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors">Batal</button>
+          <button id="btn-confirm-void" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg">VOID SEKARANG</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    (function(){
+      const STORAGE_KEY = 'polikas_bon_data_v2';
+      const AUDIT_KEY = 'tata_audit_logs';
+      function getAllBons() { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+      function saveAllBons(bons) { localStorage.setItem(STORAGE_KEY, JSON.stringify(bons)); }
+      function getAuditLogs() { return JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]'); }
+      function saveAuditLogs(logs) { localStorage.setItem(AUDIT_KEY, JSON.stringify(logs)); }
+      function addAuditLog(type, targetId, konsumen, nominal, alasan) {
+        const logs = getAuditLogs();
+        logs.unshift({ waktu: new Date().toISOString(), tipe: type, targetId, konsumen, nominal, alasan, user: 'Budi Ariadi' });
+        saveAuditLogs(logs);
+      }
+      const formatRp = (n) => 'Rp ' + (n||0).toLocaleString('id-ID');
+
+      // State
+      let activeTab = 'bon'; // 'bon' or 'bayar'
+      let pendingVoid = null; // { type, bonIdx, payIdx? }
+      let activeFilter = 'hari-ini';
+
+      // Elements
+      const tabBon = document.getElementById('tab-void-bon');
+      const tabBayar = document.getElementById('tab-void-bayar');
+      const searchInput = document.getElementById('void-search-input');
+      const btnSearch = document.getElementById('btn-search-void');
+      const resultArea = document.getElementById('void-result-area');
+      const emptyState = document.getElementById('void-empty-state');
+      const modal = document.getElementById('void-modal');
+
+      // Tab switching
+      function switchTab(tab) {
+        activeTab = tab;
+        if (tab === 'bon') {
+          tabBon.classList.add('border-rose-600','text-rose-600'); tabBon.classList.remove('border-transparent','text-slate-400');
+          tabBayar.classList.remove('border-rose-600','text-rose-600'); tabBayar.classList.add('border-transparent','text-slate-400');
+          searchInput.placeholder = 'Ketik No. Bon lalu tekan Enter... (contoh: BN-001)';
+        } else {
+          tabBayar.classList.add('border-rose-600','text-rose-600'); tabBayar.classList.remove('border-transparent','text-slate-400');
+          tabBon.classList.remove('border-rose-600','text-rose-600'); tabBon.classList.add('border-transparent','text-slate-400');
+          searchInput.placeholder = 'Ketik No. Bon yang pembayarannya ingin di-void...';
+        }
+        resultArea.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        searchInput.value = '';
+      }
+      tabBon.addEventListener('click', () => switchTab('bon'));
+      tabBayar.addEventListener('click', () => switchTab('bayar'));
+
+      // Search
+      function doSearch() {
+        const q = searchInput.value.trim().toUpperCase();
+        if (!q) { alert('Masukkan No. Bon terlebih dahulu.'); return; }
+        const bons = getAllBons();
+        const results = bons.map((b,i)=>({...b,_idx:i})).filter(b => !b.isVoid && b.id.toUpperCase().includes(q));
+        
+        if (results.length === 0) {
+          resultArea.innerHTML = '<div class="text-center py-8 text-slate-400"><p class="font-bold">Tidak ditemukan BON aktif dengan nomor "<span class="text-rose-600">' + q + '</span>"</p><p class="text-xs mt-1">Pastikan nomor bon benar dan belum di-void sebelumnya.</p></div>';
+          resultArea.classList.remove('hidden');
+          emptyState.classList.add('hidden');
+          return;
+        }
+
+        emptyState.classList.add('hidden');
+        resultArea.classList.remove('hidden');
+
+        if (activeTab === 'bon') {
+          renderBonResults(results);
+        } else {
+          renderPaymentResults(results);
+        }
+      }
+
+      btnSearch.addEventListener('click', doSearch);
+      searchInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') doSearch(); });
+
+      // Render BON results for voiding
+      function renderBonResults(bons) {
+        resultArea.innerHTML = bons.map(b => {
+          const hist = b.historiBayar || [];
+          const totalPaid = hist.filter(h=>!h.isVoid).reduce((s,h) => s+(h.nominal||0), 0);
+          const totalPot = hist.filter(h=>!h.isVoid).reduce((s,h) => s+(h.totalPotongan||0), 0);
+          const hasPayments = hist.filter(h=>!h.isVoid).length > 0;
+
+          let statusCls = 'bg-rose-100 text-rose-700', statusTxt = 'Piutang';
+          if (b.status === 'LUNAS') { statusCls='bg-emerald-100 text-emerald-700'; statusTxt='Lunas'; }
+          else if (b.status === 'SEBAGIAN') { statusCls='bg-amber-100 text-amber-700'; statusTxt='Sebagian'; }
+
+          return `<div class="border-2 border-slate-200 rounded-xl p-5 mb-3 hover:border-rose-300 transition-all">
+            <div class="flex flex-wrap justify-between items-start gap-4 mb-4">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-lg font-black text-slate-900">${b.id}</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] uppercase font-black ${statusCls}">${statusTxt}</span>
+                </div>
+                <p class="text-sm text-slate-500"><strong>${b.konsumen}</strong> • ${b.tanggal}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs text-slate-400 font-bold">Total Tagihan</p>
+                <p class="text-xl font-black text-slate-900">${formatRp(b.total)}</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-500 mb-4">
+              <span>Terbayar: <strong class="text-emerald-700">${formatRp(totalPaid)}</strong></span>
+              <span>Potongan: <strong class="text-rose-600">${formatRp(totalPot)}</strong></span>
+              <span>Pembayaran: <strong>${hist.filter(h=>!h.isVoid).length}x</strong></span>
+            </div>
+            ${hasPayments
+              ? `<div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 font-semibold mb-3">
+                  ⚠️ BON ini memiliki ${hist.filter(h=>!h.isVoid).length} transaksi pembayaran aktif. Semua pembayaran akan otomatis di-VOID bersamaan jika Anda me-void BON ini.
+                </div>`
+              : ''}
+            <button class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg text-sm uppercase tracking-wider btn-void-bon" data-idx="${b._idx}">
+              🗑️ VOID BON INI
+            </button>
+          </div>`;
+        }).join('');
+
+        resultArea.querySelectorAll('.btn-void-bon').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.dataset.idx);
+            const bon = getAllBons()[idx];
+            pendingVoid = { type: 'bon', bonIdx: idx };
+            document.getElementById('modal-title').textContent = 'Konfirmasi VOID BON';
+            document.getElementById('modal-subtitle').textContent = 'Anda akan membatalkan BON ' + bon.id;
+            const hist = bon.historiBayar || [];
+            const activePay = hist.filter(h=>!h.isVoid);
+            let detail = `<p><strong>No. Faktur:</strong> ${bon.id}</p>
+              <p><strong>Konsumen:</strong> ${bon.konsumen}</p>
+              <p><strong>Total Tagihan:</strong> ${formatRp(bon.total)}</p>`;
+            if (activePay.length > 0) {
+              detail += `<div class="mt-2 pt-2 border-t border-slate-200 text-rose-700 font-bold">⚠ ${activePay.length} pembayaran aktif juga akan di-VOID otomatis</div>`;
+            }
+            document.getElementById('modal-detail').innerHTML = detail;
+            document.getElementById('void-reason').value = '';
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+          });
+        });
+      }
+
+      // Render Payment results for voiding
+      function renderPaymentResults(bons) {
+        let html = '';
+        bons.forEach(b => {
+          const hist = (b.historiBayar || []).filter(h => !h.isVoid);
+          if (hist.length === 0) {
+            html += `<div class="border border-slate-200 rounded-xl p-5 mb-3 text-center text-slate-400 text-sm">
+              <strong>${b.id}</strong> — Tidak ada pembayaran aktif untuk di-void.
+            </div>`;
+            return;
+          }
+          html += `<div class="border-2 border-slate-200 rounded-xl overflow-hidden mb-3">
+            <div class="bg-slate-50 px-5 py-3 flex items-center justify-between border-b border-slate-200">
+              <div><span class="font-black text-slate-900">${b.id}</span> <span class="text-sm text-slate-500 ml-2">${b.konsumen}</span></div>
+              <span class="text-xs font-bold text-slate-400">${b.tanggal}</span>
+            </div>
+            <div class="divide-y divide-slate-100">
+              ${hist.map((h, hIdx) => {
+                // Find original index in the full historiBayar array
+                const origIdx = (b.historiBayar||[]).indexOf(h);
+                return `<div class="px-5 py-3 flex flex-wrap items-center justify-between gap-3 hover:bg-rose-50 transition-colors">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800">${h.tanggal} • <span class="text-slate-500">${h.waktu||'-'}</span></p>
+                    <p class="text-xs text-slate-500">Kolektor: ${h.kolektor} • ${h.caraBayar}</p>
+                    ${(h.totalPotongan||0) > 0 ? `<p class="text-xs text-rose-500 font-bold mt-1">Potongan: ${formatRp(h.totalPotongan)}</p>` : ''}
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <span class="text-lg font-black text-emerald-700">${formatRp(h.nominal)}</span>
+                    <button class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors shadow btn-void-pay" data-bon-idx="${b._idx}" data-pay-idx="${origIdx}">VOID</button>
+                  </div>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>`;
+        });
+        resultArea.innerHTML = html;
+
+        resultArea.querySelectorAll('.btn-void-pay').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const bonIdx = parseInt(btn.dataset.bonIdx);
+            const payIdx = parseInt(btn.dataset.payIdx);
+            const bon = getAllBons()[bonIdx];
+            const pay = bon.historiBayar[payIdx];
+            pendingVoid = { type: 'bayar', bonIdx, payIdx };
+            document.getElementById('modal-title').textContent = 'Konfirmasi VOID Pembayaran';
+            document.getElementById('modal-subtitle').textContent = 'Anda akan membatalkan 1 transaksi pembayaran dari ' + bon.id;
+            document.getElementById('modal-detail').innerHTML = `
+              <p><strong>No. Faktur BON:</strong> ${bon.id}</p>
+              <p><strong>Tanggal Bayar:</strong> ${pay.tanggal}</p>
+              <p><strong>Kolektor:</strong> ${pay.kolektor}</p>
+              <p><strong>Nominal Bayar:</strong> ${formatRp(pay.nominal)}</p>
+              <p><strong>Total Potongan:</strong> ${formatRp(pay.totalPotongan)}</p>
+            `;
+            document.getElementById('void-reason').value = '';
+            modal.classList.remove('hidden'); modal.classList.add('flex');
+          });
+        });
+      }
+
+      // Modal handlers
+      document.getElementById('btn-cancel-void').addEventListener('click', () => {
+        modal.classList.add('hidden'); modal.classList.remove('flex');
+        pendingVoid = null;
+      });
+
+      document.getElementById('btn-confirm-void').addEventListener('click', () => {
+        const reason = document.getElementById('void-reason').value.trim();
+        if (!reason) { alert('Harap isi alasan void.'); return; }
+        if (!pendingVoid) return;
+
+        const bons = getAllBons();
+
+        if (pendingVoid.type === 'bon') {
+          const bon = bons[pendingVoid.bonIdx];
+          // Void all active payments first
+          (bon.historiBayar || []).forEach(h => {
+            if (!h.isVoid) {
+              h.isVoid = true;
+              h.voidAt = new Date().toISOString();
+              h.voidReason = reason;
+              addAuditLog('VOID BAYAR', bon.id, bon.konsumen, h.nominal, reason + ' (auto, bon di-void)');
+            }
+          });
+          // Void the BON
+          bon.isVoid = true;
+          bon.voidAt = new Date().toISOString();
+          bon.voidReason = reason;
+          bon.status = 'VOID';
+          addAuditLog('VOID BON', bon.id, bon.konsumen, bon.total, reason);
+
+        } else if (pendingVoid.type === 'bayar') {
+          const bon = bons[pendingVoid.bonIdx];
+          const pay = bon.historiBayar[pendingVoid.payIdx];
+          pay.isVoid = true;
+          pay.voidAt = new Date().toISOString();
+          pay.voidReason = reason;
+          addAuditLog('VOID BAYAR', bon.id, bon.konsumen, pay.nominal, reason);
+
+          // Auto-sync BON status
+          const activeHist = (bon.historiBayar||[]).filter(h=>!h.isVoid);
+          let sumPaid = 0, sumPot = 0;
+          activeHist.forEach(h => { sumPaid += (h.nominal||0); sumPot += (h.totalPotongan||0); });
+          const tagihanAkhir = bon.total - sumPot;
+          const sisa = tagihanAkhir - sumPaid;
+          if (sisa <= 0) bon.status = 'LUNAS';
+          else if (sumPaid > 0) bon.status = 'SEBAGIAN';
+          else bon.status = 'PIUTANG';
+        }
+
+        saveAllBons(bons);
+        modal.classList.add('hidden'); modal.classList.remove('flex');
+        pendingVoid = null;
+
+        alert('✅ VOID berhasil. Data telah dibatalkan dan dicatat ke histori audit.');
+        // Re-search to refresh results
+        doSearch();
+        renderVoidHistory();
+      });
+
+      // ==================
+      // VOID HISTORY TABLE
+      // ==================
+      function getFilterDateRange() {
+        const now = new Date(), ts = now.toISOString().split('T')[0];
+        let f, t;
+        switch(activeFilter) {
+          case 'hari-ini': f = t = ts; break;
+          case 'kemarin': { const y = new Date(now); y.setDate(y.getDate()-1); f = t = y.toISOString().split('T')[0]; break; }
+          case 'minggu-ini': { const d=now.getDay(), diff=now.getDate()-d+(d===0?-6:1), m=new Date(now); m.setDate(diff); f=m.toISOString().split('T')[0]; t=ts; break; }
+          case 'bulan-ini': f = ts.substring(0,8) + '01'; t = ts; break;
+          case 'range': f = document.getElementById('voidFilterFrom').value || ts; t = document.getElementById('voidFilterTo').value || ts; break;
+          default: f = t = ts;
+        }
+        return { from:f, to:t };
+      }
+
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeFilter = btn.dataset.filter;
+          renderVoidHistory();
+        });
+      });
+
+      function renderVoidHistory() {
+        const logs = getAuditLogs();
+        const { from, to } = getFilterDateRange();
+        const tbody = document.getElementById('void-history-body');
+        const emptyH = document.getElementById('void-history-empty');
+
+        const filtered = logs.filter(l => {
+          const d = l.waktu.split('T')[0];
+          return d >= from && d <= to;
+        });
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = '';
+          emptyH.classList.remove('hidden');
+          return;
+        }
+        emptyH.classList.add('hidden');
+
+        tbody.innerHTML = filtered.map((l, i) => {
+          const dt = new Date(l.waktu);
+          const tipeCls = l.tipe === 'VOID BON' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-800';
+          return `<tr class="border-b border-slate-100 hover:bg-slate-50 text-xs">
+            <td class="px-3 py-2 text-center font-medium">${i+1}</td>
+            <td class="px-3 py-2 whitespace-nowrap">${dt.toLocaleDateString('id-ID')}<br><span class="text-[10px] text-slate-400">${dt.toLocaleTimeString('id-ID')}</span></td>
+            <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${tipeCls}">${l.tipe}</span></td>
+            <td class="px-3 py-2 font-bold text-slate-700">${l.targetId}</td>
+            <td class="px-3 py-2">${l.konsumen||'-'}</td>
+            <td class="px-3 py-2 text-right font-bold">${formatRp(l.nominal)}</td>
+            <td class="px-3 py-2 text-slate-500 max-w-[200px] truncate" title="${l.alasan}">${l.alasan}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      // Init
+      renderVoidHistory();
+    })();
+    </script>
     <script src="app.js"></script>
   </body>
 </html>

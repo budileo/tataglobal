@@ -367,7 +367,7 @@
           
           document.getElementById('display-range').textContent = `${rangeMode.toUpperCase()}: ${fromDate} s/d ${toDate}`;
 
-          const filtered = bons.filter(b => b.tanggal >= fromDate && b.tanggal <= toDate);
+          const filtered = bons.filter(b => !b.isVoid && b.tanggal >= fromDate && b.tanggal <= toDate);
           console.log("Filtered count:", filtered.length);
 
           // STATS INITIALIZATION
@@ -398,7 +398,7 @@
                 ukuranMap[uk] = (ukuranMap[uk] || 0) + n;
              });
 
-             const hist = b.historiBayar || [];
+             const hist = (b.historiBayar || []).filter(h=>!h.isVoid);
              let paidForThisBon = 0;
              let potForThisBon = 0;
 
