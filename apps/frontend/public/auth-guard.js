@@ -34,7 +34,7 @@ const AuthGuard = (function() {
         id: 'dept-global-unggas',
         name: 'Global Unggas',
         tokenBalance: 100,
-        inviteCode: 'GU-' + _id().toUpperCase(),
+        inviteCode: 'GU-GLOBALUNGGAS',
         createdAt: new Date().toISOString()
       }]);
     }
