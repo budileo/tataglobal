@@ -43,32 +43,91 @@
 
     <script src="auth-guard.js"></script>
     <script src="activity-logger.js"></script>
-    <script>
-      // If already logged in, redirect
-      if (AuthGuard.getCurrentUser()) {
-        window.location.href = 'dashboard.html';
-      }
+    <script type="module">
+      import { supabase } from './supabaseClient.js';
+
+      // Cek Session Supabase, BUKAN HANYA local mock data
+      supabase.auth.getSession().then(({ data: { session } }) => {
+         if (session) {
+            // Jika ada session cloud, boleh masuk
+            if (!AuthGuard.getCurrentUser()) {
+               AuthGuard.setCurrentUser({
+                  id: session.user.id,
+                  name: session.user.email.split('@')[0],
+                  email: session.user.email,
+                  role: 'OWNER',
+                  status: 'active',
+                  departmentId: 'dept-global-unggas'
+               });
+            }
+            window.location.href = 'dashboard.html';
+         } else {
+            // Jika tidak ada session cloud, HAPUS session lokal agar form login muncul
+            localStorage.removeItem('tata_current_user');
+         }
+      });
 
       document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        const username = document.getElementById('usernameInput').value.trim();
+        let username = document.getElementById('usernameInput').value.trim();
         const password = document.getElementById('passwordInput').value;
         const errorBox = document.getElementById('errorMsg');
         const btn = document.getElementById('btnLogin');
 
         btn.disabled = true; btn.textContent = 'Memproses...';
 
-        const result = await AuthGuard.authenticate(username, password);
+        // Mapping legacy username ke email untuk Supabase Auth
+        if(username === 'budileo') username = 'budileo@gmail.com';
+        if(!username.includes('@')) username = username + '@gmail.com';
 
-        if (result.success) {
-          errorBox.classList.add('hidden');
-          if (typeof ActivityLogger !== 'undefined') ActivityLogger.log({ action: 'LOGIN', entityType: 'USER', entityId: result.user.id, status: 'success', newData: { name: result.user.name, role: result.user.role }, message: 'Login berhasil: ' + result.user.name });
-          window.location.href = 'dashboard.html';
-        } else {
-          errorBox.textContent = result.message;
-          errorBox.classList.remove('hidden');
-          if (typeof ActivityLogger !== 'undefined') ActivityLogger.log({ action: 'LOGIN', entityType: 'USER', entityId: username, status: 'failed', message: result.message, isCritical: true });
-          btn.disabled = false; btn.textContent = 'Masuk Sekarang';
+        // 1. Coba login via Supabase
+        let { data, error } = await supabase.auth.signInWithPassword({
+           email: username,
+           password: password
+        });
+
+        if (error) {
+           // Langsung coba buatkan otomatis tanpa mengecek pesan error
+           const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+              email: username,
+              password: password
+           });
+           
+           if (!signUpErr && signUpData && signUpData.session) {
+               // Berhasil auto-signup dan langsung dapat session
+               data = signUpData;
+               error = null;
+           } else if (!signUpErr && (!signUpData || !signUpData.session)) {
+               errorBox.textContent = "Auto-Signup tertahan. Harap matikan 'Confirm Email' di menu Providers > Email di Supabase!";
+               errorBox.classList.remove('hidden');
+               btn.disabled = false; btn.textContent = 'Masuk Sekarang';
+               return;
+           } else {
+               // Jika signup juga error (misal akun sudah ada, berarti password memang salah)
+               errorBox.textContent = "Login Gagal: Username atau Password salah.";
+               errorBox.classList.remove('hidden');
+               if (typeof ActivityLogger !== 'undefined') ActivityLogger.log({ action: 'LOGIN', entityType: 'USER', entityId: username, status: 'failed', message: "Salah password", isCritical: true });
+               btn.disabled = false; btn.textContent = 'Masuk Sekarang';
+               return;
+           }
+        }
+
+        // 2. Jika Supabase Login berhasil, sinkronkan ke local AuthGuard
+        if (data && data.user) {
+           errorBox.classList.add('hidden');
+           
+           // Simpan local session untuk kompatibilitas dengan halaman lain yg belum migrasi auth
+           AuthGuard.setCurrentUser({
+              id: data.user.id,
+              name: data.user.email.split('@')[0],
+              email: data.user.email,
+              role: 'OWNER',
+              status: 'active',
+              departmentId: 'dept-global-unggas'
+           });
+
+           if (typeof ActivityLogger !== 'undefined') ActivityLogger.log({ action: 'LOGIN', entityType: 'USER', entityId: data.user.id, status: 'success', newData: { name: username, role: 'OWNER' }, message: 'Login Cloud berhasil: ' + username });
+           window.location.href = 'dashboard.html';
         }
       });
     </script>

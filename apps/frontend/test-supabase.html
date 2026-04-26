@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase SaaS Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-6">
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div class="p-8">
+            <h2 class="text-2xl font-black text-slate-900 mb-6 text-center">Supabase SaaS Setup</h2>
+
+            <!-- Area Notifikasi -->
+            <div id="notification" class="hidden mb-4 p-3 rounded-lg text-sm font-semibold transition-all"></div>
+
+            <!-- Area Auth (Login/Register) -->
+            <div id="auth-section">
+                <p class="text-sm text-slate-500 mb-4 text-center">Silakan login untuk mengakses data Anda.</p>
+                <div class="space-y-4">
+                    <input type="email" id="email" placeholder="Email Anda" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                    <input type="password" id="password" placeholder="Password" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+                    <div class="flex gap-2">
+                        <button id="btn-login" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors">Login</button>
+                        <button id="btn-register" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition-colors">Daftar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Area Data (Hanya tampil jika login) -->
+            <div id="data-section" class="hidden space-y-6">
+                <div class="flex items-center justify-between bg-indigo-50 p-4 rounded-xl">
+                    <div class="text-sm">
+                        <span class="block text-indigo-900 font-bold">Halo,</span>
+                        <span id="user-email" class="text-indigo-600 truncate max-w-[200px] block"></span>
+                    </div>
+                    <button id="btn-logout" class="text-xs font-bold bg-white text-rose-600 px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 transition-colors">Logout</button>
+                </div>
+
+                <div class="border-t border-slate-100 pt-6">
+                    <h3 class="font-bold text-slate-800 mb-3">Tambah Data (Insert)</h3>
+                    <div class="flex gap-2">
+                        <input type="text" id="item-name" placeholder="Nama Konsumen/Bon..." class="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 text-sm">
+                        <button id="btn-add" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl transition-colors text-sm">Simpan</button>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-6">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-bold text-slate-800">Data Anda (Read)</h3>
+                        <button id="btn-refresh" class="text-xs text-indigo-600 font-bold hover:underline">Refresh</button>
+                    </div>
+                    <ul id="data-list" class="space-y-2 max-h-48 overflow-y-auto pr-2">
+                        <!-- Data akan muncul di sini -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Integrasi Script Supabase sebagai module -->
+    <script type="module">
+        import { supabase } from './supabaseClient.js';
+
+        // --- UI Utilities ---
+        const ui = {
+            authSec: document.getElementById('auth-section'),
+            dataSec: document.getElementById('data-section'),
+            emailDisplay: document.getElementById('user-email'),
+            list: document.getElementById('data-list'),
+            notif: document.getElementById('notification'),
+            
+            showNotif(msg, type = 'success') {
+                this.notif.textContent = msg;
+                this.notif.className = `mb-4 p-3 rounded-lg text-sm font-semibold transition-all ${
+                    type === 'success' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                }`;
+                setTimeout(() => { this.notif.classList.add('hidden'); }, 4000);
+            },
+            
+            toggleView(user) {
+                if(user) {
+                    this.authSec.classList.add('hidden');
+                    this.dataSec.classList.remove('hidden');
+                    this.emailDisplay.textContent = user.email;
+                    loadData();
+                } else {
+                    this.authSec.classList.remove('hidden');
+                    this.dataSec.classList.add('hidden');
+                }
+            }
+        };
+
+        // --- Auth Setup ---
+        // Cek session awal
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            ui.toggleView(session?.user);
+        });
+
+        // Listen perubahan auth
+        supabase.auth.onAuthStateChange((_event, session) => {
+            ui.toggleView(session?.user);
+        });
+
+        document.getElementById('btn-login').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            if(!email || !password) return ui.showNotif('Isi email dan password', 'error');
+
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) ui.showNotif(error.message, 'error');
+            else ui.showNotif('Login berhasil!');
+        });
+
+        document.getElementById('btn-register').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            if(!email || !password) return ui.showNotif('Isi email dan password', 'error');
+
+            const { error } = await supabase.auth.signUp({ email, password });
+            if (error) ui.showNotif(error.message, 'error');
+            else ui.showNotif('Pendaftaran berhasil! Silakan cek email jika butuh konfirmasi.', 'success');
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            ui.showNotif('Berhasil logout');
+        });
+
+        // --- Database Operations ---
+        // 1. Insert Data (User_id otomatis ditangani oleh Supabase secara implisit via RLS, atau kita pass)
+        document.getElementById('btn-add').addEventListener('click', async () => {
+            const name = document.getElementById('item-name').value;
+            if(!name) return;
+
+            // Kita harus mengambil user id aktif untuk dimasukkan ke tabel jika tidak di-set via trigger
+            const { data: { user } } = await supabase.auth.getUser();
+
+            // Insert request
+            const { data, error } = await supabase
+                .from('demo_table')
+                .insert([
+                    { name: name, user_id: user.id }
+                ])
+                .select(); // Minta kembalian data yang di-insert
+
+            if (error) {
+                ui.showNotif(`Gagal simpan: ${error.message}`, 'error');
+                console.error(error);
+            } else {
+                ui.showNotif('Data berhasil disimpan!');
+                document.getElementById('item-name').value = '';
+                loadData(); // refresh list
+            }
+        });
+
+        // 2. Read Data
+        async function loadData() {
+            ui.list.innerHTML = '<li class="text-sm text-slate-400">Memuat data...</li>';
+            
+            // Mengambil data. Karena RLS aktif, user HANYA menerima datanya sendiri.
+            const { data, error } = await supabase
+                .from('demo_table')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                ui.list.innerHTML = `<li class="text-xs text-rose-500">Error: ${error.message}</li>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                ui.list.innerHTML = '<li class="text-xs text-slate-500">Belum ada data.</li>';
+                return;
+            }
+
+            ui.list.innerHTML = data.map(item => `
+                <li class="bg-white border border-slate-100 p-3 rounded-lg flex justify-between items-center shadow-sm">
+                    <span class="font-semibold text-sm truncate">${item.name}</span>
+                    <button onclick="deleteData('${item.id}')" class="text-xs text-rose-500 hover:underline">Hapus</button>
+                </li>
+            `).join('');
+        }
+        
+        document.getElementById('btn-refresh').addEventListener('click', loadData);
+
+        // 3. Delete Data (Dibuat global agar bisa dipanggil onclick dari HTML)
+        window.deleteData = async (id) => {
+            const { error } = await supabase
+                .from('demo_table')
+                .delete()
+                .eq('id', id);
+
+            if(error) ui.showNotif(`Gagal hapus: ${error.message}`, 'error');
+            else {
+                ui.showNotif('Berhasil dihapus');
+                loadData();
+            }
+        };
+
+    </script>
+</body>
+</html>

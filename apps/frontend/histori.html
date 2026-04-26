@@ -152,6 +152,14 @@
       </div>
     </div>
 
+    <script type="module">
+       import { supabase } from './supabaseClient.js';
+       if (typeof ActivityLogger !== 'undefined') {
+          ActivityLogger.fetchCloudLogs().then(() => {
+             if (window.renderLogsGlobal) window.renderLogsGlobal();
+          });
+       }
+    </script>
     <script src="activity-logger.js"></script>
     <script>
     (function() {
@@ -256,6 +264,8 @@
           });
         });
       }
+      
+      window.renderLogsGlobal = renderLogs;
 
       function showDetailModal(l) {
         const modal = document.getElementById('detail-modal');

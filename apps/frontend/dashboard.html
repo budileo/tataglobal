@@ -39,6 +39,8 @@
       ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="auth-guard.js"></script>
+    <script>if(typeof AuthGuard!=='undefined'){var _u=AuthGuard.getCurrentUser();if(!_u||_u.status!=='active'){window.location.replace('index.html');document.write('');}}</script>
   </head>
   <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
     

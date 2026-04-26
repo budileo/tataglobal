@@ -88,6 +88,15 @@ const AuthGuard = (function() {
 
   function logout() {
     localStorage.removeItem(KEYS.currentUser);
+    // Hapus juga session token Supabase (biasanya berawalan sb- dan berakhiran -auth-token)
+    const keysToRemove = [];
+    for(let i=0; i<localStorage.length; i++) {
+        let key = localStorage.key(i);
+        if(key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+            keysToRemove.push(key);
+        }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
     window.location.href = 'index.html';
   }
 

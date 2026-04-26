@@ -33,6 +33,8 @@
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       }
     </style>
+    <script src="auth-guard.js"></script>
+    <script>if(typeof AuthGuard!=='undefined'){var _u=AuthGuard.getCurrentUser();if(!_u||_u.status!=='active'){window.location.replace('index.html');document.write('');}}</script>
   </head>
   <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 print:pl-0 print:pb-0 print:bg-white transition-all duration-300">
     
@@ -336,6 +338,100 @@
       </div>
     </main>
 
+    <script type="module">
+      import { supabase } from './supabaseClient.js';
+      
+      window.SupabaseSync = {
+         async fetchPembayaran() {
+            try {
+               const { data: payDb, error } = await supabase.from('pembayaran').select('*, bons(no_faktur)').order('created_at', {ascending: true});
+               if (error) throw error;
+               if (payDb) {
+                  let localBons = JSON.parse(localStorage.getItem('polikas_bon_data_v2') || '[]');
+                  
+                  // Reset historiBayar lokal terlebih dahulu agar tidak dobel
+                  localBons.forEach(b => { if(b._dbId) b.historiBayar = []; });
+
+                  payDb.forEach(dbPay => {
+                     // Cari bon yang sesuai
+                     let bonIdx = localBons.findIndex(b => b._dbId === dbPay.bon_id || (dbPay.bons && b.id === dbPay.bons.no_faktur));
+                     if(bonIdx >= 0) {
+                        if(!localBons[bonIdx].historiBayar) localBons[bonIdx].historiBayar = [];
+                        
+                        // Cek apakah sudah ada (hindari duplikat)
+                        let existingPayIdx = localBons[bonIdx].historiBayar.findIndex(p => p._dbId === dbPay.id);
+                        
+                        const mappedPay = {
+                           _dbId: dbPay.id,
+                           id: 'PY-CLOUD', // marker
+                           tanggal: dbPay.tanggal,
+                           kolektor: dbPay.kolektor || '',
+                           kasir: 'Budi Ariadi', // auto
+                           caraBayar: dbPay.cara_bayar || '',
+                           waktu: dbPay.waktu || '',
+                           nominal: Number(dbPay.nominal),
+                           potongan: dbPay.potongan || { harga:0, matiKg:0, matiRp:0, susutKg:0, susutRp:0, pulangKg:0, pulangRp:0 },
+                           totalPotongan: Number(dbPay.total_potongan),
+                           isVoid: dbPay.is_void
+                        };
+
+                        if(existingPayIdx >= 0) {
+                           localBons[bonIdx].historiBayar[existingPayIdx] = mappedPay;
+                        } else {
+                           localBons[bonIdx].historiBayar.push(mappedPay);
+                        }
+                     }
+                  });
+                  localStorage.setItem('polikas_bon_data_v2', JSON.stringify(localBons));
+                  if(typeof renderTable === 'function') renderTable();
+               }
+            } catch (e) { console.error("Sync Pembayaran Error:", e); }
+         },
+
+         async pushPembayaran(bon, payEvent, isDelete = false) {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            // Pastikan bon punya UUID dari Supabase
+            let bonUuid = bon._dbId;
+            if(!bonUuid) {
+               const { data: bData } = await supabase.from('bons').select('id').eq('no_faktur', bon.id).single();
+               if(bData) bonUuid = bData.id;
+               else return; // Bon tidak ada di DB, skip sync pembayaran
+            }
+
+            try {
+               if (isDelete) {
+                  await supabase.from('pembayaran').delete().eq('id', payEvent._dbId);
+               } else {
+                  const payload = {
+                     id: payEvent._dbId,
+                     user_id: user.id,
+                     bon_id: bonUuid,
+                     nominal: payEvent.nominal,
+                     total_potongan: payEvent.totalPotongan,
+                     cara_bayar: payEvent.caraBayar,
+                     tanggal: payEvent.tanggal,
+                     kolektor: payEvent.kolektor,
+                     waktu: payEvent.waktu,
+                     potongan: payEvent.potongan,
+                     is_void: payEvent.isVoid || false
+                  };
+                  
+                  const { data: existing } = await supabase.from('pembayaran').select('id').eq('id', payEvent._dbId);
+                  if (existing && existing.length > 0) {
+                     await supabase.from('pembayaran').update(payload).eq('id', payEvent._dbId);
+                  } else {
+                     await supabase.from('pembayaran').insert([payload]);
+                  }
+                  
+                  // Otomatis update status bon di tabel bons
+                  await supabase.from('bons').update({ status: bon.status }).eq('id', bonUuid);
+               }
+            } catch (e) { console.error("Push Pembayaran Error:", e); }
+         }
+      };
+    </script>
     <!-- App Logic -->
     <script>
     (function(){
@@ -743,6 +839,7 @@
          // Buat object Payment Event
          const payEvent = {
            id: 'PY-' + Date.now(),
+           _dbId: crypto.randomUUID(),
            tanggal: tglBayar,
            kolektor: kol,
            kasir: 'Budi Ariadi', // Hardcoded requirement
@@ -767,8 +864,12 @@
          // Token Guard: PAYMENT
          if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('create','Pembayaran '+targetBon.id)) return;
          saveAllBons(bons);
+         
+         // Trigger Sync ke Cloud
+         if(window.SupabaseSync) window.SupabaseSync.pushPembayaran(targetBon, payEvent);
+         
          // Audit Log: PAYMENT
-         if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'PAYMENT',entityType:'PEMBAYARAN',entityId:targetBon.id,newData:{nominal:newEntry.nominal,totalPotongan:newEntry.totalPotongan,kolektor:newEntry.kolektor,caraBayar:newEntry.caraBayar,statusBon:targetBon.status},isCritical:targetBon.status==='LUNAS',message:'Pembayaran '+targetBon.id+' sebesar Rp '+(newEntry.nominal||0).toLocaleString('id-ID')+' → Status: '+targetBon.status});
+         if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'PAYMENT',entityType:'PEMBAYARAN',entityId:targetBon.id,newData:{nominal:payEvent.nominal,totalPotongan:payEvent.totalPotongan,kolektor:payEvent.kolektor,caraBayar:payEvent.caraBayar,statusBon:targetBon.status},isCritical:targetBon.status==='LUNAS',message:'Pembayaran '+targetBon.id+' sebesar Rp '+(payEvent.nominal||0).toLocaleString('id-ID')+' → Status: '+targetBon.status});
          
          alert('Pembayaran berhasil disimpan!');
          showListView();
@@ -776,6 +877,8 @@
 
       // Init
       showListView();
+      
+      if(window.SupabaseSync) window.SupabaseSync.fetchPembayaran();
     })();
      </script>
      <script src="auth-guard.js"></script>

@@ -35,6 +35,8 @@
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       }
     </style>
+    <script src="auth-guard.js"></script>
+    <script>if(typeof AuthGuard!=='undefined'){var _u=AuthGuard.getCurrentUser();if(!_u||_u.status!=='active'){window.location.replace('index.html');document.write('');}}</script>
   </head>
   <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
     
@@ -326,6 +328,85 @@
     <!-- ============================================== -->
     <!-- JAVASCRIPT ENGINE                              -->
     <!-- ============================================== -->
+    <script type="module">
+      import { supabase } from './supabaseClient.js';
+      
+      window.SupabaseSync = {
+         async fetchBons() {
+            try {
+               const { data: bonsDb, error } = await supabase.from('bons').select('*').order('created_at', {ascending: false});
+               if (error) throw error;
+               if (bonsDb) {
+                  // Fetch pembayaran juga agar komplit (opsional, karena nanti diload di pembayaran.html)
+                  // Untuk kesederhanaan, kita hanya sinkronisasikan yang ada di DB ke memori lokal
+                  let localBons = JSON.parse(localStorage.getItem('polikas_bon_data_v2') || '[]');
+                  
+                  // Update localBons dengan data dari cloud
+                  bonsDb.forEach(dbBon => {
+                     let existingIdx = localBons.findIndex(b => b._dbId === dbBon.id || b.id === dbBon.no_faktur);
+                     const mapped = {
+                        _dbId: dbBon.id,
+                        id: dbBon.no_faktur,
+                        tanggal: dbBon.tanggal,
+                        konsumen: dbBon.konsumen,
+                        marketing: dbBon.marketing || '',
+                        staf: dbBon.staf || '',
+                        total: Number(dbBon.total),
+                        status: dbBon.status,
+                        isVoid: dbBon.is_void,
+                        keterangan: dbBon.keterangan || '',
+                        items: dbBon.items || [],
+                        historiBayar: [] // akan diisi oleh sync pembayaran nanti
+                     };
+                     
+                     if(existingIdx >= 0) {
+                        // Gabungkan dengan historiBayar lokal yang belum sempat ter-sync (hybrid merge)
+                        mapped.historiBayar = localBons[existingIdx].historiBayar || [];
+                        localBons[existingIdx] = mapped;
+                     } else {
+                        localBons.push(mapped);
+                     }
+                  });
+                  localStorage.setItem('polikas_bon_data_v2', JSON.stringify(localBons));
+                  if(typeof renderTable === 'function') renderTable();
+               }
+            } catch (e) { console.error("Sync Bons Error:", e); }
+         },
+
+         async pushBon(bon, isDelete = false) {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            try {
+               if (isDelete) {
+                  await supabase.from('bons').delete().eq('id', bon._dbId);
+               } else {
+                  const payload = {
+                     id: bon._dbId,
+                     user_id: user.id,
+                     no_faktur: bon.id,
+                     konsumen: bon.konsumen,
+                     marketing: bon.marketing || '',
+                     staf: bon.staf || '',
+                     total: bon.total,
+                     tanggal: bon.tanggal,
+                     status: bon.status,
+                     is_void: bon.isVoid || false,
+                     keterangan: bon.keterangan || '',
+                     items: bon.items || []
+                  };
+                  
+                  const { data: existing } = await supabase.from('bons').select('id').eq('id', bon._dbId);
+                  if (existing && existing.length > 0) {
+                     await supabase.from('bons').update(payload).eq('id', bon._dbId);
+                  } else {
+                     await supabase.from('bons').insert([payload]);
+                  }
+               }
+            } catch (e) { console.error("Push Bon Error:", e); }
+         }
+      };
+    </script>
     <script>
     (function() {
       const STORAGE_KEY = 'polikas_bon_data_v2';
@@ -744,15 +825,19 @@
 
           // Token Guard: UPDATE
           if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('update','Edit BON '+existing.id)) return;
-          saveAllBons(bons);document.getElementById('form-no-bon').readOnly=false;
+          saveAllBons(bons);
+          if(window.SupabaseSync) window.SupabaseSync.pushBon(existing); // Sync ke Cloud
+          
+          document.getElementById('form-no-bon').readOnly=false;
           // Audit Log: UPDATE
           if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'BON',entityId:existing.id,oldData:{total:oldBonSnapshot.total,konsumen:oldBonSnapshot.konsumen,status:oldBonSnapshot.status,tanggal:oldBonSnapshot.tanggal},newData:{total:existing.total,konsumen:existing.konsumen,status:existing.status,tanggal:existing.tanggal},isCritical:ActivityLogger.isCriticalChange(oldBonSnapshot,existing),message:'Update BON '+existing.id+' oleh user'});
         }else{
-          const newBon = {id:nb,tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,status:'PIUTANG',keterangan:kt,items};
+          const newBon = {id:nb, _dbId: crypto.randomUUID(), tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,status:'PIUTANG',keterangan:kt,items};
           // Token Guard: CREATE
           if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('create','Buat BON '+nb)) return;
           bons.push(newBon);
           saveAllBons(bons);
+          if(window.SupabaseSync) window.SupabaseSync.pushBon(newBon); // Sync ke Cloud
           // Audit Log: CREATE
           if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'CREATE',entityType:'BON',entityId:nb,newData:{total,konsumen:ks,tanggal:tgl,staf:st,marketing:mk},message:'Buat BON baru '+nb+' untuk '+ks});
         }
@@ -761,6 +846,9 @@
       });
 
       showListView();
+      
+      // Jalankan auto-sync awal
+      if(window.SupabaseSync) window.SupabaseSync.fetchBons();
     })();
     </script>
     <script src="auth-guard.js"></script>

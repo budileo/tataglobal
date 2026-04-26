@@ -25,6 +25,62 @@ const ActivityLogger = (function() {
     localStorage.setItem(LOG_KEY, JSON.stringify(logs));
   }
 
+  async function fetchCloudLogs() {
+    if (!window.supabaseClient) return;
+    try {
+       const { data: { user } } = await window.supabaseClient.auth.getUser();
+       if (!user) return;
+       
+       const { data: actLogs } = await window.supabaseClient.from('activity_logs').select('*').order('created_at', {ascending: false}).limit(500);
+       const { data: audLogs } = await window.supabaseClient.from('audit_logs').select('*').order('created_at', {ascending: false}).limit(500);
+       
+       let localLogs = _getAll();
+       const existingIds = new Set(localLogs.map(l => l.id));
+       
+       let hasNew = false;
+       if (actLogs) {
+          actLogs.forEach(l => {
+             if(existingIds.has(l.id)) return;
+             localLogs.push({
+                id: l.id,
+                userId: 'cloud',
+                userName: 'System (Cloud)',
+                action: l.action,
+                entityType: l.entity_type,
+                entityId: l.entity_id,
+                message: l.message,
+                isCritical: false,
+                createdAt: l.created_at
+             });
+             hasNew = true;
+          });
+       }
+       if (audLogs) {
+          audLogs.forEach(l => {
+             if(existingIds.has(l.id)) return;
+             localLogs.push({
+                id: l.id,
+                userId: 'cloud',
+                userName: 'System (Cloud)',
+                action: l.action,
+                entityType: l.entity_name,
+                entityId: l.entity_id,
+                message: l.reason,
+                isCritical: true,
+                createdAt: l.created_at
+             });
+             hasNew = true;
+          });
+       }
+       
+       if (hasNew) {
+          localLogs.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+          if (localLogs.length > 2000) localLogs.length = 2000;
+          _save(localLogs);
+       }
+    } catch(e) { console.error("Sync Logs Error:", e); }
+  }
+
   /**
    * Catat aktivitas ke audit log.
    * @param {Object} opts
@@ -56,9 +112,40 @@ const ActivityLogger = (function() {
       createdAt: new Date().toISOString()
     };
     logs.unshift(entry); // newest first
-    // Keep max 2000 entries to prevent localStorage bloat
     if (logs.length > 2000) logs.length = 2000;
     _save(logs);
+    
+    // Background push to Supabase
+    if (window.supabaseClient) {
+       window.supabaseClient.auth.getUser().then(({ data: { user } }) => {
+          if (!user) return;
+          if (opts.isCritical) {
+             let amount = 0;
+             if(opts.newData && opts.newData.nominal) amount = opts.newData.nominal;
+             if(opts.newData && opts.newData.total) amount = opts.newData.total;
+             
+             window.supabaseClient.from('audit_logs').insert([{
+                id: entry.id.length === 36 ? entry.id : undefined, // skip local id if not uuid format to let db gen it
+                user_id: user.id,
+                action: entry.action,
+                entity_id: entry.entityId,
+                entity_name: entry.entityType,
+                amount: amount,
+                reason: entry.message || ''
+             }]).catch(console.error);
+          } else {
+             window.supabaseClient.from('activity_logs').insert([{
+                id: entry.id.length === 36 ? entry.id : undefined,
+                user_id: user.id,
+                action: entry.action,
+                entity_type: entry.entityType,
+                entity_id: entry.entityId,
+                message: entry.message || ''
+             }]).catch(console.error);
+          }
+       }).catch(console.error);
+    }
+    
     return entry;
   }
 
@@ -128,6 +215,7 @@ const ActivityLogger = (function() {
     });
     _save(newLogs);
   }
-
-  return { log, query, isCriticalChange, migrateOldLogs };
+  
+  // Expose fetchCloudLogs too
+  return { log, query, isCriticalChange, migrateOldLogs, fetchCloudLogs };
 })();

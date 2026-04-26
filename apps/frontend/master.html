@@ -252,6 +252,57 @@
        </div>
     </div>
 
+    <script type="module">
+       import { supabase } from './supabaseClient.js';
+       
+       window.SupabaseSync = {
+          async fetchMaster(type) {
+             const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional' };
+             const tableName = tableMap[type];
+             
+             try {
+                const { data, error } = await supabase.from(tableName).select('*').order('created_at', {ascending: false});
+                if (!error && data) {
+                   const mapped = data.map(d => ({
+                      id: d.id,
+                      nama: d.nama,
+                      telp: d.telepon || '',
+                      wa: d.telepon || '',
+                      alamat: d.alamat || '',
+                      updatedAt: new Date(d.created_at).getTime()
+                   }));
+                   localStorage.setItem('tata_master_' + type, JSON.stringify(mapped));
+                   db[type] = mapped;
+                   renderTable(type, document.getElementById('search-' + type).value.toLowerCase());
+                }
+             } catch (e) { console.error("Sync error:", e); }
+          },
+          
+          async pushMaster(type, payload, isDelete = false) {
+             const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional' };
+             const tableName = tableMap[type];
+             const { data: { user } } = await supabase.auth.getUser();
+             if (!user) return;
+             
+             try {
+                if (isDelete) {
+                   await supabase.from(tableName).delete().eq('id', payload.id);
+                } else {
+                   const dbPayload = { nama: payload.nama, telepon: payload.telp || payload.wa, user_id: user.id };
+                   if (type === 'konsumen') dbPayload.alamat = payload.alamat || '';
+                   
+                   const { data: existing } = await supabase.from(tableName).select('id').eq('id', payload.id);
+                   if (existing && existing.length > 0) {
+                      await supabase.from(tableName).update(dbPayload).eq('id', payload.id);
+                   } else {
+                      dbPayload.id = payload.id; 
+                      await supabase.from(tableName).insert([dbPayload]);
+                   }
+                }
+             } catch (e) { console.error("Push error:", e); }
+          }
+       };
+    </script>
     <script>
        const UI_TABS = ['konsumen', 'marketing', 'operasional'];
        
@@ -267,6 +318,11 @@
        function initApp() {
           UI_TABS.forEach(t => { db[t] = getStore(t); setEvts(t); });
           renderAll();
+          
+          // Trigger Background Sync with Supabase
+          if(window.SupabaseSync) {
+             UI_TABS.forEach(t => window.SupabaseSync.fetchMaster(t));
+          }
        }
 
        // Event Listeners for tabs & search
@@ -336,7 +392,9 @@
           const isEdit = editId !== null;
           document.getElementById('modal-title').textContent = isEdit ? 'Edit Data ' + type : 'Tambah Data ' + type;
           document.getElementById('form-tipe').value = type;
-          document.getElementById('form-id').value = editId || Date.now().toString();
+          
+          // Use UUID instead of Date.now() for Supabase compatibility
+          document.getElementById('form-id').value = editId || crypto.randomUUID();
           
           document.getElementById('field-alamat').classList.toggle('hidden', type !== 'konsumen');
           
@@ -396,6 +454,10 @@
 
           setStore(type, db[type]);
           renderTable(type, document.getElementById('search-' + type).value.toLowerCase());
+          
+          // Push to Supabase in background
+          if(window.SupabaseSync) window.SupabaseSync.pushMaster(type, payload, false);
+          
           closeModal();
        }
        
@@ -406,6 +468,9 @@
           db[type] = db[type].filter(x => x.id !== id);
           setStore(type, db[type]);
           renderTable(type, document.getElementById('search-' + type).value.toLowerCase());
+          
+          // Delete from Supabase in background
+          if(window.SupabaseSync) window.SupabaseSync.pushMaster(type, {id: id}, true);
        }
 
        window.addEventListener('DOMContentLoaded', initApp);

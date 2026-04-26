@@ -174,6 +174,9 @@
       </div>
     </div>
 
+    <script type="module">
+       import { supabase } from './supabaseClient.js';
+    </script>
     <script>
     (function(){
       const STORAGE_KEY = 'polikas_bon_data_v2';
@@ -405,6 +408,12 @@
           // Audit Trail
           if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'VOID',entityType:'BON',entityId:bon.id,oldData:{total:bon.total,konsumen:bon.konsumen,status:'PIUTANG'},newData:{status:'VOID'},isCritical:true,message:'VOID BON '+bon.id+' — Alasan: '+reason});
 
+          // Supabase Sync: Update BON is_void = true
+          if(window.supabaseClient && bon._dbId) {
+             window.supabaseClient.from('bons').update({ is_void: true, status: 'VOID' }).eq('id', bon._dbId).catch(console.error);
+             window.supabaseClient.from('pembayaran').update({ is_void: true }).eq('bon_id', bon._dbId).catch(console.error);
+          }
+
         } else if (pendingVoid.type === 'bayar') {
           const bon = bons[pendingVoid.bonIdx];
           const pay = bon.historiBayar[pendingVoid.payIdx];
@@ -424,6 +433,13 @@
           if (sisa <= 0) bon.status = 'LUNAS';
           else if (sumPaid > 0) bon.status = 'SEBAGIAN';
           else bon.status = 'PIUTANG';
+          
+          // Supabase Sync: Update Pembayaran is_void = true
+          if(window.supabaseClient && pay._dbId) {
+             window.supabaseClient.from('pembayaran').update({ is_void: true }).eq('id', pay._dbId).catch(console.error);
+             // Juga update status bon di cloud
+             if(bon._dbId) window.supabaseClient.from('bons').update({ status: bon.status }).eq('id', bon._dbId).catch(console.error);
+          }
         }
 
         // Token Guard: VOID
