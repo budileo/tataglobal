@@ -260,10 +260,14 @@
        _pembayaranList = [];
 
        bons.forEach(bon => {
-           // Prep BON
+           // Skip VOID bons
+           if (bon.isVoid) return;
+
+           // Prep BON (only count active/non-void payments)
            const hist = bon.historiBayar || [];
-           const potTotal = hist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
-           const paidTotal = hist.reduce((s, h) => s + (h.nominal || 0), 0);
+           const activeHist = hist.filter(h => !h.isVoid);
+           const potTotal = activeHist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
+           const paidTotal = activeHist.reduce((s, h) => s + (h.nominal || 0), 0);
            const sisa = (bon.total - potTotal) - paidTotal;
 
            const bonObj = {
@@ -274,8 +278,8 @@
            };
            _bonList.push(bonObj);
 
-           // Prep Pembayaran
-           hist.forEach(h => {
+           // Prep Pembayaran (skip voided payments)
+           activeHist.forEach(h => {
                _pembayaranList.push({
                    ...h,
                    _bonId: bon.id,
@@ -297,8 +301,8 @@
               kNode.marketingSet.add(bon.marketing);
               if(bon._ts > kNode.tsTerbaru) kNode.tsTerbaru = bon._ts;
               
-              // Pay attention to payments for ts
-              hist.forEach(h => { if(h._ts > kNode.tsTerbaru) kNode.tsTerbaru = h._ts; });
+              // Pay attention to active payments for ts
+              activeHist.forEach(h => { if(h._ts > kNode.tsTerbaru) kNode.tsTerbaru = h._ts; });
            }
 
            // Prep Marketing
@@ -313,7 +317,7 @@
               mNode.totalBayar += bonObj._paid;
               mNode.totalPiutang += bonObj._sisa;
               if(bon._ts > mNode.tsTerbaru) mNode.tsTerbaru = bon._ts;
-              hist.forEach(h => { if(h._ts > mNode.tsTerbaru) mNode.tsTerbaru = h._ts; });
+              activeHist.forEach(h => { if(h._ts > mNode.tsTerbaru) mNode.tsTerbaru = h._ts; });
            }
        });
        
