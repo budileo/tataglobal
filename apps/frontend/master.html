@@ -282,24 +282,27 @@
              const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional' };
              const tableName = tableMap[type];
              const { data: { user } } = await supabase.auth.getUser();
-             if (!user) return;
+             if (!user) { alert("Sesi cloud tidak ditemukan! Harap login ulang."); return; }
              
              try {
                 if (isDelete) {
-                   await supabase.from(tableName).delete().eq('id', payload.id);
+                   const res = await supabase.from(tableName).delete().eq('id', payload.id);
+                   if (res && res.error) alert("Gagal Hapus Cloud: " + res.error.message);
                 } else {
-                   const dbPayload = { nama: payload.nama, telepon: payload.telp || payload.wa, user_id: user.id };
+                   const dbPayload = { nama: payload.nama, telepon: payload.telp || payload.wa || '', user_id: user.id };
                    if (type === 'konsumen') dbPayload.alamat = payload.alamat || '';
                    
-                   const { data: existing } = await supabase.from(tableName).select('id').eq('id', payload.id);
+                   const { data: existing, error: errSel } = await supabase.from(tableName).select('id').eq('id', payload.id);
                    if (existing && existing.length > 0) {
-                      await supabase.from(tableName).update(dbPayload).eq('id', payload.id);
+                      const res = await supabase.from(tableName).update(dbPayload).eq('id', payload.id);
+                      if (res && res.error) alert("Gagal Update Cloud: " + res.error.message);
                    } else {
                       dbPayload.id = payload.id; 
-                      await supabase.from(tableName).insert([dbPayload]);
+                      const res = await supabase.from(tableName).insert([dbPayload]);
+                      if (res && res.error) alert("Gagal Simpan Cloud ("+tableName+"): " + res.error.message);
                    }
                 }
-             } catch (e) { console.error("Push error:", e); }
+             } catch (e) { alert("Push error: " + e.message); console.error("Push error:", e); }
           }
        };
     </script>
