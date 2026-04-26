@@ -390,19 +390,20 @@
 
          async pushPembayaran(bon, payEvent, isDelete = false) {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            if (!user) { alert("Sesi cloud tidak ditemukan! Harap login ulang."); return; }
 
             // Pastikan bon punya UUID dari Supabase
             let bonUuid = bon._dbId;
             if(!bonUuid) {
                const { data: bData } = await supabase.from('bons').select('id').eq('no_faktur', bon.id).single();
                if(bData) bonUuid = bData.id;
-               else return; // Bon tidak ada di DB, skip sync pembayaran
+               else { alert("Parent Bon tidak ditemukan di Cloud!"); return; } // Bon tidak ada di DB, skip sync pembayaran
             }
 
             try {
                if (isDelete) {
-                  await supabase.from('pembayaran').delete().eq('id', payEvent._dbId);
+                  const res = await supabase.from('pembayaran').delete().eq('id', payEvent._dbId);
+                  if (res && res.error) alert("Gagal Hapus Pembayaran Cloud: " + res.error.message);
                } else {
                   const payload = {
                      id: payEvent._dbId,
@@ -418,17 +419,20 @@
                      is_void: payEvent.isVoid || false
                   };
                   
-                  const { data: existing } = await supabase.from('pembayaran').select('id').eq('id', payEvent._dbId);
+                  const { data: existing, error: errSel } = await supabase.from('pembayaran').select('id').eq('id', payEvent._dbId);
                   if (existing && existing.length > 0) {
-                     await supabase.from('pembayaran').update(payload).eq('id', payEvent._dbId);
+                     const res = await supabase.from('pembayaran').update(payload).eq('id', payEvent._dbId);
+                     if (res && res.error) alert("Gagal Update Pembayaran Cloud: " + res.error.message);
                   } else {
-                     await supabase.from('pembayaran').insert([payload]);
+                     const res = await supabase.from('pembayaran').insert([payload]);
+                     if (res && res.error) alert("Gagal Simpan Pembayaran Cloud: " + res.error.message);
                   }
                   
                   // Otomatis update status bon di tabel bons
-                  await supabase.from('bons').update({ status: bon.status }).eq('id', bonUuid);
+                  const resBon = await supabase.from('bons').update({ status: bon.status }).eq('id', bonUuid);
+                  if (resBon && resBon.error) alert("Gagal Update Status Bon: " + resBon.error.message);
                }
-            } catch (e) { console.error("Push Pembayaran Error:", e); }
+            } catch (e) { alert("Push Pembayaran Error: " + e.message); console.error("Push Pembayaran Error:", e); }
          }
       };
     </script>
