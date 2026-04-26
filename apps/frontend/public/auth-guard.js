@@ -124,8 +124,17 @@ const AuthGuard = (function() {
   // ==================== PERMISSIONS ====================
   function getUserPermissions(userId) {
     const users = _get(KEYS.users);
-    const user = users.find(u => u.id === userId);
-    if (!user) return [];
+    let user = users.find(u => u.id === userId);
+    
+    // Fallback untuk user baru dari Supabase Auth yang belum ada di local 'users'
+    if (!user) {
+       const curr = getCurrentUser();
+       if (curr && curr.id === userId) {
+          user = curr;
+       } else {
+          return [];
+       }
+    }
 
     // Get role defaults
     const rolePerms = _get(KEYS.rolePerms);
