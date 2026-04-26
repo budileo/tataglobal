@@ -40,7 +40,7 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="auth-guard.js"></script>
-    <script>if(typeof AuthGuard!=='undefined'){var _u=AuthGuard.getCurrentUser();if(!_u||_u.status!=='active'){window.location.replace('index.html');document.write('');}}</script>
+    <!-- Validasi sesi cloud dilakukan oleh cloud-auth-guard.js (module) -->
   </head>
   <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
     
@@ -573,6 +573,7 @@
        window.addEventListener('sidebarToggle', () => { setTimeout(() => { if(myChart) myChart.resize(); }, 300); });
     </script>
     <script src="auth-guard.js"></script>
+    <script type="module" src="cloud-auth-guard.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
