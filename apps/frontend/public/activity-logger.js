@@ -132,7 +132,7 @@ const ActivityLogger = (function() {
                 entity_name: entry.entityType,
                 amount: amount,
                 reason: entry.message || ''
-             }]).catch(console.error);
+             }]).then(res => { if(res.error) console.error(res.error); });
           } else {
              window.supabaseClient.from('activity_logs').insert([{
                 id: entry.id.length === 36 ? entry.id : undefined,
@@ -141,9 +141,9 @@ const ActivityLogger = (function() {
                 entity_type: entry.entityType,
                 entity_id: entry.entityId,
                 message: entry.message || ''
-             }]).catch(console.error);
+             }]).then(res => { if(res.error) console.error(res.error); });
           }
-       }).catch(console.error);
+       }).then(res => { if(res && res.error) console.error(res.error); });
     }
     
     return entry;
