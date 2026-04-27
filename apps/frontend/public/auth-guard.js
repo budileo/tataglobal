@@ -86,9 +86,18 @@ const AuthGuard = (function() {
     _set(KEYS.currentUser, user);
   }
 
-  function logout() {
+  async function logout() {
+    // 1. Sign out dari Supabase Cloud (penting agar session cloud terhapus)
+    try {
+      if (window.supabaseClient) {
+        await window.supabaseClient.auth.signOut();
+      }
+    } catch(e) { console.error('Supabase signOut error:', e); }
+    
+    // 2. Hapus session lokal
     localStorage.removeItem(KEYS.currentUser);
-    // Hapus juga session token Supabase (biasanya berawalan sb- dan berakhiran -auth-token)
+    
+    // 3. Hapus juga session token Supabase dari localStorage
     const keysToRemove = [];
     for(let i=0; i<localStorage.length; i++) {
         let key = localStorage.key(i);
@@ -97,6 +106,8 @@ const AuthGuard = (function() {
         }
     }
     keysToRemove.forEach(k => localStorage.removeItem(k));
+    
+    // 4. Redirect ke login page
     window.location.href = 'index.html';
   }
 
