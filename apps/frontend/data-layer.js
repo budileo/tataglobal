@@ -184,7 +184,12 @@ window.DataLayer = {
         const res = await supabase.from(tableName).delete().eq('id', payload.id);
         if (res && res.error) throw new Error(res.error.message);
       } else {
-        const dbPayload = { nama: payload.nama, user_id: user.id };
+        const dbPayload = { 
+           nama: payload.nama, 
+           user_id: user.id,
+           telp: payload.telp || '',
+           wa: payload.wa || ''
+        };
         if (type === 'konsumen') dbPayload.alamat = payload.alamat || '';
         
         const { data: existing } = await supabase.from(tableName).select('id').eq('id', payload.id);
