@@ -497,10 +497,12 @@
              
              let j = 0, t = 0, p = 0;
              bons.forEach(b => {
+                if (b.isVoid) return;
                 if (b.tanggal === dStr) j += (parseFloat(b.total) || 0);
                 
                 let paidBeforeOrOn = 0, potBeforeOrOn = 0;
                 (b.historiBayar || []).forEach(h => {
+                   if (h.isVoid) return;
                    const hNom = parseFloat(h.nominal) || 0;
                    const hPot = parseFloat(h.totalPotongan) || 0;
                    if (h.tanggal === dStr) t += hNom;
