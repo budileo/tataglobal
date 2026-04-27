@@ -174,22 +174,14 @@
       </div>
     </div>
 
-    <script type="module">
-       import { supabase } from './supabaseClient.js';
-    </script>
+    <script type="module" src="data-layer.js"></script>
     <script>
     (function(){
       const STORAGE_KEY = 'polikas_bon_data_v2';
-      const AUDIT_KEY = 'tata_audit_logs';
-      function getAllBons() { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-      function saveAllBons(bons) { localStorage.setItem(STORAGE_KEY, JSON.stringify(bons)); }
-      function getAuditLogs() { return JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]'); }
-      function saveAuditLogs(logs) { localStorage.setItem(AUDIT_KEY, JSON.stringify(logs)); }
-      function addAuditLog(type, targetId, konsumen, nominal, alasan) {
-        const logs = getAuditLogs();
-        logs.unshift({ waktu: new Date().toISOString(), tipe: type, targetId, konsumen, nominal, alasan, user: 'Budi Ariadi' });
-        saveAuditLogs(logs);
-      }
+      function getAllBons() { return window.DataLayer ? window.DataLayer.getBons() : []; }
+      
+      // Audit trail uses ActivityLogger
+      const formatRp = (n) => 'Rp ' + (n||0).toLocaleString('id-ID');
       const formatRp = (n) => 'Rp ' + (n||0).toLocaleString('id-ID');
 
       // State
@@ -381,7 +373,7 @@
         pendingVoid = null;
       });
 
-      document.getElementById('btn-confirm-void').addEventListener('click', () => {
+        document.getElementById('btn-confirm-void').addEventListener('click', async () => {
         const reason = document.getElementById('void-reason').value.trim();
         if (!reason) { alert('Harap isi alasan void.'); return; }
         if (!pendingVoid) return;
@@ -396,7 +388,6 @@
               h.isVoid = true;
               h.voidAt = new Date().toISOString();
               h.voidReason = reason;
-              addAuditLog('VOID BAYAR', bon.id, bon.konsumen, h.nominal, reason + ' (auto, bon di-void)');
             }
           });
           // Void the BON
@@ -404,15 +395,12 @@
           bon.voidAt = new Date().toISOString();
           bon.voidReason = reason;
           bon.status = 'VOID';
-          addAuditLog('VOID BON', bon.id, bon.konsumen, bon.total, reason);
           // Audit Trail
-          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'VOID',entityType:'BON',entityId:bon.id,oldData:{total:bon.total,konsumen:bon.konsumen,status:'PIUTANG'},newData:{status:'VOID'},isCritical:true,message:'VOID BON '+bon.id+' — Alasan: '+reason});
-
-          // Supabase Sync: Update BON is_void = true
-          if(window.supabaseClient && bon._dbId) {
-             window.supabaseClient.from('bons').update({ is_void: true, status: 'VOID' }).eq('id', bon._dbId).catch(console.error);
-             window.supabaseClient.from('pembayaran').update({ is_void: true }).eq('bon_id', bon._dbId).catch(console.error);
+          if(typeof ActivityLogger!=='undefined') {
+              await ActivityLogger.log({action:'VOID',entityType:'BON',entityId:bon.id,oldData:{total:bon.total,konsumen:bon.konsumen,status:'PIUTANG'},newData:{status:'VOID'},isCritical:true,message:'VOID BON '+bon.id+' — Alasan: '+reason});
           }
+
+          if (window.DataLayer) await window.DataLayer.saveBon(bon);
 
         } else if (pendingVoid.type === 'bayar') {
           const bon = bons[pendingVoid.bonIdx];
@@ -420,9 +408,10 @@
           pay.isVoid = true;
           pay.voidAt = new Date().toISOString();
           pay.voidReason = reason;
-          addAuditLog('VOID BAYAR', bon.id, bon.konsumen, pay.nominal, reason);
           // Audit Trail
-          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'VOID',entityType:'PEMBAYARAN',entityId:bon.id,oldData:{nominal:pay.nominal,kolektor:pay.kolektor,tanggal:pay.tanggal},newData:{status:'VOID'},isCritical:true,message:'VOID Pembayaran '+bon.id+' Rp '+(pay.nominal||0).toLocaleString('id-ID')+' — Alasan: '+reason});
+          if(typeof ActivityLogger!=='undefined') {
+             await ActivityLogger.log({action:'VOID',entityType:'PEMBAYARAN',entityId:bon.id,oldData:{nominal:pay.nominal,kolektor:pay.kolektor,tanggal:pay.tanggal},newData:{status:'VOID'},isCritical:true,message:'VOID Pembayaran '+bon.id+' Rp '+(pay.nominal||0).toLocaleString('id-ID')+' — Alasan: '+reason});
+          }
 
           // Auto-sync BON status
           const activeHist = (bon.historiBayar||[]).filter(h=>!h.isVoid);
@@ -434,17 +423,11 @@
           else if (sumPaid > 0) bon.status = 'SEBAGIAN';
           else bon.status = 'PIUTANG';
           
-          // Supabase Sync: Update Pembayaran is_void = true
-          if(window.supabaseClient && pay._dbId) {
-             window.supabaseClient.from('pembayaran').update({ is_void: true }).eq('id', pay._dbId).catch(console.error);
-             // Juga update status bon di cloud
-             if(bon._dbId) window.supabaseClient.from('bons').update({ status: bon.status }).eq('id', bon._dbId).catch(console.error);
-          }
+          if (window.DataLayer) await window.DataLayer.savePembayaran(bon, pay);
         }
 
         // Token Guard: VOID
         if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('void','VOID data')) { pendingVoid=null; return; }
-        saveAllBons(bons);
         modal.classList.add('hidden'); modal.classList.remove('flex');
         pendingVoid = null;
 
@@ -481,41 +464,44 @@
         });
       });
 
-      function renderVoidHistory() {
-        const logs = getAuditLogs();
+      async function renderVoidHistory() {
         const { from, to } = getFilterDateRange();
+        const logs = typeof ActivityLogger !== 'undefined' ? await ActivityLogger.query({ dateFrom: from, dateTo: to, action: 'VOID' }) : [];
         const tbody = document.getElementById('void-history-body');
         const emptyH = document.getElementById('void-history-empty');
 
-        const filtered = logs.filter(l => {
-          const d = l.waktu.split('T')[0];
-          return d >= from && d <= to;
-        });
-
-        if (filtered.length === 0) {
+        if (logs.length === 0) {
           tbody.innerHTML = '';
           emptyH.classList.remove('hidden');
           return;
         }
         emptyH.classList.add('hidden');
 
-        tbody.innerHTML = filtered.map((l, i) => {
-          const dt = new Date(l.waktu);
-          const tipeCls = l.tipe === 'VOID BON' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-800';
+        tbody.innerHTML = logs.map((l, i) => {
+          const dt = new Date(l.createdAt);
+          const tipeStr = l.entityType === 'BON' ? 'VOID BON' : 'VOID BAYAR';
+          const tipeCls = l.entityType === 'BON' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-800';
+          const nominal = l.oldData ? (l.oldData.total || l.oldData.nominal || 0) : 0;
+          const konsumen = l.oldData ? l.oldData.konsumen : '-';
+          const alasan = l.message ? l.message.split(' — Alasan: ').pop() : '-';
+
           return `<tr class="border-b border-slate-100 hover:bg-slate-50 text-xs">
             <td class="px-3 py-2 text-center font-medium">${i+1}</td>
             <td class="px-3 py-2 whitespace-nowrap">${dt.toLocaleDateString('id-ID')}<br><span class="text-[10px] text-slate-400">${dt.toLocaleTimeString('id-ID')}</span></td>
-            <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${tipeCls}">${l.tipe}</span></td>
-            <td class="px-3 py-2 font-bold text-slate-700">${l.targetId}</td>
-            <td class="px-3 py-2">${l.konsumen||'-'}</td>
-            <td class="px-3 py-2 text-right font-bold">${formatRp(l.nominal)}</td>
-            <td class="px-3 py-2 text-slate-500 max-w-[200px] truncate" title="${l.alasan}">${l.alasan}</td>
+            <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${tipeCls}">${tipeStr}</span></td>
+            <td class="px-3 py-2 font-bold text-slate-700">${l.entityId}</td>
+            <td class="px-3 py-2">${konsumen||'-'}</td>
+            <td class="px-3 py-2 text-right font-bold">${formatRp(nominal)}</td>
+            <td class="px-3 py-2 text-slate-500 max-w-[200px] truncate" title="${alasan}">${alasan}</td>
           </tr>`;
         }).join('');
       }
 
       // Init
-      renderVoidHistory();
+      window.addEventListener('DOMContentLoaded', async () => {
+          if (window.DataLayer) await window.DataLayer.init();
+          renderVoidHistory();
+      });
     })();
     </script>
     <script src="auth-guard.js"></script>

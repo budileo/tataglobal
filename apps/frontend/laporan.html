@@ -317,13 +317,14 @@
 
     </main>
 
+    <script type="module" src="data-layer.js"></script>
     <script>
       // Formatting helpers
       const formatRp = (num) => 'Rp ' + (num||0).toLocaleString('id-ID');
       const formatKg = (num) => (num||0).toLocaleString('id-ID', {minimumFractionDigits: 1, maximumFractionDigits: 2}) + ' Kg';
 
       const STORAGE_KEY = 'polikas_bon_data_v2';
-      function getAllBons() { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+      function getAllBons() { return window.DataLayer ? window.DataLayer.getBons() : []; }
 
       let rekapData = []; // grouped by date
 
@@ -766,7 +767,14 @@
       };
       document.getElementById('btn-print-rekap').addEventListener('click', handlePrint);
       document.getElementById('btn-print-detail').addEventListener('click', handlePrint);
-
+      window.addEventListener('DOMContentLoaded', async () => {
+         if (window.DataLayer) await window.DataLayer.init();
+         
+         const now = new Date(), ts = now.toISOString().split('T')[0];
+         document.getElementById('rekap-start').value = ts;
+         document.getElementById('rekap-end').value = ts;
+         calculateRekap();
+      });
      </script>
      <script src="auth-guard.js"></script>
      <script type="module" src="cloud-auth-guard.js"></script>

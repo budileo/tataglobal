@@ -152,19 +152,15 @@
       </div>
     </div>
 
-    <script type="module">
-       import { supabase } from './supabaseClient.js';
+    <script type="module" src="data-layer.js"></script>
+    <script>
        if (typeof ActivityLogger !== 'undefined') {
-          ActivityLogger.fetchCloudLogs().then(() => {
-             if (window.renderLogsGlobal) window.renderLogsGlobal();
-          });
+          // Initialize ActivityLogger if needed, wait for it
        }
     </script>
     <script src="activity-logger.js"></script>
     <script>
     (function() {
-      // Migrate old void logs on first load
-      ActivityLogger.migrateOldLogs();
 
       let activePeriod = 'hari-ini';
       const formatRp = (n) => 'Rp ' + (n||0).toLocaleString('id-ID');
@@ -199,7 +195,7 @@
         }
       }
 
-      function renderLogs() {
+      async function renderLogs() {
         const range = getDateRange();
         const filters = {
           ...range,
@@ -211,7 +207,7 @@
         // Clean undefined
         Object.keys(filters).forEach(k => { if(!filters[k]) delete filters[k]; });
 
-        const logs = ActivityLogger.query(filters);
+        const logs = await ActivityLogger.query(filters);
         const tbody = document.getElementById('log-tbody');
         const empty = document.getElementById('log-empty');
 

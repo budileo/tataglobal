@@ -314,13 +314,11 @@
 
     </main>
 
+    <script type="module" src="data-layer.js"></script>
     <script>
        const STORAGE_KEY = 'polikas_bon_data_v2';
        function getAllBons() { 
-          try {
-             const data = localStorage.getItem(STORAGE_KEY);
-             return data ? JSON.parse(data) : [];
-          } catch(e) { console.error("Error read localStorage", e); return []; }
+          return window.DataLayer ? window.DataLayer.getBons() : [];
        }
        
        const formatRp = (num) => 'Rp ' + (num||0).toLocaleString('id-ID');
@@ -379,7 +377,7 @@
           const ukuranMap = {};
 
           // CONSUMER SETS FROM MASTER DATA
-          const masterKons = JSON.parse(localStorage.getItem('tata_master_konsumen')||'[]');
+          const masterKons = window.DataLayer ? window.DataLayer.getMaster('konsumen') : [];
           
           const activeConsumersSet = new Set();
           filtered.forEach(b => { if(b.konsumen) activeConsumersSet.add(b.konsumen.trim()); });
@@ -561,12 +559,13 @@
 
        document.getElementById('apply-filter').addEventListener('click', calculateDashboard);
 
-       window.addEventListener('load', () => {
+       window.addEventListener('DOMContentLoaded', async () => {
           const now = new Date();
           const first = toLocalYMD(new Date(now.getFullYear(), now.getMonth(), 1));
           const last = toLocalYMD(now);
           document.getElementById('start-date').value = first;
           document.getElementById('end-date').value = last;
+          if (window.DataLayer) await window.DataLayer.init();
           calculateDashboard();
        });
 

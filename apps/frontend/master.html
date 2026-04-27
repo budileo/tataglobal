@@ -252,80 +252,24 @@
        </div>
     </div>
 
-    <script type="module">
-       import { supabase } from './supabaseClient.js';
-       
-       window.SupabaseSync = {
-          async fetchMaster(type) {
-             const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional' };
-             const tableName = tableMap[type];
-             
-             try {
-                const { data, error } = await supabase.from(tableName).select('*').order('created_at', {ascending: false});
-                if (!error && data) {
-                   const mapped = data.map(d => ({
-                      id: d.id,
-                      nama: d.nama,
-                      telp: d.telp || '',
-                      wa: d.wa || '',
-                      alamat: d.alamat || '',
-                      updatedAt: new Date(d.created_at).getTime()
-                   }));
-                   localStorage.setItem('tata_master_' + type, JSON.stringify(mapped));
-                   db[type] = mapped;
-                   renderTable(type, document.getElementById('search-' + type).value.toLowerCase());
-                }
-             } catch (e) { console.error("Sync error:", e); }
-          },
-          
-          async pushMaster(type, payload, isDelete = false) {
-             const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional' };
-             const tableName = tableMap[type];
-             const { data: { user } } = await supabase.auth.getUser();
-             if (!user) { alert("Sesi cloud tidak ditemukan! Harap login ulang."); return; }
-             
-             try {
-                if (isDelete) {
-                   const res = await supabase.from(tableName).delete().eq('id', payload.id);
-                   if (res && res.error) alert("Gagal Hapus Cloud: " + res.error.message);
-                } else {
-                   const dbPayload = { nama: payload.nama, user_id: user.id };
-                   if (type === 'konsumen') dbPayload.alamat = payload.alamat || '';
-                   
-                   const { data: existing, error: errSel } = await supabase.from(tableName).select('id').eq('id', payload.id);
-                   if (existing && existing.length > 0) {
-                      const res = await supabase.from(tableName).update(dbPayload).eq('id', payload.id);
-                      if (res && res.error) alert("Gagal Update Cloud: " + res.error.message);
-                   } else {
-                      dbPayload.id = payload.id; 
-                      const res = await supabase.from(tableName).insert([dbPayload]);
-                      if (res && res.error) alert("Gagal Simpan Cloud ("+tableName+"): " + res.error.message);
-                   }
-                }
-             } catch (e) { alert("Push error: " + e.message); console.error("Push error:", e); }
-          }
-       };
-    </script>
+    <script type="module" src="data-layer.js"></script>
     <script>
        const UI_TABS = ['konsumen', 'marketing', 'operasional'];
        
-       // Helper localstorage
-       function getStore(type) { return JSON.parse(localStorage.getItem('tata_master_' + type) || '[]'); }
-       function setStore(type, data) { localStorage.setItem('tata_master_' + type, JSON.stringify(data)); }
+       // Helper localstorage (Removed in favor of DataLayer)
        
        // State
        let activeTab = 'konsumen';
        let db = { konsumen: [], marketing: [], operasional: [] };
 
        // Initialize
-       function initApp() {
-          UI_TABS.forEach(t => { db[t] = getStore(t); setEvts(t); });
+       async function initApp() {
+          if (window.DataLayer) await window.DataLayer.init();
+          UI_TABS.forEach(t => { 
+             db[t] = window.DataLayer ? window.DataLayer.getMaster(t) : []; 
+             setEvts(t); 
+          });
           renderAll();
-          
-          // Trigger Background Sync with Supabase
-          if(window.SupabaseSync) {
-             UI_TABS.forEach(t => window.SupabaseSync.fetchMaster(t));
-          }
        }
 
        // Event Listeners for tabs & search
@@ -428,7 +372,7 @@
           setTimeout(() => { modal.classList.add('hidden'); }, 300);
        }
        
-       function saveData() {
+       async function saveData() {
           const type = document.getElementById('form-tipe').value;
           const id = document.getElementById('form-id').value;
           const nama = document.getElementById('input-nama').value.trim();
@@ -451,29 +395,29 @@
           
           if(type === 'konsumen') payload.alamat = document.getElementById('input-alamat').value.trim();
 
-          const existingIdx = db[type].findIndex(x => x.id === id);
-          if(existingIdx >= 0) db[type][existingIdx] = payload;
-          else db[type].unshift(payload); // insert at top
+          // Push to Supabase directly
+          if (window.DataLayer) {
+             await window.DataLayer.saveMaster(type, payload, false);
+             // Refresh db state
+             db[type] = window.DataLayer.getMaster(type);
+          }
 
-          setStore(type, db[type]);
           renderTable(type, document.getElementById('search-' + type).value.toLowerCase());
-          
-          // Push to Supabase in background
-          if(window.SupabaseSync) window.SupabaseSync.pushMaster(type, payload, false);
-          
           closeModal();
        }
        
        function editData(type, id) { openModal(type, id); }
        
-       function deleteData(type, id) {
+       async function deleteData(type, id) {
           if(!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
-          db[type] = db[type].filter(x => x.id !== id);
-          setStore(type, db[type]);
-          renderTable(type, document.getElementById('search-' + type).value.toLowerCase());
           
-          // Delete from Supabase in background
-          if(window.SupabaseSync) window.SupabaseSync.pushMaster(type, {id: id}, true);
+          // Delete from Supabase directly
+          if (window.DataLayer) {
+             await window.DataLayer.saveMaster(type, {id: id}, true);
+             // Refresh db state
+             db[type] = window.DataLayer.getMaster(type);
+          }
+          renderTable(type, document.getElementById('search-' + type).value.toLowerCase());
        }
 
        window.addEventListener('DOMContentLoaded', initApp);
