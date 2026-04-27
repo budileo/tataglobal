@@ -55,14 +55,12 @@ const AuthGuard = (function() {
       }]);
     }
 
-    // 3. Default Role Permissions
-    if (_get(KEYS.rolePerms).length === 0) {
-      _set(KEYS.rolePerms, [
-        { role: 'OWNER', permissions: ['dashboard.view','bon.create','bon.update','bon.delete','pembayaran.create','laporan.view','void.approve','search.view','master_data.manage','history.view','setting.manage'] },
-        { role: 'MANAGER', permissions: ['dashboard.view','bon.create','bon.update','pembayaran.create','laporan.view','void.approve','search.view','master_data.manage','history.view'] },
-        { role: 'STAFF', permissions: ['dashboard.view','bon.create','pembayaran.create','search.view'] }
-      ]);
-    }
+    // 3. Default Role Permissions (Force Update to latest)
+    _set(KEYS.rolePerms, [
+      { role: 'OWNER', permissions: ['dashboard.view','bon.create','bon.update','bon.delete','pembayaran.create','laporan.view','void.approve','search.view','master_data.manage','history.view','setting.manage'] },
+      { role: 'MANAGER', permissions: ['dashboard.view','bon.create','bon.update','pembayaran.create','laporan.view','void.approve','search.view','master_data.manage','history.view'] },
+      { role: 'STAFF', permissions: ['dashboard.view','bon.create','pembayaran.create','search.view'] }
+    ]);
 
     // 4. Default Token Tarif
     if (_get(KEYS.tokenTarif).length === 0) {

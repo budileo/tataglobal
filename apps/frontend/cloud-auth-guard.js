@@ -30,13 +30,16 @@ import { supabase } from './supabaseClient.js';
     // Sesi cloud valid → pastikan AuthGuard lokal juga ter-sinkronisasi
     if (typeof AuthGuard !== 'undefined') {
       const currentLocal = AuthGuard.getCurrentUser();
-      // Jika belum ada lokal, atau ID-nya beda dengan session cloud → sinkronkan
-      if (!currentLocal || currentLocal.id !== session.user.id) {
+      // Force OWNER for budileo even if session says otherwise
+      let role = 'OWNER';
+      
+      // Jika belum ada lokal, atau ID-nya beda dengan session cloud, atau jika budileo dipaksa OWNER
+      if (!currentLocal || currentLocal.id !== session.user.id || (session.user.email === 'budileo@gmail.com' && currentLocal.role !== 'OWNER')) {
         AuthGuard.setCurrentUser({
           id: session.user.id,
           name: session.user.email.split('@')[0],
           email: session.user.email,
-          role: 'OWNER',
+          role: role,
           status: 'active',
           departmentId: 'dept-global-unggas'
         });
