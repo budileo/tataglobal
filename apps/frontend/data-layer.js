@@ -66,13 +66,13 @@ window.DataLayer = {
 
       // Process Master
       this.data.master_konsumen = (konsumen || []).map(d => ({
-        id: d.id, nama: d.nama, telp: d.telp || '', wa: d.wa || '', alamat: d.alamat || '', updatedAt: new Date(d.created_at).getTime()
+        id: d.id, nama: d.nama, telp: d.telepon || '', wa: d.wa || '', alamat: d.alamat || '', updatedAt: new Date(d.created_at).getTime()
       }));
       this.data.master_marketing = (marketing || []).map(d => ({
-        id: d.id, nama: d.nama, telp: d.telp || '', wa: d.wa || '', alamat: d.alamat || '', updatedAt: new Date(d.created_at).getTime()
+        id: d.id, nama: d.nama, telp: d.telepon || '', wa: d.wa || '', alamat: d.alamat || '', updatedAt: new Date(d.created_at).getTime()
       }));
       this.data.master_operasional = (operasional || []).map(d => ({
-        id: d.id, nama: d.nama, telp: d.telp || '', wa: d.wa || '', alamat: d.alamat || '', updatedAt: new Date(d.created_at).getTime()
+        id: d.id, nama: d.nama, telp: d.telepon || '', wa: d.wa || '', alamat: d.alamat || '', updatedAt: new Date(d.created_at).getTime()
       }));
 
       console.log('DataLayer: Initialization complete');
@@ -187,7 +187,7 @@ window.DataLayer = {
         const dbPayload = { 
            nama: payload.nama, 
            user_id: user.id,
-           telp: payload.telp || '',
+           telepon: payload.telp || '',
            wa: payload.wa || ''
         };
         if (type === 'konsumen') dbPayload.alamat = payload.alamat || '';
