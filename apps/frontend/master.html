@@ -266,8 +266,8 @@
                    const mapped = data.map(d => ({
                       id: d.id,
                       nama: d.nama,
-                      telp: d.telepon || '',
-                      wa: d.telepon || '',
+                      telp: d.telp || '',
+                      wa: d.wa || '',
                       alamat: d.alamat || '',
                       updatedAt: new Date(d.created_at).getTime()
                    }));
@@ -289,7 +289,7 @@
                    const res = await supabase.from(tableName).delete().eq('id', payload.id);
                    if (res && res.error) alert("Gagal Hapus Cloud: " + res.error.message);
                 } else {
-                   const dbPayload = { nama: payload.nama, telepon: payload.telp || payload.wa || '', user_id: user.id };
+                   const dbPayload = { nama: payload.nama, user_id: user.id };
                    if (type === 'konsumen') dbPayload.alamat = payload.alamat || '';
                    
                    const { data: existing, error: errSel } = await supabase.from(tableName).select('id').eq('id', payload.id);
