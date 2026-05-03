@@ -191,7 +191,34 @@
           <p class="font-semibold text-lg mb-1">Belum Ada Bon</p><p class="text-sm">Tidak ditemukan data bon faktur untuk filter ini.</p>
         </div>
       </div>
-    </main>
+    <!-- Histori Pembayaran -->
+      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6">
+        <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider border-b border-slate-100 pb-2 mb-4">Histori Pembayaran Sebelumnya</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-600 mb-2">
+            <thead class="bg-slate-50 text-slate-500 text-xs font-semibold">
+              <tr>
+                <th class="px-2 py-2 border-b border-slate-200">Tgl Bayar</th>
+                <th class="px-2 py-2 border-b border-slate-200">Kolektor</th><th class="px-2 py-2 border-b border-slate-200 text-xs">Memo</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">Pot Harga</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Mati (Kg/Rp)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Susut (Kg/Rp)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Pulang (Kg/Rp)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right bg-rose-50 text-rose-700 text-xs">Ttl Potong</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right bg-emerald-50 text-emerald-700 text-sm">Nominal Bayar</th>
+              </tr>
+            </thead>
+            <tbody id="histori-table-body">
+              <!-- Riwayat pembayaran -->
+            </tbody>
+          </table>
+        </div>
+        <div class="flex justify-end pt-2 text-sm font-bold text-slate-800">
+          Total Terbayar Sebelumnya: <span id="text-total-terbayar" class="ml-2 text-emerald-700">Rp 0</span>
+        </div>
+      </div>
+
+      </main>
 
     <!-- ============================================== -->
     <!-- VIEW 2: FORM PEMBAYARAN                        -->
@@ -225,49 +252,47 @@
            <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Informasi Tagihan Awal</h4>
            <span id="form-id-badge" class="bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded text-xs">BN-XXX</span>
          </div>
-         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div><p class="text-xs text-slate-500 mb-1">Konsumen</p><p id="form-konsumen-text" class="text-sm font-semibold text-slate-800">-</p></div>
-            <div><p class="text-xs text-slate-500 mb-1">Tanggal Bon</p><p id="form-tglbon-text" class="text-sm font-semibold text-slate-800">-</p></div>
-            <div><p class="text-xs text-slate-500 mb-1">Total Item</p><p id="form-item-text" class="text-sm font-semibold text-slate-800">-</p></div>
-            <div><p class="text-xs text-slate-500 mb-1">Tagihan Bon Awal</p><p id="form-tagihanawal-text" class="text-lg text-slate-900 font-bold">-</p></div>
+         <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
+            <div><p class="text-[10px] text-slate-500 mb-0.5 uppercase font-bold">Konsumen</p><p id="form-konsumen-text" class="text-sm font-semibold text-slate-800">-</p></div>
+            <div><p class="text-[10px] text-slate-500 mb-0.5 uppercase font-bold">Tanggal Bon</p><p id="form-tglbon-text" class="text-sm font-semibold text-slate-800">-</p></div>
+            <div><p class="text-[10px] text-slate-500 mb-0.5 uppercase font-bold">Total Item</p><p id="form-item-text" class="text-sm font-semibold text-slate-800">-</p></div>
+            <div><p class="text-[10px] text-slate-500 mb-0.5 uppercase font-bold">Staf Operasional</p><p id="form-staf-ops" class="text-sm font-semibold text-slate-800">-</p></div>
+            <div><p class="text-[10px] text-slate-500 mb-0.5 uppercase font-bold">PIC Marketing</p><p id="form-pic-mar" class="text-sm font-semibold text-slate-800">-</p></div>
+            <div><p class="text-[10px] text-slate-500 mb-0.5 uppercase font-bold">Tagihan Bon Awal</p><p id="form-tagihanawal-text" class="text-sm text-slate-900 font-bold">-</p></div>
          </div>
       </div>
 
-      <!-- Histori Pembayaran -->
-      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6">
-        <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider border-b border-slate-100 pb-2 mb-4">Histori Pembayaran Sebelumnya</h4>
+      <!-- Detail Item Barang -->
+      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6 print:shadow-none print:border-slate-300 print:mb-4">
+        <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider border-b border-slate-100 pb-2 mb-4">Detail Item Barang</h4>
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-600 mb-2">
-            <thead class="bg-slate-50 text-slate-500 text-xs font-semibold">
+          <table class="w-full text-left text-sm text-slate-600 mb-2 border border-slate-200">
+            <thead class="bg-slate-50 text-slate-500 text-[10px] uppercase font-semibold">
               <tr>
-                <th class="px-2 py-2 border-b border-slate-200">Tgl Bayar</th>
-                <th class="px-2 py-2 border-b border-slate-200">Kolektor</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">Pot Harga</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Mati (Kg/Rp)</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Susut (Kg/Rp)</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Pulang (Kg/Rp)</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right bg-rose-50 text-rose-700 text-xs">Ttl Potong</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right bg-emerald-50 text-emerald-700 text-sm">Nominal Bayar</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-center">No</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-center">Jml Ayam</th>
+                <th class="px-2 py-2 border-b border-slate-200">Ukuran</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right">Bruto (Kg)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right">Kotak (Kg)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right">Netto (Kg)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right">Harga/Kg</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right">Jumlah (Rp)</th>
               </tr>
             </thead>
-            <tbody id="histori-table-body">
-              <!-- Riwayat pembayaran -->
-            </tbody>
+            <tbody id="detail-item-body"></tbody>
           </table>
-        </div>
-        <div class="flex justify-end pt-2 text-sm font-bold text-slate-800">
-          Total Terbayar Sebelumnya: <span id="text-total-terbayar" class="ml-2 text-emerald-700">Rp 0</span>
         </div>
       </div>
 
       <!-- Pengaturan Pembayaran Baru -->
       <div id="section-bayar-baru" class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6 print:hidden">
         <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider border-b border-slate-100 pb-2 mb-4">Data Pembayaran Saat Ini</h4>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Tgl Pembayaran</label><input id="inp-tgl-bayar" type="date" class="w-full border border-slate-200 rounded px-3 py-2"></div>
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Kolektor Marketing</label><select id="inp-kolektor" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option value="">--Pilih--</option></select></div>
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Cara Bayar</label><select id="inp-cara-bayar" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option>Kasir</option><option>Marketing</option><option>Transfer</option></select></div>
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Waktu Bayar</label><select id="inp-waktu-bayar" class="w-full bg-white border border-slate-200 rounded px-3 py-2"><option>Pagi</option><option>Siang</option><option>Sore</option><option>Malam</option></select></div>
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">Memo</label><input id="inp-memo" type="text" class="w-full border border-slate-200 rounded px-3 py-2" placeholder="Catatan..."></div>
         </div>
         <div class="text-xs text-slate-400 mt-[-10px] mb-4">Kasir Finance: <strong class="text-slate-600">Budi Ariadi</strong> (Auto)</div>
 
@@ -335,7 +360,7 @@
          <div class="w-full md:w-auto relative print:hidden">
             <label class="block text-xs text-slate-400 font-bold mb-1 uppercase">Nominal Uang Diterima</label>
             <span class="absolute left-3 top-[34px] font-bold text-slate-600">Rp</span>
-            <input type="number" id="inp-bayar-rp" class="w-full md:w-56 pl-10 pr-4 py-3 text-slate-900 rounded bg-white outline-emerald-500 font-bold text-lg" placeholder="1000000">
+            <input type="text" id="inp-bayar-rp" class="w-full md:w-56 pl-10 pr-4 py-3 text-slate-900 rounded bg-white outline-emerald-500 font-bold text-lg" placeholder="1.000.000" oninput="window.formatRupiahInput(this)">
          </div>
          
          <button id="btn-simpan-bayar" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-8 rounded transition-colors shadow print:hidden">
@@ -353,6 +378,13 @@
     </script>
     <!-- App Logic -->
     <script>
+      window.formatRupiahInput = function(el) {
+         let val = el.value.replace(/[^,\d]/g, '').toString();
+         if(val) el.value = parseInt(val).toLocaleString('id-ID');
+         else el.value = '';
+         if (typeof runCalculations === 'function') runCalculations();
+      };
+
     (function(){
       const STORAGE_KEY = 'polikas_bon_data_v2';
       let editingBonIndex = -1;
@@ -419,6 +451,7 @@
         document.querySelectorAll('.potongan-calc').forEach(el => el.value = 0);
         ['mati-kg','susut-kg','pulang-kg'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('inp-bayar-rp').value = '';
+        document.getElementById('inp-memo').value = '';
 
         const isLunas = bon.status === 'LUNAS';
         
@@ -438,7 +471,27 @@
         document.getElementById('form-id-badge').textContent = bon.id;
         document.getElementById('form-konsumen-text').textContent = bon.konsumen;
         document.getElementById('form-tglbon-text').textContent = new Date(bon.tanggal).toLocaleDateString('id-ID');
-        document.getElementById('form-item-text').textContent = (bon.items?.length || 0) + ' Item';
+                document.getElementById('form-item-text').textContent = (bon.items?.length || 0) + ' Item';
+        document.getElementById('form-staf-ops').textContent = bon.staf || '-';
+        document.getElementById('form-pic-mar').textContent = bon.marketing || '-';
+        
+        const tbodyItem = document.getElementById('detail-item-body');
+        if(bon.items && bon.items.length > 0) {
+            tbodyItem.innerHTML = bon.items.map((it, idx) => \
+                <tr class="border-b border-slate-100 text-xs">
+                    <td class="px-2 py-2 text-center">\</td>
+                    <td class="px-2 py-2 text-center">\</td>
+                    <td class="px-2 py-2">\</td>
+                    <td class="px-2 py-2 text-right">\</td>
+                    <td class="px-2 py-2 text-right">\</td>
+                    <td class="px-2 py-2 text-right font-bold text-slate-800">\</td>
+                    <td class="px-2 py-2 text-right">\</td>
+                    <td class="px-2 py-2 text-right font-bold text-slate-800">\</td>
+                </tr>
+            \).join('');
+        } else {
+            tbodyItem.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-slate-400 italic">Tidak ada item barang</td></tr>';
+        }
         document.getElementById('form-tagihanawal-text').textContent = 'Rp ' + bon.total.toLocaleString('id-ID');
         
         // Render histori
@@ -446,13 +499,13 @@
         const hist = bon.historiBayar || [];
         let totalPaid = 0;
         if(hist.length === 0) {
-          histTbody.innerHTML = `<tr><td colspan="6" class="px-3 py-4 text-center text-slate-400 italic">Belum ada riwayat pembayaran untuk bon ini.</td></tr>`;
+          histTbody.innerHTML = `<tr><td colspan="8" class="px-3 py-4 text-center text-slate-400 italic">Belum ada riwayat pembayaran untuk bon ini.</td></tr>`;
         } else {
           histTbody.innerHTML = hist.map(h => {
              totalPaid += (h.nominal || 0);
              return `<tr class="border-b border-slate-100 text-xs">
                <td class="px-2 py-2 text-slate-700">${h.tanggal}<br><span class="text-[10px] text-slate-400 font-bold">${h.caraBayar}</span></td>
-               <td class="px-2 py-2">${h.kolektor}<br><span class="text-[10px] text-slate-400">${h.waktu}</span></td>
+               <td class="px-2 py-2">${h.kolektor}<br><span class="text-[10px] text-slate-400">${h.waktu}</span></td><td class="px-2 py-2 text-xs italic text-slate-500">${h.memo || '-'}</td>
                <td class="px-2 py-2 text-right text-rose-600">${(h.potongan?.harga||0).toLocaleString('id-ID')}</td>
                <td class="px-2 py-2 text-right text-rose-600"><span class="text-[10px] text-slate-400 font-bold">${h.potongan?.matiKg||0} Kg</span><br>${(h.potongan?.matiRp||0).toLocaleString('id-ID')}</td>
                <td class="px-2 py-2 text-right text-rose-600"><span class="text-[10px] text-slate-400 font-bold">${h.potongan?.susutKg||0} Kg</span><br>${(h.potongan?.susutRp||0).toLocaleString('id-ID')}</td>
@@ -772,7 +825,8 @@
       document.getElementById('btn-simpan-bayar').addEventListener('click', async () => {
          if(editingBonIndex < 0) return;
          
-         const nominal = parseFloat(document.getElementById('inp-bayar-rp').value);
+         const nominalStr = document.getElementById('inp-bayar-rp').value.replace(/\./g, '');
+         const nominal = parseFloat(nominalStr);
          if(isNaN(nominal) || nominal <= 0) { alert('Harap isi nominal pembayaran dengan benar.'); return; }
 
          const tglBayar = document.getElementById('inp-tgl-bayar').value;
@@ -807,6 +861,7 @@
            kasir: 'Budi Ariadi', // Hardcoded requirement
            caraBayar: cara,
            waktu: waktu,
+           memo: document.getElementById('inp-memo').value,
            nominal: nominal,
            potongan: { harga: potHarga, matiKg, matiRp: potMati, susutKg, susutRp: potSusut, pulangKg, pulangRp: potPulang },
            totalPotongan: totalPotNew
