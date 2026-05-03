@@ -6,6 +6,7 @@
     <title>Bon Penjualan - Operasional Keuangan</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
       tailwind.config = {
         theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } }
@@ -118,6 +119,10 @@
                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                Cetak PDF
             </button>
+            <button id="btn-export-excel" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors shadow-lg shadow-emerald-600/20 flex items-center gap-2 shrink-0 no-print">
+               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+               Export Excel
+            </button>
             <button id="btn-buat-bon" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors shadow-lg shadow-emerald-600/20 flex items-center gap-2 shrink-0">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Buat Bon Baru
             </button>
@@ -162,7 +167,18 @@
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm text-slate-600">
             <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
-              <tr><th class="px-2 py-2 border-r border-slate-100 w-10 text-center">No</th><th class="px-2 py-2 border-r border-slate-100 w-24">Tanggal</th><th class="px-2 py-2 border-r border-slate-100 w-24">No Faktur</th><th class="px-2 py-2 border-r border-slate-100 text-center">Jml Item</th><th class="px-2 py-2 border-r border-slate-100 text-right">Neto (kg)</th><th class="px-2 py-2 border-r border-slate-100">Konsumen</th><th class="px-2 py-2 border-r border-slate-100">Staf</th><th class="px-2 py-2 border-r border-slate-100 text-right">Total (Rp)</th><th class="px-2 py-2 border-r border-slate-100 text-center">Status</th><th class="px-2 py-2 text-center">Aksi</th></tr>
+              <tr>
+                <th class="px-2 py-2 border-r border-slate-100 w-10 text-center">No</th>
+                <th class="px-2 py-2 border-r border-slate-100 w-24 cursor-pointer hover:bg-slate-100 transition-colors" onclick="setSort('tanggal')">Tanggal <span class="sort-icon text-xs ml-1" data-col="tanggal">↕</span></th>
+                <th class="px-2 py-2 border-r border-slate-100 w-24 cursor-pointer hover:bg-slate-100 transition-colors" onclick="setSort('id')">No Faktur <span class="sort-icon text-xs ml-1" data-col="id">↕</span></th>
+                <th class="px-2 py-2 border-r border-slate-100 text-center">Jml Item</th>
+                <th class="px-2 py-2 border-r border-slate-100 text-right">Neto (kg)</th>
+                <th class="px-2 py-2 border-r border-slate-100 cursor-pointer hover:bg-slate-100 transition-colors" onclick="setSort('konsumen')">Konsumen <span class="sort-icon text-xs ml-1" data-col="konsumen">↕</span></th>
+                <th class="px-2 py-2 border-r border-slate-100">Staf</th>
+                <th class="px-2 py-2 border-r border-slate-100 text-right">Total (Rp)</th>
+                <th class="px-2 py-2 border-r border-slate-100 text-center cursor-pointer hover:bg-slate-100 transition-colors" onclick="setSort('status')">Status <span class="sort-icon text-xs ml-1" data-col="status">↕</span></th>
+                <th class="px-2 py-2 text-center">Aksi</th>
+              </tr>
             </thead>
             <tbody id="bon-table-body"></tbody>
           </table>
@@ -340,6 +356,24 @@
     (function() {
       const STORAGE_KEY = 'polikas_bon_data_v2';
       let editingBonIndex = -1;
+      let sortCol = '';
+      let sortAsc = true;
+
+      window.setSort = function(col) {
+        if (sortCol === col) sortAsc = !sortAsc;
+        else { sortCol = col; sortAsc = true; }
+        renderTable();
+      };
+
+      function updateSortIcons() {
+        document.querySelectorAll('.sort-icon').forEach(el => {
+          if (el.dataset.col === sortCol) {
+            el.innerHTML = sortAsc ? '↑' : '↓';
+          } else {
+            el.innerHTML = '↕';
+          }
+        });
+      }
 
       function getAllBons() { return window.DataLayer ? window.DataLayer.getBons() : []; }
       // saveAllBons is replaced by DataLayer.saveBon
@@ -458,6 +492,33 @@
         document.title = origTitle;
       });
 
+      const btnExport = document.getElementById('btn-export-excel');
+      if(btnExport) btnExport.addEventListener('click',()=>{
+        const wsData = [
+          ['BON PENJUALAN'],
+          ['CV Global Putra Swasembada'],
+          [''],
+          ['No', 'Tanggal', 'No Faktur', 'Jml Item', 'Neto (kg)', 'Konsumen', 'Staf', 'Total (Rp)', 'Status']
+        ];
+        const tbodyRows = document.querySelectorAll('#bon-table-body tr');
+        if(tbodyRows.length === 0 || document.getElementById('empty-state').classList.contains('hidden') === false) {
+           alert('Tidak ada data untuk diekspor.');
+           return;
+        }
+        tbodyRows.forEach((tr) => {
+          const rowData = [];
+          const tds = tr.querySelectorAll('td');
+          for(let i=0; i<tds.length-1; i++) {
+            rowData.push(tds[i].innerText.trim());
+          }
+          wsData.push(rowData);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Bon Penjualan");
+        XLSX.writeFile(wb, "Bon_Penjualan.xlsx");
+      });
+
       document.getElementById('btn-edit-bon').addEventListener('click',()=>{
         if(editingBonIndex<0)return;
         const bon=getAllBons()[editingBonIndex];
@@ -544,6 +605,19 @@
         const filtered=bons.map((b,i)=>({...b,_idx:i})).filter(b=>{
           return !b.isVoid && (b.tanggal>=from&&b.tanggal<=to)&&(!q||b.id.toLowerCase().includes(q)||b.konsumen.toLowerCase().includes(q));
         });
+        if (sortCol) {
+          filtered.sort((a, b) => {
+            let valA = a[sortCol];
+            let valB = b[sortCol];
+            if (typeof valA === 'string') valA = valA.toLowerCase();
+            if (typeof valB === 'string') valB = valB.toLowerCase();
+            if (valA < valB) return sortAsc ? -1 : 1;
+            if (valA > valB) return sortAsc ? 1 : -1;
+            return 0;
+          });
+        }
+        if (typeof updateSortIcons === 'function') setTimeout(updateSortIcons, 0);
+
         let sumPenjualan=0, sumKgNetto=0, sumEkor=0, sumTerbayar=0, sumPiutang=0, sumLunas=0, sumXBayar=0, sumPotongan=0;
         let sP_Harga=0, sP_MatiRp=0, sP_MatiKg=0, sP_SusutRp=0, sP_SusutKg=0, sP_PulangRp=0, sP_PulangKg=0;
 

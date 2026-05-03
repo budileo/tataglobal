@@ -6,6 +6,7 @@
     <title>Pembayaran - TATA GLOBAL</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
       tailwind.config = { theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } } }
     </script>
@@ -129,6 +130,10 @@
           <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
           <input id="searchInput" type="text" placeholder="Cari No Faktur atau Nama Konsumen..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
         </div>
+        <button id="btn-export-excel" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors shadow-lg shadow-emerald-600/20 flex items-center gap-2 shrink-0 no-print">
+           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+           Export Excel
+        </button>
         <button onclick="window.print()" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold px-5 py-2.5 rounded-lg transition-colors shadow-sm flex items-center gap-2 shrink-0">
            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
            Cetak PDF
@@ -352,6 +357,24 @@
       const STORAGE_KEY = 'polikas_bon_data_v2';
       let editingBonIndex = -1;
       let activeFilter = 'hari-ini';
+      let sortCol = '';
+      let sortAsc = true;
+
+      window.setSort = function(col) {
+        if (sortCol === col) sortAsc = !sortAsc;
+        else { sortCol = col; sortAsc = true; }
+        renderTable();
+      };
+
+      function updateSortIcons() {
+        document.querySelectorAll('.sort-icon').forEach(el => {
+          if (el.dataset.col === sortCol) {
+            el.innerHTML = sortAsc ? '↑' : '↓';
+          } else {
+            el.innerHTML = '↕';
+          }
+        });
+      }
       
       // Helpers
       function getAllBons() { return window.DataLayer ? window.DataLayer.getBons() : []; }
@@ -556,11 +579,24 @@
 
         if(activeTab === 'piutang') {
            // RENDERING PIUTANG
-           tableHead.innerHTML = `<tr><th class="px-2 py-2 border-r border-slate-100 w-10 text-center text-xs">No</th><th class="px-2 py-2 border-r border-slate-100 w-24 text-xs">Tanggal</th><th class="px-2 py-2 border-r border-slate-100 w-24 text-xs">No Faktur</th><th class="px-2 py-2 border-r border-slate-100 text-xs">Konsumen</th><th class="px-2 py-2 border-r border-slate-100 text-right text-xs">Tagihan Awal</th><th class="px-2 py-2 border-r border-slate-100 text-right bg-rose-50 text-rose-700 text-xs">Ttl Potongan</th><th class="px-2 py-2 border-r border-slate-100 text-right text-xs">Tlh Dibayar</th><th class="px-2 py-2 border-r border-slate-100 text-center text-xs">x Bayar</th><th class="px-2 py-2 border-r border-slate-100 text-right text-xs">Sisa Tagihan</th><th class="px-2 py-2 border-r border-slate-100 text-center text-xs">Status</th><th class="px-2 py-2 text-center no-print text-xs">Aksi</th></tr>`;
+           tableHead.innerHTML = `<tr><th class="px-2 py-2 border-r border-slate-100 w-10 text-center text-xs">No</th><th class="px-2 py-2 border-r border-slate-100 w-24 text-xs cursor-pointer hover:bg-slate-100 transition-colors" onclick="setSort('tanggal')">Tanggal <span class="sort-icon text-xs ml-1" data-col="tanggal">↕</span></th><th class="px-2 py-2 border-r border-slate-100 w-24 text-xs cursor-pointer hover:bg-slate-100 transition-colors" onclick="setSort('id')">No Faktur <span class="sort-icon text-xs ml-1" data-col="id">↕</span></th><th class="px-2 py-2 border-r border-slate-100 text-xs cursor-pointer hover:bg-slate-100 transition-colors" onclick="setSort('konsumen')">Konsumen <span class="sort-icon text-xs ml-1" data-col="konsumen">↕</span></th><th class="px-2 py-2 border-r border-slate-100 text-right text-xs">Tagihan Awal</th><th class="px-2 py-2 border-r border-slate-100 text-right bg-rose-50 text-rose-700 text-xs">Ttl Potongan</th><th class="px-2 py-2 border-r border-slate-100 text-right text-xs">Tlh Dibayar</th><th class="px-2 py-2 border-r border-slate-100 text-center text-xs">x Bayar</th><th class="px-2 py-2 border-r border-slate-100 text-right text-xs">Sisa Tagihan</th><th class="px-2 py-2 border-r border-slate-100 text-center text-xs cursor-pointer hover:bg-slate-100 transition-colors" onclick="setSort('status')">Status <span class="sort-icon text-xs ml-1" data-col="status">↕</span></th><th class="px-2 py-2 text-center no-print text-xs">Aksi</th></tr>`;
            
            const filtered = bons.map((b,i)=>({...b,_idx:i})).filter(b=>{
              return !b.isVoid && (b.tanggal>=from && b.tanggal<=to) && (!query || b.id.toLowerCase().includes(query) || b.konsumen.toLowerCase().includes(query));
            });
+
+           if (sortCol) {
+             filtered.sort((a, b) => {
+               let valA = a[sortCol];
+               let valB = b[sortCol];
+               if (typeof valA === 'string') valA = valA.toLowerCase();
+               if (typeof valB === 'string') valB = valB.toLowerCase();
+               if (valA < valB) return sortAsc ? -1 : 1;
+               if (valA > valB) return sortAsc ? 1 : -1;
+               return 0;
+             });
+           }
+           if (typeof updateSortIcons === 'function') setTimeout(updateSortIcons, 0);
 
            updateSummary(filtered);
 
@@ -595,7 +631,7 @@
 
         } else {
            // RENDERING HISTORY
-           tableHead.innerHTML = `<tr><th class="px-2 py-2 border-r border-slate-100 w-10 text-center text-xs">No</th><th class="px-2 py-2 border-r border-slate-100 w-24 text-left text-xs">Tgl Bayar</th><th class="px-2 py-2 border-r border-slate-100 text-left text-xs">Konsumen</th><th class="px-2 py-2 border-r border-slate-100 text-left text-xs">No Faktur</th><th class="px-2 py-2 border-r border-slate-100 text-right text-xs">Tagihan Awal</th><th class="px-2 py-2 border-r border-slate-100 text-right bg-rose-50 text-rose-700 text-xs">Ttl Potong</th><th class="px-2 py-2 border-r border-slate-100 text-right bg-emerald-50 text-emerald-800 text-xs">Nominal Bayar</th><th class="px-2 py-2 text-right text-xs">Sisa Tagihan</th><th class="px-2 py-2 no-print text-center text-xs">Aksi</th></tr>`;
+           tableHead.innerHTML = `<tr><th class="px-2 py-2 border-r border-slate-100 w-10 text-center text-xs">No</th><th class="px-2 py-2 border-r border-slate-100 w-24 text-left text-xs cursor-pointer hover:bg-slate-100 transition-colors" onclick="setSort('tglBayar')">Tgl Bayar <span class="sort-icon text-xs ml-1" data-col="tglBayar">↕</span></th><th class="px-2 py-2 border-r border-slate-100 text-left text-xs cursor-pointer hover:bg-slate-100 transition-colors" onclick="setSort('konsumen')">Konsumen <span class="sort-icon text-xs ml-1" data-col="konsumen">↕</span></th><th class="px-2 py-2 border-r border-slate-100 text-left text-xs cursor-pointer hover:bg-slate-100 transition-colors" onclick="setSort('noFaktur')">No Faktur <span class="sort-icon text-xs ml-1" data-col="noFaktur">↕</span></th><th class="px-2 py-2 border-r border-slate-100 text-right text-xs">Tagihan Awal</th><th class="px-2 py-2 border-r border-slate-100 text-right bg-rose-50 text-rose-700 text-xs">Ttl Potong</th><th class="px-2 py-2 border-r border-slate-100 text-right bg-emerald-50 text-emerald-800 text-xs">Nominal Bayar</th><th class="px-2 py-2 text-right text-xs">Sisa Tagihan</th><th class="px-2 py-2 no-print text-center text-xs">Aksi</th></tr>`;
            
            let allHistory = [];
            bons.forEach(b => {
@@ -627,6 +663,19 @@
               const queryMatch = !query || h.noFaktur.toLowerCase().includes(query) || h.konsumen.toLowerCase().includes(query);
               return dateMatch && queryMatch;
            });
+
+           if (sortCol) {
+             filteredHistory.sort((a, b) => {
+               let valA = a[sortCol];
+               let valB = b[sortCol];
+               if (typeof valA === 'string') valA = valA.toLowerCase();
+               if (typeof valB === 'string') valB = valB.toLowerCase();
+               if (valA < valB) return sortAsc ? -1 : 1;
+               if (valA > valB) return sortAsc ? 1 : -1;
+               return 0;
+             });
+           }
+           if (typeof updateSortIcons === 'function') setTimeout(updateSortIcons, 0);
 
            // Update summary based on bills related to these transactions
            updateSummary(bons.filter(b => b.tanggal >= from && b.tanggal <= to));
@@ -788,6 +837,41 @@
 
       // Init
       showListView();
+
+      const btnExport = document.getElementById('btn-export-excel');
+      if(btnExport) btnExport.addEventListener('click',()=>{
+        const isPiutang = activeTab === 'piutang';
+        const title = isPiutang ? 'DAFTAR PIUTANG' : 'HISTORI PEMBAYARAN';
+        const wsData = [
+          [title],
+          ['CV Global Putra Swasembada'],
+          ['']
+        ];
+        
+        if (isPiutang) {
+           wsData.push(['No', 'Tanggal', 'No Faktur', 'Konsumen', 'Tagihan Awal', 'Ttl Potongan', 'Tlh Dibayar', 'x Bayar', 'Sisa Tagihan', 'Status']);
+        } else {
+           wsData.push(['No', 'Tgl Bayar', 'Konsumen', 'No Faktur', 'Tagihan Awal', 'Ttl Potong', 'Nominal Bayar', 'Sisa Tagihan']);
+        }
+
+        const tbodyRows = document.querySelectorAll('#payment-table-body tr');
+        if(tbodyRows.length === 0 || document.getElementById('empty-state').classList.contains('hidden') === false) {
+           alert('Tidak ada data untuk diekspor.');
+           return;
+        }
+        tbodyRows.forEach((tr) => {
+          const rowData = [];
+          const tds = tr.querySelectorAll('td');
+          for(let i=0; i<tds.length-1; i++) {
+            rowData.push(tds[i].innerText.replace(/\n/g, ' ').trim());
+          }
+          wsData.push(rowData);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, title);
+        XLSX.writeFile(wb, title.replace(/\s/g, '_') + ".xlsx");
+      });
     })();
      </script>
      <script src="auth-guard.js"></script>
