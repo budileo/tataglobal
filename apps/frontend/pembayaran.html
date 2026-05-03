@@ -191,32 +191,7 @@
           <p class="font-semibold text-lg mb-1">Belum Ada Bon</p><p class="text-sm">Tidak ditemukan data bon faktur untuk filter ini.</p>
         </div>
       </div>
-    <!-- Histori Pembayaran -->
-      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6">
-        <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider border-b border-slate-100 pb-2 mb-4">Histori Pembayaran Sebelumnya</h4>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-600 mb-2">
-            <thead class="bg-slate-50 text-slate-500 text-xs font-semibold">
-              <tr>
-                <th class="px-2 py-2 border-b border-slate-200">Tgl Bayar</th>
-                <th class="px-2 py-2 border-b border-slate-200">Kolektor</th><th class="px-2 py-2 border-b border-slate-200 text-xs">Memo</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">Pot Harga</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Mati (Kg/Rp)</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Susut (Kg/Rp)</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Pulang (Kg/Rp)</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right bg-rose-50 text-rose-700 text-xs">Ttl Potong</th>
-                <th class="px-2 py-2 border-b border-slate-200 text-right bg-emerald-50 text-emerald-700 text-sm">Nominal Bayar</th>
-              </tr>
-            </thead>
-            <tbody id="histori-table-body">
-              <!-- Riwayat pembayaran -->
-            </tbody>
-          </table>
-        </div>
-        <div class="flex justify-end pt-2 text-sm font-bold text-slate-800">
-          Total Terbayar Sebelumnya: <span id="text-total-terbayar" class="ml-2 text-emerald-700">Rp 0</span>
-        </div>
-      </div>
+
 
       </main>
 
@@ -367,6 +342,33 @@
             SIMPAN PEMBAYARAN
          </button>
       </div>
+    
+    <!-- Histori Pembayaran -->
+      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6">
+        <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider border-b border-slate-100 pb-2 mb-4">Histori Pembayaran Sebelumnya</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-600 mb-2">
+            <thead class="bg-slate-50 text-slate-500 text-xs font-semibold">
+              <tr>
+                <th class="px-2 py-2 border-b border-slate-200">Tgl Bayar</th>
+                <th class="px-2 py-2 border-b border-slate-200">Kolektor</th><th class="px-2 py-2 border-b border-slate-200 text-xs">Memo</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">Pot Harga</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Mati (Kg/Rp)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Susut (Kg/Rp)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right text-[10px] text-rose-600">A.Pulang (Kg/Rp)</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right bg-rose-50 text-rose-700 text-xs">Ttl Potong</th>
+                <th class="px-2 py-2 border-b border-slate-200 text-right bg-emerald-50 text-emerald-700 text-sm">Nominal Bayar</th>
+              </tr>
+            </thead>
+            <tbody id="histori-table-body">
+              <!-- Riwayat pembayaran -->
+            </tbody>
+          </table>
+        </div>
+        <div class="flex justify-end pt-2 text-sm font-bold text-slate-800">
+          Total Terbayar Sebelumnya: <span id="text-total-terbayar" class="ml-2 text-emerald-700">Rp 0</span>
+        </div>
+      </div>
     </main>
 
     <script type="module" src="data-layer.js"></script>
@@ -477,18 +479,18 @@
         
         const tbodyItem = document.getElementById('detail-item-body');
         if(bon.items && bon.items.length > 0) {
-            tbodyItem.innerHTML = bon.items.map((it, idx) => \
+            tbodyItem.innerHTML = bon.items.map((it, idx) => `
                 <tr class="border-b border-slate-100 text-xs">
-                    <td class="px-2 py-2 text-center">\</td>
-                    <td class="px-2 py-2 text-center">\</td>
-                    <td class="px-2 py-2">\</td>
-                    <td class="px-2 py-2 text-right">\</td>
-                    <td class="px-2 py-2 text-right">\</td>
-                    <td class="px-2 py-2 text-right font-bold text-slate-800">\</td>
-                    <td class="px-2 py-2 text-right">\</td>
-                    <td class="px-2 py-2 text-right font-bold text-slate-800">\</td>
+                    <td class="px-2 py-2 text-center">${idx + 1}</td>
+                    <td class="px-2 py-2 text-center">${it.jmlAyam || 0}</td>
+                    <td class="px-2 py-2">${it.ukuran || '-'}</td>
+                    <td class="px-2 py-2 text-right">${(it.bruto || 0).toLocaleString('id-ID')}</td>
+                    <td class="px-2 py-2 text-right">${(it.beratKotak || 0).toLocaleString('id-ID')}</td>
+                    <td class="px-2 py-2 text-right font-bold text-slate-800">${(it.netto || 0).toLocaleString('id-ID')}</td>
+                    <td class="px-2 py-2 text-right">${(it.harga || 0).toLocaleString('id-ID')}</td>
+                    <td class="px-2 py-2 text-right font-bold text-slate-800">${(it.total || 0).toLocaleString('id-ID')}</td>
                 </tr>
-            \).join('');
+            `).join('');
         } else {
             tbodyItem.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-slate-400 italic">Tidak ada item barang</td></tr>';
         }
