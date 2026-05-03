@@ -55,6 +55,7 @@ window.DataLayer = {
             kasir: 'Budi Ariadi', // auto for now
             caraBayar: dbPay.cara_bayar || '',
             waktu: dbPay.waktu || '',
+            memo: dbPay.memo || (dbPay.potongan && dbPay.potongan._memo) || '',
             nominal: Number(dbPay.nominal),
             potongan: dbPay.potongan || { harga:0, matiKg:0, matiRp:0, susutKg:0, susutRp:0, pulangKg:0, pulangRp:0 },
             totalPotongan: Number(dbPay.total_potongan),
@@ -153,7 +154,7 @@ window.DataLayer = {
           tanggal: payEvent.tanggal,
           kolektor: payEvent.kolektor,
           waktu: payEvent.waktu,
-          potongan: payEvent.potongan,
+          potongan: Object.assign({}, payEvent.potongan, { _memo: payEvent.memo || '' }),
           is_void: payEvent.isVoid || false
         };
         

@@ -485,10 +485,10 @@
                     <td class="px-2 py-2 text-center">${it.jmlAyam || 0}</td>
                     <td class="px-2 py-2">${it.ukuran || '-'}</td>
                     <td class="px-2 py-2 text-right">${(it.bruto || 0).toLocaleString('id-ID')}</td>
-                    <td class="px-2 py-2 text-right">${(it.beratKotak || 0).toLocaleString('id-ID')}</td>
+                    <td class="px-2 py-2 text-right">${it.jmlAyam || 0}</td>
                     <td class="px-2 py-2 text-right font-bold text-slate-800">${(it.netto || 0).toLocaleString('id-ID')}</td>
                     <td class="px-2 py-2 text-right">${(it.harga || 0).toLocaleString('id-ID')}</td>
-                    <td class="px-2 py-2 text-right font-bold text-slate-800">${(it.total || 0).toLocaleString('id-ID')}</td>
+                    <td class="px-2 py-2 text-right font-bold text-slate-800">${(it.jumlah || 0).toLocaleString('id-ID')}</td>
                 </tr>
             `).join('');
         } else {
@@ -498,7 +498,7 @@
         
         // Render histori
         const histTbody = document.getElementById('histori-table-body');
-        const hist = bon.historiBayar || [];
+        const hist = (bon.historiBayar || []).filter(h => !h.isVoid);
         let totalPaid = 0;
         if(hist.length === 0) {
           histTbody.innerHTML = `<tr><td colspan="8" class="px-3 py-4 text-center text-slate-400 italic">Belum ada riwayat pembayaran untuk bon ini.</td></tr>`;
@@ -708,6 +708,7 @@
                     potongTrans: h.totalPotongan || 0,
                     bayarTrans: h.nominal || 0,
                     sisa: sisaSetelahIni,
+                    memo: h.memo || '',
                     bonIdx: bons.indexOf(b)
                  });
               });
