@@ -143,6 +143,27 @@
       }
       updateTokenBadge();
 
+      // ========== CLOUD SYNC ==========
+      async function initSettings() {
+         const btnLoad = document.createElement('div');
+         btnLoad.id = 'sync-overlay';
+         btnLoad.className = 'fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm';
+         btnLoad.innerHTML = `<div class="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div><p class="mt-4 font-bold text-slate-700 animate-pulse">Menyelaraskan data cloud...</p>`;
+         document.body.appendChild(btnLoad);
+         
+         await AuthGuard.initCloudSync();
+         
+         document.body.removeChild(btnLoad);
+         updateTokenBadge();
+         
+         // Reload currently active tab
+         const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+         if(activeTab==='users') renderUsers();
+         if(activeTab==='perms') renderPerms();
+         if(activeTab==='topup') renderTopup();
+         if(activeTab==='tarif') renderTarif();
+      }
+
       // ========== TAB SWITCHING ==========
       const tabs = document.querySelectorAll('.tab-btn');
       const panels = document.querySelectorAll('.tab-panel');
@@ -343,6 +364,9 @@
 
       // Init
       renderUsers();
+      
+      // Run Cloud Sync
+      setTimeout(() => initSettings(), 100);
     })();
     </script>
     <script src="app.js"></script>

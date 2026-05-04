@@ -50,11 +50,11 @@ const ActivityLogger = (function() {
     };
 
     try {
-       // Insert into audit_logs table
-       const { error } = await supabase.from('audit_logs').insert([entry]);
-       if (error) console.error("Gagal simpan audit log:", error);
+       const tableName = opts.isCritical ? 'audit_logs' : 'activity_logs';
+       const { error } = await supabase.from(tableName).insert([entry]);
+       if (error) console.error("Gagal simpan log ke " + tableName + ":", error);
     } catch(e) {
-       console.error("Exception simpan audit log:", e);
+       console.error("Exception simpan log:", e);
     }
     
     return entry;
@@ -73,20 +73,39 @@ const ActivityLogger = (function() {
     if (!supabase) return [];
 
     try {
-      let q = supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(500);
+      let qAudit = supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(250);
+      let qActivity = supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(250);
 
-      if (filters.dateFrom) q = q.gte('created_at', filters.dateFrom + 'T00:00:00Z');
-      if (filters.dateTo) q = q.lte('created_at', filters.dateTo + 'T23:59:59Z');
-      if (filters.action) q = q.eq('action', filters.action);
-      if (filters.entityType) q = q.eq('entity_type', filters.entityType);
-      if (filters.criticalOnly) q = q.eq('is_critical', true);
-      // for search, you might need a custom RPC or ilike on multiple fields in a real app, 
-      // but for now we fetch and filter locally if search is present, to keep it simple
+      if (filters.dateFrom) {
+          qAudit = qAudit.gte('created_at', filters.dateFrom + 'T00:00:00Z');
+          qActivity = qActivity.gte('created_at', filters.dateFrom + 'T00:00:00Z');
+      }
+      if (filters.dateTo) {
+          qAudit = qAudit.lte('created_at', filters.dateTo + 'T23:59:59Z');
+          qActivity = qActivity.lte('created_at', filters.dateTo + 'T23:59:59Z');
+      }
+      if (filters.action) {
+          qAudit = qAudit.eq('action', filters.action);
+          qActivity = qActivity.eq('action', filters.action);
+      }
+      if (filters.entityType) {
+          qAudit = qAudit.eq('entity_type', filters.entityType);
+          qActivity = qActivity.eq('entity_type', filters.entityType);
+      }
+
+      const [resAudit, resActivity] = await Promise.all([
+          qAudit,
+          filters.criticalOnly ? { data: [] } : qActivity
+      ]);
+
+      if (resAudit.error) throw resAudit.error;
+      if (resActivity.error) throw resActivity.error;
       
-      const { data, error } = await q;
-      if (error) throw error;
+      let combinedData = [...(resAudit.data || []), ...(resActivity.data || [])];
+      // Sort descending by created_at
+      combinedData.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       
-      let logs = data.map(d => ({
+      let logs = combinedData.map(d => ({
          id: d.id,
          userId: d.user_id,
          userName: d.user_name,
@@ -113,7 +132,7 @@ const ActivityLogger = (function() {
       }
       return logs;
     } catch(e) {
-       console.error("Gagal query audit log:", e);
+       console.error("Gagal query activity/audit log:", e);
        return [];
     }
   }

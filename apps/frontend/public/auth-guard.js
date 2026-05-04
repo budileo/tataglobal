@@ -75,6 +75,63 @@ const AuthGuard = (function() {
     }
   }
 
+  // ==================== CLOUD SYNC ====================
+  async function initCloudSync() {
+    if (!window.supabaseClient) return;
+    try {
+      // Fetch all core data from Supabase
+      const [
+        { data: depts },
+        { data: appUsers },
+        { data: userPerms },
+        { data: tokenTarif },
+        { data: tokenHistory }
+      ] = await Promise.all([
+        window.supabaseClient.from('departments').select('*'),
+        window.supabaseClient.from('app_users').select('*'),
+        window.supabaseClient.from('user_permissions').select('*'),
+        window.supabaseClient.from('token_tarif').select('*'),
+        window.supabaseClient.from('token_history').select('*').order('created_at', { ascending: false }).limit(100)
+      ]);
+
+      // Update local storage silently if data exists
+      if (depts && depts.length > 0) {
+        _set(KEYS.departments, depts.map(d => ({
+          id: d.id, name: d.name, tokenBalance: Number(d.token_balance), inviteCode: d.invite_code, createdAt: d.created_at
+        })));
+      }
+      
+      if (appUsers && appUsers.length > 0) {
+        _set(KEYS.users, appUsers.map(u => ({
+          id: u.id, name: u.name, email: u.email, username: u.username, passwordHash: u.password_hash,
+          role: u.role, status: u.status, departmentId: u.department_id, createdAt: u.created_at
+        })));
+      }
+
+      if (userPerms && userPerms.length > 0) {
+        _set(KEYS.userPerms, userPerms.map(p => ({
+          userId: p.user_id, permissions: p.permissions || []
+        })));
+      }
+
+      if (tokenTarif && tokenTarif.length > 0) {
+        _set(KEYS.tokenTarif, tokenTarif.map(t => ({
+          code: t.code, label: t.label, cost: Number(t.cost)
+        })));
+      }
+
+      if (tokenHistory && tokenHistory.length > 0) {
+        _set(KEYS.tokenHistory, tokenHistory.map(h => ({
+          id: h.id, departmentId: h.department_id, userId: h.user_id, userName: h.user_name,
+          type: h.type, amount: Number(h.amount), actionCode: h.action_code, description: h.description,
+          balanceAfter: Number(h.balance_after), createdAt: h.created_at
+        })));
+      }
+    } catch (e) {
+      console.error("AuthGuard Cloud Sync Error:", e);
+    }
+  }
+
   // ==================== AUTH ====================
   function getCurrentUser() {
     return _getObj(KEYS.currentUser);
@@ -176,7 +233,17 @@ const AuthGuard = (function() {
 
   // ==================== DEPARTMENTS ====================
   function getDepartments() { return _get(KEYS.departments); }
-  function saveDepartments(depts) { _set(KEYS.departments, depts); }
+  function saveDepartments(depts) { 
+     _set(KEYS.departments, depts); 
+     // Cloud sync
+     if (window.supabaseClient) {
+        depts.forEach(d => {
+           window.supabaseClient.from('departments').upsert({
+              id: d.id, name: d.name, token_balance: d.tokenBalance, invite_code: d.inviteCode, created_at: d.createdAt
+           }).then();
+        });
+     }
+  }
 
   function getDepartmentById(id) {
     return _get(KEYS.departments).find(d => d.id === id) || null;
@@ -190,7 +257,17 @@ const AuthGuard = (function() {
 
   // ==================== TOKEN ENGINE ====================
   function getTokenTarif() { return _get(KEYS.tokenTarif); }
-  function saveTokenTarif(t) { _set(KEYS.tokenTarif, t); }
+  function saveTokenTarif(t) { 
+     _set(KEYS.tokenTarif, t); 
+     // Cloud Sync
+     if (window.supabaseClient) {
+        t.forEach(tarif => {
+           window.supabaseClient.from('token_tarif').upsert({
+              code: tarif.code, label: tarif.label, cost: tarif.cost
+           }).then();
+        });
+     }
+  }
 
   function getTarifCost(actionCode) {
     const tarif = _get(KEYS.tokenTarif);
@@ -227,7 +304,7 @@ const AuthGuard = (function() {
 
     // Record history
     const history = _get(KEYS.tokenHistory);
-    history.unshift({
+    const historyEntry = {
       id: 'tkn-' + _id(),
       departmentId: dept.id,
       userId: user.id,
@@ -238,9 +315,21 @@ const AuthGuard = (function() {
       description: description || actionCode,
       balanceAfter: dept.tokenBalance,
       createdAt: new Date().toISOString()
-    });
+    };
+    history.unshift(historyEntry);
     if (history.length > 5000) history.length = 5000;
     _set(KEYS.tokenHistory, history);
+
+    // Push to Cloud
+    if (window.supabaseClient) {
+       window.supabaseClient.from('departments').update({ token_balance: dept.tokenBalance }).eq('id', dept.id).then();
+       window.supabaseClient.from('token_history').insert([{
+          id: historyEntry.id, department_id: historyEntry.departmentId, user_id: historyEntry.userId,
+          user_name: historyEntry.userName, type: historyEntry.type, amount: historyEntry.amount,
+          action_code: historyEntry.actionCode, description: historyEntry.description,
+          balance_after: historyEntry.balanceAfter, created_at: historyEntry.createdAt
+       }]).then();
+    }
 
     // Update current user cache
     setCurrentUser({ ...user });
@@ -257,7 +346,7 @@ const AuthGuard = (function() {
     _set(KEYS.departments, depts);
 
     const history = _get(KEYS.tokenHistory);
-    history.unshift({
+    const historyEntry = {
       id: 'tkn-' + _id(),
       departmentId: departmentId,
       userId: byUserId,
@@ -268,8 +357,20 @@ const AuthGuard = (function() {
       description: note || 'Top-up token oleh Owner',
       balanceAfter: dept.tokenBalance,
       createdAt: new Date().toISOString()
-    });
+    };
+    history.unshift(historyEntry);
     _set(KEYS.tokenHistory, history);
+    
+    // Push to Cloud
+    if (window.supabaseClient) {
+       window.supabaseClient.from('departments').update({ token_balance: dept.tokenBalance }).eq('id', dept.id).then();
+       window.supabaseClient.from('token_history').insert([{
+          id: historyEntry.id, department_id: historyEntry.departmentId, user_id: historyEntry.userId,
+          user_name: historyEntry.userName, type: historyEntry.type, amount: historyEntry.amount,
+          action_code: historyEntry.actionCode, description: historyEntry.description,
+          balance_after: historyEntry.balanceAfter, created_at: historyEntry.createdAt
+       }]).then();
+    }
     return dept.tokenBalance;
   }
 
@@ -279,7 +380,17 @@ const AuthGuard = (function() {
 
   // ==================== USERS CRUD ====================
   function getUsers() { return _get(KEYS.users); }
-  function saveUsers(users) { _set(KEYS.users, users); }
+  function saveUsers(users) { 
+     _set(KEYS.users, users); 
+     if (window.supabaseClient) {
+        users.forEach(u => {
+           window.supabaseClient.from('app_users').upsert({
+              id: u.id, name: u.name, email: u.email, username: u.username, password_hash: u.passwordHash,
+              role: u.role, status: u.status, department_id: u.departmentId, created_at: u.createdAt
+           }).then();
+        });
+     }
+  }
 
   function getUsersByDepartment(deptId) {
     return _get(KEYS.users).filter(u => u.departmentId === deptId);
@@ -291,11 +402,21 @@ const AuthGuard = (function() {
     if (idx >= 0) overrides[idx].permissions = permissions;
     else overrides.push({ userId, permissions });
     _set(KEYS.userPerms, overrides);
+    
+    if (window.supabaseClient) {
+       window.supabaseClient.from('user_permissions').upsert({
+          user_id: userId, permissions: permissions
+       }).then();
+    }
   }
 
   function resetUserPermissions(userId) {
     const overrides = _get(KEYS.userPerms);
     _set(KEYS.userPerms, overrides.filter(o => o.userId !== userId));
+    
+    if (window.supabaseClient) {
+       window.supabaseClient.from('user_permissions').delete().eq('user_id', userId).then();
+    }
   }
 
   function hasOverride(userId) {
@@ -326,6 +447,14 @@ const AuthGuard = (function() {
     };
     users.push(newUser);
     _set(KEYS.users, users);
+
+    if (window.supabaseClient) {
+       window.supabaseClient.from('app_users').insert([{
+          id: newUser.id, name: newUser.name, email: newUser.email, username: newUser.username,
+          password_hash: newUser.passwordHash, role: newUser.role, status: newUser.status,
+          department_id: newUser.departmentId, created_at: newUser.createdAt
+       }]).then();
+    }
 
     if (typeof ActivityLogger !== 'undefined') {
       ActivityLogger.log({ action: 'CREATE', entityType: 'USER', entityId: newUser.id, newData: { name, email, username, role: 'STAFF', department: dept.name }, message: 'User baru mendaftar via invite: ' + name });
@@ -367,6 +496,7 @@ const AuthGuard = (function() {
   seedDefaults();
 
   return {
+    initCloudSync,
     // Auth
     getCurrentUser, setCurrentUser, logout, requireAuth, authenticate,
     // Permissions
