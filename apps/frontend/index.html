@@ -82,7 +82,7 @@
 
         // Mapping legacy username ke email untuk Supabase Auth
         if(username === 'budileo') username = 'budileo@gmail.com';
-        if(!username.includes('@')) username = username + '@gmail.com';
+        else if(!username.includes('@')) username = username + '@gmail.com';
 
         // 1. Coba login via Supabase
         let { data, error } = await supabase.auth.signInWithPassword({
@@ -126,7 +126,23 @@
         }
 
         // 2. Pastikan di app_users memang aktif (untuk kasus login dengan session lama atau salah user)
-        const { data: finalAppUser } = await supabase.from('app_users').select('*').eq('email', username).single();
+        let { data: finalAppUser } = await supabase.from('app_users').select('*').eq('email', username).single();
+        
+        // Auto-migrate owner if missing in app_users (to prevent lockout and keep old auth.uid for RLS)
+        if (!finalAppUser && data && data.user && (username === 'budileo@gmail.com' || username === 'budi@tataglobal.com')) {
+            await supabase.from('app_users').insert([{
+               id: data.user.id,
+               name: 'Budi Ariadi',
+               email: username,
+               username: 'budileo',
+               role: 'OWNER',
+               status: 'active',
+               department_id: 'dept-global-unggas'
+            }]);
+            const res = await supabase.from('app_users').select('*').eq('email', username).single();
+            finalAppUser = res.data;
+        }
+
         if (!finalAppUser || finalAppUser.status !== 'active') {
             await supabase.auth.signOut();
             errorBox.textContent = "Akun Anda berstatus Menunggu / Non-aktif. Hubungi Admin.";

@@ -32,8 +32,23 @@ import { supabase } from './supabaseClient.js';
       const currentLocal = AuthGuard.getCurrentUser();
       
       // Fetch user role and status from Supabase to prevent hardcoded OWNER role
-      const { data: appUser } = await supabase.from('app_users').select('*').eq('email', session.user.email).single();
+      let { data: appUser } = await supabase.from('app_users').select('*').eq('email', session.user.email).single();
       
+      // Auto-migrate owner if missing
+      if (!appUser && (session.user.email === 'budileo@gmail.com' || session.user.email === 'budi@tataglobal.com')) {
+          await supabase.from('app_users').insert([{
+             id: session.user.id,
+             name: 'Budi Ariadi',
+             email: session.user.email,
+             username: 'budileo',
+             role: 'OWNER',
+             status: 'active',
+             department_id: 'dept-global-unggas'
+          }]);
+          const res = await supabase.from('app_users').select('*').eq('email', session.user.email).single();
+          appUser = res.data;
+      }
+
       if (!appUser || appUser.status !== 'active') {
          await supabase.auth.signOut();
          localStorage.removeItem('tata_current_user');
