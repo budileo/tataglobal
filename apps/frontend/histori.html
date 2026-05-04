@@ -162,6 +162,11 @@
     <script src="activity-logger.js"></script>
     <script>
     (function() {
+      // Helper to wait for module to load
+      function waitForSupabase(callback) {
+         if (window.supabaseClient) callback();
+         else setTimeout(() => waitForSupabase(callback), 50);
+      }
 
       let activePeriod = 'hari-ini';
       const formatRp = (n) => 'Rp ' + (n||0).toLocaleString('id-ID');
@@ -362,7 +367,9 @@
       });
 
       // Init
-      renderLogs();
+      waitForSupabase(() => {
+        renderLogs();
+      });
     })();
     </script>
     <script src="auth-guard.js"></script>

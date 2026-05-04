@@ -142,6 +142,12 @@
         document.getElementById('dept-token-badge').textContent = '🪙 ' + (dept?dept.tokenBalance:0) + ' Token';
       }
       updateTokenBadge();
+      
+      // Helper to wait for module to load
+      function waitForSupabase(callback) {
+         if (window.supabaseClient) callback();
+         else setTimeout(() => waitForSupabase(callback), 50);
+      }
 
       // ========== CLOUD SYNC ==========
       async function initSettings() {
@@ -366,7 +372,9 @@
       renderUsers();
       
       // Run Cloud Sync
-      setTimeout(() => initSettings(), 100);
+      waitForSupabase(() => {
+        initSettings();
+      });
     })();
     </script>
     <script src="app.js"></script>
