@@ -6,6 +6,7 @@
     <title>Laporan - Operasional Keuangan</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
       tailwind.config = { theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } } }
     </script>
@@ -168,9 +169,12 @@
             <button id="btn-back-detail" class="text-slate-500 hover:text-slate-800 font-medium text-sm flex items-center gap-2 transition-colors border px-3 py-1.5 rounded bg-white">
                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> Kembali
             </button>
-            <button id="btn-print-detail" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-sm font-medium shadow-sm transition-colors flex gap-2">
-               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> Cetak Laporan (PDF)
-            </button>
+             <button id="btn-excel-detail" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-sm font-medium shadow-sm transition-colors flex gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Export Excel
+             </button>
+             <button id="btn-print-detail" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded text-sm font-medium shadow-sm transition-colors flex gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> Cetak PDF
+             </button>
          </div>
 
           <!-- Kop Surat Laporan -->
@@ -239,7 +243,8 @@
                          <th class="px-2 py-2 border-r border-slate-300 w-8 text-center">No</th>
                          <th class="px-2 py-2 border-r border-slate-300 w-24 text-center">Tgl / Faktur</th>
                          <th class="px-2 py-2 border-r border-slate-300">Konsumen</th>
-                         <th class="px-2 py-2 border-r border-slate-300 text-right w-24">Tagihan / Sisa</th>
+                         <th class="px-2 py-2 border-r border-slate-300 text-right w-24">Tagihan</th>
+                         <th class="px-2 py-2 border-r border-slate-300 text-right w-20">Sisa</th>
                          <th class="px-2 py-2 border-r border-slate-300 text-right w-20 font-black text-rose-800 bg-rose-50">Ttl Potong</th>
                          <th class="px-2 py-2 border-r border-slate-300 text-right w-20">Pot.Harga</th>
                          <th class="px-2 py-2 border-r border-slate-300 text-right w-24">A.Mati(Kg/Rp)</th>
@@ -288,6 +293,7 @@
                       <thead>
                          <tr class="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold uppercase">
                             <th class="px-3 py-2 border-r border-slate-200">Ukuran Ayam</th>
+                            <th class="px-3 py-2 border-r border-slate-200 text-right">Jumlah Ekor</th>
                             <th class="px-3 py-2 text-right">Jumlah (Kg)</th>
                          </tr>
                       </thead>
@@ -306,6 +312,7 @@
                             <th class="px-2 py-2 border-r border-slate-200">Nama Konsumen</th>
                             <th class="px-2 py-2 border-r border-slate-200 text-center w-24">Kode Bon</th>
                             <th class="px-2 py-2 border-r border-slate-200 text-right w-24">Ayam KG</th>
+                            <th class="px-2 py-2 border-r border-slate-200 text-right w-20">Ekor</th>
                             <th class="px-2 py-2">Detail Ukuran</th>
                          </tr>
                       </thead>
@@ -320,28 +327,26 @@
 
     <script type="module" src="data-layer.js"></script>
     <script>
-      // Formatting helpers
       const formatRp = (num) => 'Rp ' + (num||0).toLocaleString('id-ID');
       const formatKg = (num) => (num||0).toLocaleString('id-ID', {minimumFractionDigits: 1, maximumFractionDigits: 2}) + ' Kg';
 
       const STORAGE_KEY = 'polikas_bon_data_v2';
       function getAllBons() { return window.DataLayer ? window.DataLayer.getBons() : []; }
 
-      let rekapData = []; // grouped by date
+      let rekapData = []; 
 
       function calculateRekap() {
          const bons = getAllBons();
          const byDate = {};
 
          bons.filter(b => !b.isVoid).forEach(b => {
-            // Receipt records
             (b.historiBayar || []).filter(h => !h.isVoid).forEach(h => {
                 const d = h.tanggal;
                 if(!d) return;
                 if(!byDate[d]) byDate[d] = {
                     date: d, penerimaan: 0, penjualanRp: 0, penjualanKg: 0,
                     potTotal:0, potHarga:0, potMatiRp:0, potSusutRp:0, potPulangRp:0,
-                    bonIds: new Set(), // Track unique bons for the day
+                    bonIds: new Set(),
                     waktuMap: {}, caraMap: {}, kolMap: {}, kasirMap: {}
                 };
                 const entry = byDate[d];
@@ -369,7 +374,6 @@
                 entry.potTotal += (h.totalPotongan || 0);
             });
 
-            // Sales records
             const bd = b.tanggal;
             if(bd) {
                 if(!byDate[bd]) byDate[bd] = {
@@ -384,7 +388,6 @@
             }
          });
 
-         // Filter
          const filterMode = document.getElementById('rekap-filter').value;
          const now = new Date(), ts = now.toISOString().split('T')[0];
          let from, to;
@@ -400,10 +403,8 @@
             to = document.getElementById('rekap-end').value || ts;
          }
 
-         // Sort oldest first
          rekapData = Object.values(byDate).filter(d => d.date >= from && d.date <= to).sort((a,b) => a.date.localeCompare(b.date));
 
-         // Render Table
          const tbody = document.getElementById('rekap-tbody');
          tbody.innerHTML = '';
          if(rekapData.length === 0) {
@@ -451,8 +452,6 @@
       function showDetail(dateStr, mode = 'penerimaan') {
          document.getElementById('view-rekap').classList.add('hidden');
          document.getElementById('view-detail').classList.remove('hidden');
-
-         // Hide all mode containers
          document.querySelectorAll('.mode-container').forEach(c => c.classList.add('hidden'));
 
          const dateObj = new Date(dateStr);
@@ -477,6 +476,8 @@
             document.body.classList.add('print:landscape');
             renderDetailAyam(dateStr);
          }
+         
+         window.currentDetail = { dateStr, mode };
       }
 
       function renderDetailPenerimaan(dateStr) {
@@ -534,18 +535,14 @@
             return;
          }
 
-         // 1. Group by Collector
          const grouped = {};
          dailyBons.forEach(b => {
-             const hist = (b.historiBayar || []).filter(h => !h.isVoid);
-             const collector = hist.length > 0 ? hist[0].kolektor : (b.kolektor || 'TANPA MARKETING');
-             if(!grouped[collector]) grouped[collector] = [];
-             grouped[collector].push(b);
+             const marketing = (b.marketing || 'TANPA MARKETING').toUpperCase();
+             if(!grouped[marketing]) grouped[marketing] = [];
+             grouped[marketing].push(b);
          });
 
-         // 2. Render Groups
          Object.keys(grouped).sort().forEach(marketing => {
-            // Group Header
             const headerTr = document.createElement('tr');
             headerTr.className = "bg-slate-50 border-y border-slate-400 print:bg-slate-100";
             headerTr.innerHTML = `<td colspan="10" class="px-3 py-2 font-black text-slate-900 uppercase tracking-widest text-[11px]">MARKETING: ${marketing}</td>`;
@@ -575,10 +572,8 @@
                      <span class="text-slate-400">${b.tanggal}</span>
                   </td>
                   <td class="px-2 py-2 border-r border-slate-200 font-semibold text-slate-700">${b.konsumen}</td>
-                  <td class="px-2 py-2 border-r border-slate-200 text-right">
-                     <span class="block font-bold text-slate-900">${b.total.toLocaleString('id-ID')}</span>
-                     <span class="text-rose-600 font-bold italic">${sisa.toLocaleString('id-ID')}</span>
-                  </td>
+                  <td class="px-2 py-2 border-r border-slate-200 text-right font-bold text-slate-900">${b.total.toLocaleString('id-ID')}</td>
+                  <td class="px-2 py-2 border-r border-slate-200 text-right text-rose-600 font-bold italic">${sisa.toLocaleString('id-ID')}</td>
                   <td class="px-2 py-2 border-r border-slate-200 text-right font-black text-rose-800 bg-rose-50">${pot.total.toLocaleString('id-ID')}</td>
                   <td class="px-2 py-2 border-r border-slate-200 text-right">${pot.harga.toLocaleString('id-ID')}</td>
                   <td class="px-2 py-2 border-r border-slate-200 text-right leading-tight">
@@ -680,28 +675,38 @@
          const dailyBons = bons.filter(b => !b.isVoid && b.tanggal === dateStr);
          
          let totalKg = 0;
-         const mapUkuran = {}; // { size: kg }
-         const pelangganData = []; // { name, id, kg, details: string }
+         let totalEkor = 0;
+         const mapUkuran = {};
+         const mapUkuranEkor = {};
+         const pelangganData = [];
 
          dailyBons.forEach(b => {
             let bonKg = 0;
+            let bonEkor = 0;
             const itemsByUkuran = {};
+            const itemsByUkuranEkor = {};
             
             (b.items || []).forEach(it => {
                const kg = (it.netto || 0);
+               const ekor = Number(it.jmlAyam || 0);
                const uk = (it.ukuran || 'TDK DIKETAHUI').toUpperCase();
                
                totalKg += kg;
+               totalEkor += ekor;
                bonKg += kg;
+               bonEkor += ekor;
                mapUkuran[uk] = (mapUkuran[uk] || 0) + kg;
+               mapUkuranEkor[uk] = (mapUkuranEkor[uk] || 0) + ekor;
                itemsByUkuran[uk] = (itemsByUkuran[uk] || 0) + kg;
+               itemsByUkuranEkor[uk] = (itemsByUkuranEkor[uk] || 0) + ekor;
             });
 
-            const detailsArr = Object.keys(itemsByUkuran).map(u => `${u}: ${itemsByUkuran[u].toFixed(2)}kg`);
+            const detailsArr = Object.keys(itemsByUkuran).map(u => `${u}: ${itemsByUkuranEkor[u]}ekor/${itemsByUkuran[u].toFixed(2)}kg`);
             pelangganData.push({
                konsumen: b.konsumen,
                id: b.id,
                kg: bonKg,
+               ekor: bonEkor,
                details: detailsArr.join(', ')
             });
          });
@@ -712,13 +717,14 @@
          // 2. Render Ukuran Table (Sorted by Kg DESC)
          const tbodyUkuran = document.getElementById('tbody-ayam-ukuran');
          tbodyUkuran.innerHTML = '';
-         const sortedUkuran = Object.keys(mapUkuran).map(u => ({ ukuran: u, kg: mapUkuran[u] })).sort((a, b) => b.kg - a.kg);
+         const sortedUkuran = Object.keys(mapUkuran).map(u => ({ ukuran: u, ekor: mapUkuranEkor[u] || 0, kg: mapUkuran[u] })).sort((a, b) => b.kg - a.kg);
          
          sortedUkuran.forEach(item => {
             const tr = document.createElement('tr');
             tr.className = "border-b border-slate-200 text-[12px]";
             tr.innerHTML = `
                <td class="px-3 py-2 border-r border-slate-200 font-bold">${item.ukuran}</td>
+               <td class="px-3 py-2 border-r border-slate-200 text-right font-semibold">${item.ekor.toLocaleString('id-ID')} Ekor</td>
                <td class="px-3 py-2 text-right font-semibold">${item.kg.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
             `;
             tbodyUkuran.appendChild(tr);
@@ -737,6 +743,7 @@
                <td class="px-2 py-2 border-r border-slate-200 font-bold text-slate-800">${p.konsumen}</td>
                <td class="px-2 py-2 border-r border-slate-200 text-center font-semibold text-blue-600">${p.id}</td>
                <td class="px-2 py-2 border-r border-slate-200 text-right font-bold text-slate-900">${p.kg.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right font-semibold">${p.ekor} Ekor</td>
                <td class="px-2 py-2 italic text-slate-500">${p.details}</td>
             `;
             tbodyPelanggan.appendChild(tr);
@@ -768,6 +775,52 @@
       };
       document.getElementById('btn-print-rekap').addEventListener('click', handlePrint);
       document.getElementById('btn-print-detail').addEventListener('click', handlePrint);
+
+      // Excel Export
+      document.getElementById('btn-excel-detail').addEventListener('click', () => {
+         if (!window.currentDetail) return;
+         const { dateStr, mode } = window.currentDetail;
+         const title = document.getElementById('det-title').textContent;
+         const periode = document.getElementById('det-periode').textContent;
+         const wsData = [[title], ['CV Global Putra Swasembada'], ['Periode: ' + periode], ['']];
+
+         if (mode === 'potongan') {
+            wsData.push(['No','Tgl/Faktur','Konsumen','Tagihan','Sisa','Ttl Potong','Pot.Harga','Mati Kg','Mati Rp','Susut Kg','Susut Rp','Pulang Kg','Pulang Rp','Marketing']);
+            const bons = getAllBons().filter(b => !b.isVoid && b.tanggal === dateStr);
+            bons.forEach((b, i) => {
+               const hist = (b.historiBayar||[]).filter(h=>!h.isVoid);
+               const paid = hist.reduce((s,h)=>s+(h.nominal||0),0);
+               const pot = hist.reduce((a,h)=>{ const p=h.potongan||{}; a.t+=(h.totalPotongan||0); a.h+=(p.harga||0); a.mk+=(p.matiKg||0); a.mr+=(p.matiRp||0); a.sk+=(p.susutKg||0); a.sr+=(p.susutRp||0); a.pk+=(p.pulangKg||0); a.pr+=(p.pulangRp||0); return a; },{t:0,h:0,mk:0,mr:0,sk:0,sr:0,pk:0,pr:0});
+               wsData.push([i+1, b.tanggal+' / '+b.id, b.konsumen, b.total, b.total-pot.t-paid, pot.t, pot.h, pot.mk, pot.mr, pot.sk, pot.sr, pot.pk, pot.pr, b.marketing||'']);
+            });
+         } else if (mode === 'piutang') {
+            wsData.push(['No','Tgl Faktur','No Faktur','Konsumen','Tagihan','Pembayaran','Sisa Piutang','Marketing']);
+            const bons = getAllBons().filter(b=>!b.isVoid&&b.tanggal<=dateStr);
+            let row = 0;
+            bons.forEach(b => {
+               const hist = (b.historiBayar||[]).filter(h=>!h.isVoid&&h.tanggal<=dateStr);
+               const paid = hist.reduce((s,h)=>s+(h.nominal||0),0);
+               const pot = hist.reduce((s,h)=>s+(h.totalPotongan||0),0);
+               const sisa = b.total-pot-paid;
+               if(sisa>0) { row++; wsData.push([row, b.tanggal, b.id, b.konsumen, b.total, paid, sisa, b.marketing||'']); }
+            });
+         } else if (mode === 'ayam') {
+            wsData.push(['--- Jumlah Ayam Terjual ---']); wsData.push(['Ukuran','Ekor','Kg']);
+            const bons = getAllBons().filter(b=>!b.isVoid&&b.tanggal===dateStr);
+            const mu={}; const me={};
+            bons.forEach(b=>(b.items||[]).forEach(it=>{ const u=(it.ukuran||'?').toUpperCase(); mu[u]=(mu[u]||0)+(it.netto||0); me[u]=(me[u]||0)+Number(it.jmlAyam||0); }));
+            Object.keys(mu).sort().forEach(u=>wsData.push([u, me[u]||0, mu[u]]));
+            wsData.push(['']); wsData.push(['--- Penjualan ke Pelanggan ---']); wsData.push(['No','Konsumen','Kode Bon','Kg','Ekor','Detail']);
+            bons.forEach((b,i)=>{ let kg=0,ek=0; (b.items||[]).forEach(it=>{kg+=(it.netto||0);ek+=Number(it.jmlAyam||0);}); const d=(b.items||[]).map(it=>(it.ukuran||'?')+':'+Number(it.jmlAyam||0)+'ekor/'+(it.netto||0).toFixed(2)+'kg').join(', '); wsData.push([i+1,b.konsumen,b.id,kg,ek,d]); });
+         } else {
+            wsData.push(['Laporan Penerimaan - silakan gunakan mode Cetak PDF untuk jenis ini.']);
+         }
+         const ws = XLSX.utils.aoa_to_sheet(wsData);
+         const wb = XLSX.utils.book_new();
+         XLSX.utils.book_append_sheet(wb, ws, mode);
+         XLSX.writeFile(wb, 'Laporan_'+mode+'_'+dateStr+'.xlsx');
+      });
+
       window.addEventListener('DOMContentLoaded', async () => {
          if (window.DataLayer) await window.DataLayer.init();
          
