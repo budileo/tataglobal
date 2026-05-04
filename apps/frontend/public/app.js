@@ -64,4 +64,24 @@ document.addEventListener('DOMContentLoaded', () => {
       window.dispatchEvent(new CustomEvent('sidebarToggle'));
     });
   }
+
+  // Update sidebar and header user info
+  if (typeof AuthGuard !== 'undefined') {
+    const user = AuthGuard.getCurrentUser();
+    if (user) {
+      // Sidebar
+      const nameEl = document.getElementById('sidebar-user-name');
+      const emailEl = document.getElementById('sidebar-user-email');
+      if (nameEl) nameEl.textContent = user.name || '-';
+      if (emailEl) emailEl.textContent = user.email || user.role || '-';
+
+      // Header role badge
+      const roleBadge = document.getElementById('header-role-badge');
+      if (roleBadge) roleBadge.textContent = 'Role: ' + (user.role || '-');
+
+      // Header avatar initial
+      const avatar = document.getElementById('header-user-avatar');
+      if (avatar) avatar.textContent = (user.name || '-').charAt(0).toUpperCase();
+    }
+  }
 });
