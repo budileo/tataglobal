@@ -616,8 +616,8 @@
              const paid = hist.reduce((s, h) => s + (h.nominal || 0), 0);
              const pot = hist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
              const sisa = b.total - pot - paid;
-             const collector = hist.length > 0 ? hist[0].kolektor : (b.kolektor || 'TANPA MARKETING');
-             return { ...b, sisa, paid, pot, collector };
+             const marketingName = (b.marketing || b.staf || '-').toUpperCase();
+             return { ...b, sisa, paid, pot, collector: marketingName };
          }).filter(b => b.sisa > 0);
 
          if(!unpaidBons.length) {
