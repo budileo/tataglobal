@@ -48,22 +48,25 @@
       import { supabase } from './supabaseClient.js';
 
       // Cek Session Supabase, BUKAN HANYA local mock data
-      supabase.auth.getSession().then(({ data: { session } }) => {
+      supabase.auth.getSession().then(async ({ data: { session } }) => {
          if (session) {
-            // Jika ada session cloud, boleh masuk
-            if (!AuthGuard.getCurrentUser()) {
+            const { data: appUser } = await supabase.from('app_users').select('*').eq('email', session.user.email).single();
+            
+            if (appUser && appUser.status === 'active') {
                AuthGuard.setCurrentUser({
-                  id: session.user.id,
-                  name: session.user.email.split('@')[0],
-                  email: session.user.email,
-                  role: 'OWNER',
-                  status: 'active',
-                  departmentId: 'dept-global-unggas'
+                  id: appUser.id,
+                  name: appUser.name,
+                  email: appUser.email,
+                  role: appUser.role,
+                  status: appUser.status,
+                  departmentId: appUser.department_id
                });
+               window.location.href = 'dashboard.html';
+            } else {
+               await supabase.auth.signOut();
+               localStorage.removeItem('tata_current_user');
             }
-            window.location.href = 'dashboard.html';
          } else {
-            // Jika tidak ada session cloud, HAPUS session lokal agar form login muncul
             localStorage.removeItem('tata_current_user');
          }
       });
@@ -88,23 +91,32 @@
         });
 
         if (error) {
-           // Langsung coba buatkan otomatis tanpa mengecek pesan error
+           const { data: appUser } = await supabase.from('app_users').select('*').eq('email', username).single();
+           
+           if (!appUser) {
+              errorBox.textContent = "Akun belum terdaftar. Silakan hubungi Owner untuk mendapatkan link pendaftaran.";
+              errorBox.classList.remove('hidden');
+              btn.disabled = false; btn.textContent = 'Masuk Sekarang';
+              return;
+           }
+
+           if (appUser.status !== 'active') {
+              errorBox.textContent = "Akun Anda berstatus Menunggu / Non-aktif. Hubungi Admin.";
+              errorBox.classList.remove('hidden');
+              btn.disabled = false; btn.textContent = 'Masuk Sekarang';
+              return;
+           }
+
+           // Jika aktif tapi belum ada di auth.users (karena pendaftaran hanya masuk app_users), auto-signup ke auth
            const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
               email: username,
               password: password
            });
            
            if (!signUpErr && signUpData && signUpData.session) {
-               // Berhasil auto-signup dan langsung dapat session
                data = signUpData;
                error = null;
-           } else if (!signUpErr && (!signUpData || !signUpData.session)) {
-               errorBox.textContent = "Auto-Signup tertahan. Harap matikan 'Confirm Email' di menu Providers > Email di Supabase!";
-               errorBox.classList.remove('hidden');
-               btn.disabled = false; btn.textContent = 'Masuk Sekarang';
-               return;
            } else {
-               // Jika signup juga error (misal akun sudah ada, berarti password memang salah)
                errorBox.textContent = "Login Gagal: Username atau Password salah.";
                errorBox.classList.remove('hidden');
                if (typeof ActivityLogger !== 'undefined') ActivityLogger.log({ action: 'LOGIN', entityType: 'USER', entityId: username, status: 'failed', message: "Salah password", isCritical: true });
@@ -113,21 +125,29 @@
            }
         }
 
-        // 2. Jika Supabase Login berhasil, sinkronkan ke local AuthGuard
+        // 2. Pastikan di app_users memang aktif (untuk kasus login dengan session lama atau salah user)
+        const { data: finalAppUser } = await supabase.from('app_users').select('*').eq('email', username).single();
+        if (!finalAppUser || finalAppUser.status !== 'active') {
+            await supabase.auth.signOut();
+            errorBox.textContent = "Akun Anda berstatus Menunggu / Non-aktif. Hubungi Admin.";
+            errorBox.classList.remove('hidden');
+            btn.disabled = false; btn.textContent = 'Masuk Sekarang';
+            return;
+        }
+
         if (data && data.user) {
            errorBox.classList.add('hidden');
            
-           // Simpan local session untuk kompatibilitas dengan halaman lain yg belum migrasi auth
            AuthGuard.setCurrentUser({
-              id: data.user.id,
-              name: data.user.email.split('@')[0],
-              email: data.user.email,
-              role: 'OWNER',
-              status: 'active',
-              departmentId: 'dept-global-unggas'
+              id: finalAppUser.id,
+              name: finalAppUser.name,
+              email: finalAppUser.email,
+              role: finalAppUser.role,
+              status: finalAppUser.status,
+              departmentId: finalAppUser.department_id
            });
 
-           if (typeof ActivityLogger !== 'undefined') ActivityLogger.log({ action: 'LOGIN', entityType: 'USER', entityId: data.user.id, status: 'success', newData: { name: username, role: 'OWNER' }, message: 'Login Cloud berhasil: ' + username });
+           if (typeof ActivityLogger !== 'undefined') ActivityLogger.log({ action: 'LOGIN', entityType: 'USER', entityId: data.user.id, status: 'success', newData: { name: finalAppUser.name, role: finalAppUser.role }, message: 'Login Cloud berhasil: ' + finalAppUser.name });
            window.location.href = 'dashboard.html';
         }
       });

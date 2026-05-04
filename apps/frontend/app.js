@@ -43,4 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
       window.dispatchEvent(new CustomEvent('sidebarToggle'));
     });
   }
+
+  // Update sidebar user info
+  if (typeof AuthGuard !== 'undefined') {
+    const user = AuthGuard.getCurrentUser();
+    if (user) {
+      const nameEl = document.getElementById('sidebar-user-name');
+      const emailEl = document.getElementById('sidebar-user-email');
+      if (nameEl) nameEl.textContent = user.name;
+      if (emailEl) emailEl.textContent = user.email || user.role;
+    }
+  }
 });

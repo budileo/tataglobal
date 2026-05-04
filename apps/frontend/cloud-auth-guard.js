@@ -30,19 +30,31 @@ import { supabase } from './supabaseClient.js';
     // Sesi cloud valid → pastikan AuthGuard lokal juga ter-sinkronisasi
     if (typeof AuthGuard !== 'undefined') {
       const currentLocal = AuthGuard.getCurrentUser();
-      // Force OWNER for budileo even if session says otherwise
-      let role = 'OWNER';
       
-      // Jika belum ada lokal, atau ID-nya beda dengan session cloud, atau jika budileo dipaksa OWNER
-      if (!currentLocal || currentLocal.id !== session.user.id || (session.user.email === 'budileo@gmail.com' && currentLocal.role !== 'OWNER')) {
+      // Fetch user role and status from Supabase to prevent hardcoded OWNER role
+      const { data: appUser } = await supabase.from('app_users').select('*').eq('email', session.user.email).single();
+      
+      if (!appUser || appUser.status !== 'active') {
+         await supabase.auth.signOut();
+         localStorage.removeItem('tata_current_user');
+         window.location.replace('index.html');
+         return;
+      }
+      
+      // Jika belum ada lokal, atau role-nya beda dengan database cloud
+      if (!currentLocal || currentLocal.id !== session.user.id || currentLocal.role !== appUser.role) {
         AuthGuard.setCurrentUser({
-          id: session.user.id,
-          name: session.user.email.split('@')[0],
-          email: session.user.email,
-          role: role,
-          status: 'active',
-          departmentId: 'dept-global-unggas'
+          id: appUser.id,
+          name: appUser.name,
+          email: appUser.email,
+          role: appUser.role,
+          status: appUser.status,
+          departmentId: appUser.department_id
         });
+        
+        if (typeof AuthGuard.applySidebarPermissions === 'function') {
+           AuthGuard.applySidebarPermissions();
+        }
       }
     }
   } catch (e) {
