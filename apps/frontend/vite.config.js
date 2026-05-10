@@ -18,7 +18,8 @@ export default defineConfig({
         void: resolve(__dirname, 'void.html'),
         pencarian: resolve(__dirname, 'pencarian.html'),
         setting: resolve(__dirname, 'setting.html'),
-        join: resolve(__dirname, 'join.html')
+        join: resolve(__dirname, 'join.html'),
+        pelanggan: resolve(__dirname, 'pelanggan.html')
       }
     }
   }
