@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -427,7 +427,7 @@
                 tr.className = "border-b border-slate-100 hover:bg-slate-100 transition-colors group text-[13px] print:text-[12px] print:text-black";
                 tr.innerHTML = `
                     <td class="px-3 py-2 border-r border-slate-100 text-center font-medium">${i+1}</td>
-                    <td class="px-3 py-2 border-r border-slate-100 font-bold text-slate-700">${new Date(row.date).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'})}</td>
+                    <td class="px-3 py-2 border-r border-slate-100 font-bold text-slate-700">${new Date(row.date).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric', timeZone: 'Asia/Jakarta'})}</td>
                     <td class="px-3 py-2 border-r border-slate-100 text-center font-bold text-blue-600">${count}</td>
                     <td class="px-3 py-2 border-r border-slate-100 text-right font-medium">${formatRp(row.penjualanRp)}</td>
                     <td class="px-3 py-2 border-r border-slate-100 text-right text-rose-600 font-semibold print:text-black">${formatRp(piutangHariIni)}</td>
@@ -456,7 +456,7 @@
          document.querySelectorAll('.mode-container').forEach(c => c.classList.add('hidden'));
 
          const dateObj = new Date(dateStr);
-         const formattedDate = dateObj.toLocaleDateString('id-ID', {weekday: 'long', day:'2-digit', month:'long', year:'numeric'});
+         const formattedDate = dateObj.toLocaleDateString('id-ID', {weekday: 'long', day:'2-digit', month:'long', year:'numeric', timeZone: 'Asia/Jakarta'});
          document.getElementById('det-periode').textContent = formattedDate;
 
          if (mode === 'penerimaan') {

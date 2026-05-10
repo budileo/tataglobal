@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -488,7 +488,7 @@
 
           return `<tr class="border-b border-slate-100 hover:bg-slate-50 text-xs">
             <td class="px-3 py-2 text-center font-medium">${i+1}</td>
-            <td class="px-3 py-2 whitespace-nowrap">${dt.toLocaleDateString('id-ID')}<br><span class="text-[10px] text-slate-400">${dt.toLocaleTimeString('id-ID')}</span></td>
+            <td class="px-3 py-2 whitespace-nowrap">${dt.toLocaleDateString('id-ID', {timeZone:'Asia/Jakarta'})}<br><span class="text-[10px] text-slate-400">${dt.toLocaleTimeString('id-ID', {timeZone:'Asia/Jakarta'})}</span></td>
             <td class="px-3 py-2"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${tipeCls}">${tipeStr}</span></td>
             <td class="px-3 py-2 font-bold text-slate-700">${l.entityId}</td>
             <td class="px-3 py-2">${konsumen||'-'}</td>

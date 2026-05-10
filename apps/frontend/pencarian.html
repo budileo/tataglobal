@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -236,7 +236,7 @@
 
     function formatFullDate(ts) {
        const d = new Date(ts);
-       const datePart = d.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric'});
+       const datePart = d.toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric', timeZone: 'Asia/Jakarta'});
        const timePart = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
        return `${datePart} ${timePart}`;
     }

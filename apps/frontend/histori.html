@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -229,8 +229,8 @@
 
         tbody.innerHTML = logs.map((l, i) => {
           const dt = new Date(l.createdAt);
-          const dateStr = dt.toLocaleDateString('id-ID', {day:'2-digit', month:'short'});
-          const timeStr = dt.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+          const dateStr = dt.toLocaleDateString('id-ID', {day:'2-digit', month:'short', timeZone: 'Asia/Jakarta'});
+          const timeStr = dt.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit', second:'2-digit', timeZone: 'Asia/Jakarta'});
           const ac = actionConfig[l.action] || actionConfig.UNKNOWN;
           const hasData = l.oldData || l.newData;
           const criticalBadge = l.isCritical ? '<span class="ml-1 px-1.5 py-0.5 bg-rose-600 text-white text-[8px] font-black rounded uppercase">KRITIS</span>' : '';
@@ -274,7 +274,7 @@
         const modal = document.getElementById('detail-modal');
         const dt = new Date(l.createdAt);
         document.getElementById('modal-subtitle').textContent =
-          `${l.action} ${entityLabels[l.entityType]||l.entityType} • ${l.entityId} • ${dt.toLocaleString('id-ID')}`;
+          `${l.action} ${entityLabels[l.entityType]||l.entityType} • ${l.entityId} • ${dt.toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'})}`;
 
         // Meta info
         document.getElementById('modal-meta').innerHTML = `

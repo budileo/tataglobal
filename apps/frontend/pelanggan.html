@@ -290,6 +290,11 @@
     (function(){
       const fmtRp = n => 'Rp ' + (n||0).toLocaleString('id-ID');
       const fmtKg = n => (n||0).toFixed(2) + ' Kg';
+      const fmtDate = (d) => {
+        if(!d) return '-';
+        const date = new Date(d);
+        return isNaN(date.getTime()) ? d : date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' });
+      };
       let currentPelanggan = null;
 
       // Wait for DataLayer
@@ -428,7 +433,7 @@
           return `<tr class="border-b border-slate-100 hover:bg-slate-50">
             <td class="px-3 py-2 text-slate-400">${i+1}</td>
             <td class="px-3 py-2 font-bold text-slate-800">${b.id}</td>
-            <td class="px-3 py-2 text-slate-600">${b.tanggal}</td>
+            <td class="px-3 py-2 text-slate-600">${fmtDate(b.tanggal)}</td>
             <td class="px-3 py-2 text-right font-medium">${b.total.toLocaleString('id-ID')}</td>
             <td class="px-3 py-2 text-right font-bold text-emerald-700">${paid.toLocaleString('id-ID')}</td>
             <td class="px-3 py-2 text-right font-bold text-rose-600">${sisa.toLocaleString('id-ID')}</td>
@@ -450,7 +455,7 @@
         if(!last25.length){tbody.innerHTML='<tr><td colspan="7" class="px-3 py-6 text-center text-slate-400">Belum ada pembayaran</td></tr>';return;}
         tbody.innerHTML=last25.map((h,i)=>`<tr class="border-b border-slate-100 hover:bg-slate-50">
           <td class="px-3 py-2 text-slate-400">${i+1}</td>
-          <td class="px-3 py-2">${h.tanggal}<br><span class="text-[10px] text-slate-400">${h.waktu||''}</span></td>
+          <td class="px-3 py-2">${fmtDate(h.tanggal)}<br><span class="text-[10px] text-slate-400">${h.waktu||''}</span></td>
           <td class="px-3 py-2 font-bold text-slate-700">${h.noFaktur}</td>
           <td class="px-3 py-2">${h.kolektor||'-'}</td>
           <td class="px-3 py-2">${h.caraBayar||'-'}</td>
@@ -478,7 +483,7 @@
           return `<tr class="border-b border-slate-100 hover:bg-slate-50">
             <td class="px-3 py-2 text-slate-400">${i+1}</td>
             <td class="px-3 py-2 font-bold text-slate-800">${b.id}</td>
-            <td class="px-3 py-2">${b.tanggal}</td>
+            <td class="px-3 py-2">${fmtDate(b.tanggal)}</td>
             <td class="px-3 py-2 text-right">${b.total.toLocaleString('id-ID')}</td>
             <td class="px-3 py-2 text-right text-rose-600">${pot.toLocaleString('id-ID')}</td>
             <td class="px-3 py-2 text-right text-emerald-700">${paid.toLocaleString('id-ID')}</td>
@@ -526,7 +531,7 @@
         if(!rows.length){tbody.innerHTML='<tr><td colspan="5" class="px-3 py-6 text-center text-slate-400">Tidak ada data pada periode ini</td></tr>';tfoot.innerHTML='';return;}
 
         tbody.innerHTML=rows.map((r,i)=>`<tr class="border-b border-slate-100 ${r.type==='pembelian'?'bg-blue-50/30':''} hover:bg-slate-50 text-xs">
-          <td class="px-3 py-2 text-slate-600">${r.tanggal}<br><span class="text-[10px] text-slate-400">${r.noFaktur}</span></td>
+          <td class="px-3 py-2 text-slate-600">${fmtDate(r.tanggal)}<br><span class="text-[10px] text-slate-400">${r.noFaktur}</span></td>
           <td class="px-3 py-2 font-semibold ${r.type==='pembelian'?'text-blue-700':'text-emerald-700'}">${r.transaksi}</td>
           <td class="px-3 py-2 text-right font-bold">${r.jumlah.toLocaleString('id-ID')}</td>
           <td class="px-3 py-2 text-right text-rose-600">${r.potongan>0?r.potongan.toLocaleString('id-ID'):'-'}</td>
@@ -570,7 +575,7 @@
         if(!rows.length){tbody.innerHTML='<tr><td colspan="6" class="px-3 py-6 text-center text-slate-400">Tidak ada data pada periode ini</td></tr>';tfoot.innerHTML='';return;}
 
         tbody.innerHTML=rows.map(r=>`<tr class="border-b border-slate-100 hover:bg-slate-50 text-xs">
-          <td class="px-3 py-2 text-slate-600">${r.tanggal}<br><span class="text-[10px] text-slate-400">${r.noFaktur}</span></td>
+          <td class="px-3 py-2 text-slate-600">${fmtDate(r.tanggal)}<br><span class="text-[10px] text-slate-400">${r.noFaktur}</span></td>
           <td class="px-3 py-2 text-right font-bold text-blue-700">${r.beli.toFixed(2)}</td>
           <td class="px-3 py-2 text-center text-rose-600">${r.mati.toFixed(2)}</td>
           <td class="px-3 py-2 text-center text-rose-600">${r.susut.toFixed(2)}</td>

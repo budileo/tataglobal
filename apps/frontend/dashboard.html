@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -367,7 +367,8 @@
              }
           }
           
-          document.getElementById('display-range').textContent = `${rangeMode.toUpperCase()}: ${fromDate} s/d ${toDate}`;
+          const fmtHeader = (d) => new Date(d).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric', timeZone: 'Asia/Jakarta'});
+          document.getElementById('display-range').textContent = `${rangeMode.toUpperCase()}: ${fmtHeader(fromDate)} s/d ${fmtHeader(toDate)}`;
 
           const filtered = bons.filter(b => !b.isVoid && b.tanggal >= fromDate && b.tanggal <= toDate);
           console.log("Filtered count:", filtered.length);
