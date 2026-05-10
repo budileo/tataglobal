@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -320,13 +320,9 @@
       function renderTable(filter=''){
         const konsumen = window.DataLayer ? window.DataLayer.getMaster('konsumen') : [];
         const bons = window.DataLayer ? window.DataLayer.getBons() : [];
-        const filtered = filter ? konsumen.filter(k=>k.nama.toLowerCase().includes(filter.toLowerCase())||((k.alamat||'').toLowerCase().includes(filter.toLowerCase()))) : konsumen;
-        const tbody = document.getElementById('tabel-pelanggan');
-        const empty = document.getElementById('empty-pelanggan');
-        document.getElementById('jumlah-pelanggan').textContent = filtered.length + ' Pelanggan';
-        if(!filtered.length){empty.classList.remove('hidden');tbody.innerHTML='';return;}
-        empty.classList.add('hidden');
-        tbody.innerHTML = filtered.map((k,i)=>{
+        // Hitung piutang tiap pelanggan dulu, lalu sort dari terbesar ke terkecil (UI only)
+        const baseList = filter ? konsumen.filter(k=>k.nama.toLowerCase().includes(filter.toLowerCase())||((k.alamat||'').toLowerCase().includes(filter.toLowerCase()))) : konsumen;
+        const withPiutang = baseList.map(k=>{
           const bonsPelanggan=bons.filter(b=>!b.isVoid&&b.konsumen===k.nama);
           const piutang=bonsPelanggan.reduce((s,b)=>{
             const hist=(b.historiBayar||[]).filter(h=>!h.isVoid);
@@ -335,6 +331,16 @@
             const sisa=(b.total-pot)-paid;
             return s+(sisa>0.01?sisa:0);
           },0);
+          return Object.assign({}, k, {_piutang: piutang});
+        });
+        const filtered = withPiutang.sort((a,b)=>b._piutang - a._piutang);
+        const tbody = document.getElementById('tabel-pelanggan');
+        const empty = document.getElementById('empty-pelanggan');
+        document.getElementById('jumlah-pelanggan').textContent = filtered.length + ' Pelanggan';
+        if(!filtered.length){empty.classList.remove('hidden');tbody.innerHTML='';return;}
+        empty.classList.add('hidden');
+        tbody.innerHTML = filtered.map((k,i)=>{
+          const piutang=k._piutang;
           return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors text-sm">
             <td class="px-4 py-3 text-slate-400 font-medium">${i+1}</td>
             <td class="px-4 py-3 font-bold text-slate-800">${k.nama}${piutang>0?`<br><span class="text-[10px] font-bold text-rose-500">Piutang: ${fmtRp(piutang)}</span>`:''}</td>
