@@ -1,15 +1,38 @@
 // app.js
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Auth Guard Check
-  if (typeof AuthGuard !== 'undefined') {
-    if (!AuthGuard.requireAuth()) return;
-    AuthGuard.applySidebarPermissions();
-  }
-
   const sidebar = document.getElementById('sidebar');
   const toggleBtn = document.getElementById('toggleMenuBtn');
   const mainWrapper = document.getElementById('main-wrapper');
-  
+
+  // 1. Auth Guard Check
+  if (typeof AuthGuard !== 'undefined') {
+    if (!AuthGuard.requireAuth()) return;
+
+    // Sembunyikan semua menu sidebar dulu (mencegah flash of unauthorized content)
+    if (sidebar) {
+      const menuLinks = sidebar.querySelectorAll('a[href]');
+      menuLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        // Jangan sembunyikan link logout (yang pakai onclick) 
+        if (href && href !== '#' && AuthGuard.menuPermissionMap[href]) {
+          link.style.display = 'none';
+        }
+      });
+    }
+
+    // Fetch permission dari Supabase cloud, lalu tampilkan menu yang sesuai
+    // Ini memastikan menu sidebar SELALU mengacu ke database, bukan localStorage
+    if (typeof AuthGuard.applySidebarPermissionsFromCloud === 'function') {
+      AuthGuard.applySidebarPermissionsFromCloud().catch(() => {
+        // Fallback ke data lokal jika cloud gagal
+        AuthGuard.applySidebarPermissions();
+      });
+    } else {
+      // Fallback jika fungsi cloud belum ada
+      AuthGuard.applySidebarPermissions();
+    }
+  }
+
   if (sidebar && toggleBtn && mainWrapper) {
     // Inject Token Badge if not present
     if (typeof AuthGuard !== 'undefined' && !document.getElementById('sidebar-token-info')) {

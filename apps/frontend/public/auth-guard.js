@@ -476,20 +476,91 @@ const AuthGuard = (function() {
     'setting.html': 'setting.manage'
   };
 
-  function applySidebarPermissions() {
+  /**
+   * Menampilkan/menyembunyikan menu sidebar berdasarkan daftar permission.
+   * @param {string[]} [permList] - Jika diberikan, gunakan daftar ini. Jika tidak, ambil dari lokal.
+   */
+  function applySidebarPermissions(permList) {
     const user = getCurrentUser();
     if (!user) return;
     const sidebar = document.getElementById('sidebar');
     if (!sidebar) return;
 
+    // Gunakan permList jika diberikan, atau fallback ke lokal
+    const perms = permList || getUserPermissions(user.id);
+
     const links = sidebar.querySelectorAll('a[href]');
     links.forEach(link => {
       const href = link.getAttribute('href');
       const requiredPerm = menuPermissionMap[href];
-      if (requiredPerm && !hasPermission(requiredPerm)) {
-        link.style.display = 'none';
+      if (requiredPerm) {
+        // Tampilkan jika punya permission, sembunyikan jika tidak
+        link.style.display = perms.includes(requiredPerm) ? '' : 'none';
       }
     });
+  }
+
+  /**
+   * Fetch permission dari Supabase lalu terapkan ke sidebar.
+   * Ini memastikan menu selalu konsisten dengan database, bukan data lokal browser.
+   * Fallback ke data lokal jika Supabase tidak tersedia (offline).
+   */
+  async function applySidebarPermissionsFromCloud() {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    // Default: ambil dari lokal dulu sebagai fallback awal
+    let perms = getUserPermissions(user.id);
+
+    if (window.supabaseClient) {
+      try {
+        // 1. Coba ambil override permission untuk user ini dari Supabase
+        const { data: userPermRow, error: permErr } = await window.supabaseClient
+          .from('user_permissions')
+          .select('permissions')
+          .eq('user_id', user.id)
+          .single();
+
+        if (!permErr && userPermRow && userPermRow.permissions && userPermRow.permissions.length > 0) {
+          // User punya override permission di database
+          perms = userPermRow.permissions;
+          // Sinkronkan ke lokal agar konsisten
+          _set(KEYS.userPerms, [{ userId: user.id, permissions: perms }]);
+          console.log('[AuthGuard] ✅ Permission diambil dari Supabase (override):', perms);
+        } else {
+          // Tidak ada override, gunakan default role
+          // Ambil role terbaru dari app_users untuk memastikan role konsisten
+          const { data: appUser, error: userErr } = await window.supabaseClient
+            .from('app_users')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+          if (!userErr && appUser) {
+            // Update role di currentUser jika berbeda
+            if (appUser.role !== user.role) {
+              user.role = appUser.role;
+              setCurrentUser(user);
+            }
+          }
+
+          // Gunakan default permission berdasarkan role
+          const rolePerms = _get(KEYS.rolePerms);
+          const roleEntry = rolePerms.find(r => r.role === user.role);
+          perms = roleEntry ? [...roleEntry.permissions] : [];
+          
+          // Hapus override lokal yang mungkin basi
+          _set(KEYS.userPerms, _get(KEYS.userPerms).filter(o => o.userId !== user.id));
+          console.log('[AuthGuard] ✅ Permission default role "' + user.role + '" dari database:', perms);
+        }
+      } catch (e) {
+        console.warn('[AuthGuard] ⚠️ Gagal fetch permission dari Supabase, gunakan data lokal:', e.message);
+        // Tetap gunakan perms dari lokal (sudah di-set di atas)
+      }
+    }
+
+    // Terapkan ke sidebar
+    applySidebarPermissions(perms);
   }
 
   // ==================== INIT ====================
@@ -512,7 +583,7 @@ const AuthGuard = (function() {
     // Invite
     getDeptByInviteCode, registerUser,
     // UI
-    applySidebarPermissions, menuPermissionMap,
+    applySidebarPermissions, applySidebarPermissionsFromCloud, menuPermissionMap,
     // Util
     _hash: _hash, KEYS: KEYS
   };

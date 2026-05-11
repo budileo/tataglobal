@@ -56,20 +56,51 @@ import { supabase } from './supabaseClient.js';
          return;
       }
       
-      // Jika belum ada lokal, atau role-nya beda dengan database cloud
-      if (!currentLocal || currentLocal.id !== session.user.id || currentLocal.role !== appUser.role) {
-        AuthGuard.setCurrentUser({
-          id: appUser.id,
-          name: appUser.name,
-          email: appUser.email,
-          role: appUser.role,
-          status: appUser.status,
-          departmentId: appUser.department_id
-        });
-        
-        if (typeof AuthGuard.applySidebarPermissions === 'function') {
-           AuthGuard.applySidebarPermissions();
+      // Sinkronkan data user ke lokal (SELALU, bukan hanya saat role berubah)
+      AuthGuard.setCurrentUser({
+        id: appUser.id,
+        name: appUser.name,
+        email: appUser.email,
+        role: appUser.role,
+        status: appUser.status,
+        departmentId: appUser.department_id
+      });
+
+      // Fetch user_permissions dari Supabase dan sinkronkan ke localStorage
+      try {
+        const { data: userPermRow } = await supabase
+          .from('user_permissions')
+          .select('permissions')
+          .eq('user_id', appUser.id)
+          .single();
+
+        if (userPermRow && userPermRow.permissions) {
+          // Sinkronkan override permission dari Supabase ke localStorage
+          const localPerms = JSON.parse(localStorage.getItem('tata_user_permissions') || '[]');
+          const idx = localPerms.findIndex(o => o.userId === appUser.id);
+          if (idx >= 0) {
+            localPerms[idx].permissions = userPermRow.permissions;
+          } else {
+            localPerms.push({ userId: appUser.id, permissions: userPermRow.permissions });
+          }
+          localStorage.setItem('tata_user_permissions', JSON.stringify(localPerms));
+          console.log('[CloudAuthGuard] ✅ Permission di-sync dari Supabase:', userPermRow.permissions);
+        } else {
+          // Tidak ada override, hapus override lokal yang mungkin basi
+          const localPerms = JSON.parse(localStorage.getItem('tata_user_permissions') || '[]');
+          const filtered = localPerms.filter(o => o.userId !== appUser.id);
+          localStorage.setItem('tata_user_permissions', JSON.stringify(filtered));
+          console.log('[CloudAuthGuard] ✅ Tidak ada override, gunakan default role:', appUser.role);
         }
+      } catch (permErr) {
+        console.warn('[CloudAuthGuard] ⚠️ Gagal sync permission:', permErr.message);
+      }
+
+      // Selalu terapkan sidebar permission dari cloud setelah data di-sync
+      if (typeof AuthGuard.applySidebarPermissionsFromCloud === 'function') {
+        await AuthGuard.applySidebarPermissionsFromCloud();
+      } else if (typeof AuthGuard.applySidebarPermissions === 'function') {
+        AuthGuard.applySidebarPermissions();
       }
     }
   } catch (e) {
