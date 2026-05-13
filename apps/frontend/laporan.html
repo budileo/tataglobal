@@ -355,8 +355,7 @@
                             <tr class="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold uppercase">
                                <th class="px-3 py-2 border-r border-slate-200 w-10 text-center">No</th>
                                <th class="px-3 py-2 border-r border-slate-200">Jenis Ukuran</th>
-                               <th class="px-3 py-2 border-r border-slate-200 text-center">Audit</th>
-                               <th class="px-3 py-2 border-r border-slate-200 text-right">Audit Jumlah Ekor</th>
+                               <th class="px-3 py-2 border-r border-slate-200 text-center">Audit / Keterangan</th>
                                <th class="px-3 py-2 border-r border-slate-200 text-right">Jumlah Ekor</th>
                                <th class="px-3 py-2 text-right">Jumlah Kg</th>
                             </tr>
@@ -934,38 +933,36 @@
             const auditData = auditMap[key];
             const realData = rekapMap[key];
             if (auditData.ekor > 0 || realData.ekor > 0) {
-               // Row 1: Audit (Blue)
+               // Row 1: Ukuran Bon Fix (Blue)
                const tr1 = document.createElement('tr');
                tr1.className = "border-b border-slate-100 text-blue-600 font-semibold";
                tr1.innerHTML = `
                   <td rowspan="3" class="px-3 py-2 border-r border-slate-200 text-center text-slate-800 font-medium">${auditNo++}</td>
                   <td rowspan="3" class="px-3 py-2 border-r border-slate-200 font-bold text-slate-800">${key}</td>
-                  <td class="px-3 py-2 border-r border-slate-200 text-center italic">Audit Ukuran</td>
-                  <td class="px-3 py-2 border-r border-slate-200 text-right">${auditData.ekor.toLocaleString('id-ID')}</td>
+                  <td class="px-3 py-2 border-r border-slate-200 text-center italic">Ukuran Bon Fix</td>
                   <td class="px-3 py-2 border-r border-slate-200 text-right">${auditData.ekor.toLocaleString('id-ID')}</td>
                   <td class="px-3 py-2 text-right">${auditData.kg.toLocaleString('id-ID', {minimumFractionDigits:2})}</td>
                `;
                tbodyAudit.appendChild(tr1);
 
-               // Row 2: Mapping (Black)
+               // Row 2: Ukuran Rekomendasi (Black)
                const tr2 = document.createElement('tr');
                tr2.className = "border-b border-slate-100 text-slate-900 font-semibold";
                tr2.innerHTML = `
-                  <td class="px-3 py-2 border-r border-slate-200 text-center italic">Mapping Realisasi</td>
-                  <td class="px-3 py-2 border-r border-slate-200 text-right">${realData.ekor.toLocaleString('id-ID')}</td>
+                  <td class="px-3 py-2 border-r border-slate-200 text-center italic">Ukuran Rekomendasi</td>
                   <td class="px-3 py-2 border-r border-slate-200 text-right">${realData.ekor.toLocaleString('id-ID')}</td>
                   <td class="px-3 py-2 text-right">${realData.kg.toLocaleString('id-ID', {minimumFractionDigits:2})}</td>
                `;
                tbodyAudit.appendChild(tr2);
 
-               // Row 3: Selisih (Red)
+               // Row 3: Jumlah Geser (Red)
                const diffEkor = auditData.ekor - realData.ekor;
                const diffKg = auditData.kg - realData.kg;
+               const pDiff = auditData.ekor > 0 ? (Math.abs(diffEkor) / auditData.ekor * 100).toFixed(0) : 0;
                const tr3 = document.createElement('tr');
                tr3.className = "border-b border-slate-200 text-rose-600 font-bold";
                tr3.innerHTML = `
-                  <td class="px-3 py-2 border-r border-slate-200 text-center italic">Selisih</td>
-                  <td class="px-3 py-2 border-r border-slate-200 text-right">${diffEkor.toLocaleString('id-ID')}</td>
+                  <td class="px-3 py-2 border-r border-slate-200 text-center italic">Jumlah Geser (${pDiff}%)</td>
                   <td class="px-3 py-2 border-r border-slate-200 text-right">${diffEkor.toLocaleString('id-ID')}</td>
                   <td class="px-3 py-2 text-right">${diffKg.toLocaleString('id-ID', {minimumFractionDigits:2})}</td>
                `;
@@ -1092,9 +1089,29 @@
              wsData.push(['Total Jumlah Geser', `${tGeser}, ${pGeser}%`]);
              
              wsData.push(['']);
-             wsData.push(['--- Laporan Matrik Ukuran Ayam ---']);
-             wsData.push(['No', 'No Bon', 'Nama Konsumen', 'Jumlah Ayam (ekor)', 'Berat Netto (kg)', 'Rata Rata Ayam (kg)', 'Mapping Ukuran', 'Ukuran', 'Geser']);
-             detailRows.forEach(row => wsData.push(row));
+              // Audit Excel
+              wsData.push(['']);
+              wsData.push(['--- Data Audit Matrik dengan Realisasi penjualan ---']);
+              wsData.push(['No', 'Jenis Ukuran', 'Audit / Keterangan', 'Jumlah Ekor', 'Jumlah Kg']);
+              let aNo = 1;
+              order.forEach(key => {
+                  const ad = auditMap[key];
+                  const rd = rekapMap[key];
+                  if (ad.ekor > 0 || rd.ekor > 0) {
+                      const dEkor = ad.ekor - rd.ekor;
+                      const dKg = ad.kg - rd.kg;
+                      const pD = ad.ekor > 0 ? (Math.abs(dEkor) / ad.ekor * 100).toFixed(0) : 0;
+                      wsData.push([aNo, key, 'Ukuran Bon Fix', ad.ekor, ad.kg]);
+                      wsData.push(['', '', 'Ukuran Rekomendasi', rd.ekor, rd.kg]);
+                      wsData.push(['', '', `Jumlah Geser (${pD}%)`, dEkor, dKg]);
+                      aNo++;
+                  }
+              });
+              
+              wsData.push(['']);
+              wsData.push(['--- Laporan Matrik Ukuran Ayam ---']);
+              wsData.push(['No', 'No Bon', 'Nama Konsumen', 'Jumlah Ayam (ekor)', 'Berat Netto (kg)', 'Rata Rata Ayam (kg)', 'Mapping Ukuran', 'Ukuran', 'Geser']);
+              detailRows.forEach(row => wsData.push(row));
          } else {
             wsData.push(['Laporan Penerimaan - silakan gunakan mode Cetak PDF untuk jenis ini.']);
          }
