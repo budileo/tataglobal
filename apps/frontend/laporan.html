@@ -322,6 +322,47 @@
                 </div>
              </div>
           </div>
+
+          <!-- 5. MODE: UKURAN (MATRIK UKURAN AYAM) -->
+          <div id="container-ukuran" class="mode-container hidden">
+             <!-- Rekapitulasi Matrik Ukuran Ayam -->
+             <div class="mb-8">
+                <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-4 uppercase text-[13px] tracking-widest">A. Rekapitulasi Matrik Ukuran Ayam</h3>
+                <div class="overflow-x-auto">
+                   <table class="w-full text-left text-xs text-slate-600 border-collapse border border-slate-200">
+                      <thead>
+                         <tr class="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold uppercase">
+                            <th class="px-3 py-2 border-r border-slate-200 w-10 text-center">No</th>
+                            <th class="px-3 py-2 border-r border-slate-200">Mapping Ukuran</th>
+                            <th class="px-3 py-2 border-r border-slate-200 text-right">Jumlah Ekor</th>
+                            <th class="px-3 py-2 text-right">Jumlah Berat (Netto)</th>
+                         </tr>
+                      </thead>
+                      <tbody id="tbody-ukuran-rekap"></tbody>
+                   </table>
+                </div>
+             </div>
+
+             <!-- Laporan Matrik Ukuran Ayam -->
+             <div>
+                <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-4 uppercase text-[13px] tracking-widest">B. Laporan Matrik Ukuran Ayam</h3>
+                <div class="overflow-x-auto">
+                   <table class="w-full text-left text-[11px] text-slate-600 border-collapse border border-slate-200">
+                      <thead>
+                         <tr class="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold uppercase">
+                            <th class="px-2 py-2 border-r border-slate-200 text-center w-24">No Bon</th>
+                            <th class="px-2 py-2 border-r border-slate-200">Nama Konsumen</th>
+                            <th class="px-2 py-2 border-r border-slate-200 text-right w-24">Jumlah Ayam (ekor)</th>
+                            <th class="px-2 py-2 border-r border-slate-200 text-right w-24">Berat Netto (kg)</th>
+                            <th class="px-2 py-2 border-r border-slate-200 text-right w-24">Rata Rata Ayam (kg)</th>
+                            <th class="px-2 py-2 text-center w-24">Mapping Ukuran</th>
+                         </tr>
+                      </thead>
+                      <tbody id="tbody-ukuran-detail"></tbody>
+                   </table>
+                </div>
+             </div>
+          </div>
       </div>
 
     </main>
@@ -438,6 +479,7 @@
                             <button class="btn-det bg-rose-600 hover:bg-rose-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="potongan" data-date="${row.date}">Potongan</button>
                             <button class="btn-det bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="piutang" data-date="${row.date}">Piutang</button>
                             <button class="btn-det bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="ayam" data-date="${row.date}">Ayam</button>
+                            <button class="btn-det bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="ukuran" data-date="${row.date}">Ukuran</button>
                         </div>
                     </td>
                 `;
@@ -476,6 +518,10 @@
             document.getElementById('container-ayam').classList.remove('hidden');
             document.body.classList.add('print:landscape');
             renderDetailAyam(dateStr);
+         } else if (mode === 'ukuran') {
+            document.getElementById('det-title').textContent = 'MATRIK UKURAN AYAM HARIAN';
+            document.getElementById('container-ukuran').classList.remove('hidden');
+            renderDetailUkuran(dateStr);
          }
          
          window.currentDetail = { dateStr, mode };
@@ -751,6 +797,78 @@
          });
       }
 
+      function renderDetailUkuran(dateStr) {
+         const bons = getAllBons();
+         const dailyBons = bons.filter(b => !b.isVoid && b.tanggal === dateStr).sort((a,b) => {
+             const numA = parseInt(a.id.replace(/\D/g, '')) || 0;
+             const numB = parseInt(b.id.replace(/\D/g, '')) || 0;
+             if (numA !== numB) return numA - numB;
+             return a.id.localeCompare(b.id);
+         });
+
+         const tbodyDetail = document.getElementById('tbody-ukuran-detail');
+         tbodyDetail.innerHTML = '';
+         
+         const rekapMap = {
+             'KTN': { ekor: 0, kg: 0 },
+             'K': { ekor: 0, kg: 0 },
+             'TB': { ekor: 0, kg: 0 },
+             'B': { ekor: 0, kg: 0 },
+             'JK': { ekor: 0, kg: 0 },
+             'JB': { ekor: 0, kg: 0 }
+         };
+
+         dailyBons.forEach(b => {
+             (b.items || []).forEach(it => {
+                 const ekor = Number(it.jmlAyam || 0);
+                 const kg = Number(it.netto || 0);
+                 if (ekor > 0) {
+                     const rata = kg / ekor;
+                     let mapping = '';
+                     if (rata < 0.8) mapping = 'KTN';
+                     else if (rata < 1.3) mapping = 'K';
+                     else if (rata < 1.7) mapping = 'TB';
+                     else if (rata < 2.0) mapping = 'B';
+                     else if (rata < 2.3) mapping = 'JK';
+                     else mapping = 'JB';
+
+                     rekapMap[mapping].ekor += ekor;
+                     rekapMap[mapping].kg += kg;
+
+                     const tr = document.createElement('tr');
+                     tr.className = "border-b border-slate-200 hover:bg-slate-50";
+                     tr.innerHTML = `
+                        <td class="px-2 py-2 border-r border-slate-200 text-center font-semibold text-blue-600">${b.id}</td>
+                        <td class="px-2 py-2 border-r border-slate-200 font-bold text-slate-800">${b.konsumen}</td>
+                        <td class="px-2 py-2 border-r border-slate-200 text-right font-semibold">${ekor.toLocaleString('id-ID')}</td>
+                        <td class="px-2 py-2 border-r border-slate-200 text-right font-semibold">${kg.toLocaleString('id-ID', {minimumFractionDigits:2})}</td>
+                        <td class="px-2 py-2 border-r border-slate-200 text-right font-bold text-slate-900">${rata.toLocaleString('id-ID', {minimumFractionDigits:2})}</td>
+                        <td class="px-2 py-2 text-center font-bold text-emerald-700 bg-emerald-50/50">${mapping}</td>
+                     `;
+                     tbodyDetail.appendChild(tr);
+                 }
+             });
+         });
+
+         const tbodyRekap = document.getElementById('tbody-ukuran-rekap');
+         tbodyRekap.innerHTML = '';
+         const order = ['KTN', 'K', 'TB', 'B', 'JK', 'JB'];
+         let no = 1;
+         order.forEach(key => {
+             if (rekapMap[key].ekor > 0 || rekapMap[key].kg > 0) {
+                 const tr = document.createElement('tr');
+                 tr.className = "border-b border-slate-200 hover:bg-slate-50 text-[12px]";
+                 tr.innerHTML = `
+                    <td class="px-3 py-2 border-r border-slate-200 text-center font-medium">${no++}</td>
+                    <td class="px-3 py-2 border-r border-slate-200 font-bold text-emerald-700">${key}</td>
+                    <td class="px-3 py-2 border-r border-slate-200 text-right font-semibold">${rekapMap[key].ekor.toLocaleString('id-ID')}</td>
+                    <td class="px-3 py-2 text-right font-semibold">${rekapMap[key].kg.toLocaleString('id-ID', {minimumFractionDigits:2})}</td>
+                 `;
+                 tbodyRekap.appendChild(tr);
+             }
+         });
+      }
+
       document.getElementById('btn-back-detail').addEventListener('click', () => {
          document.getElementById('view-detail').classList.add('hidden');
          document.getElementById('view-rekap').classList.remove('hidden');
@@ -813,6 +931,54 @@
             Object.keys(mu).sort().forEach(u=>wsData.push([u, me[u]||0, mu[u]]));
             wsData.push(['']); wsData.push(['--- Penjualan ke Pelanggan ---']); wsData.push(['No','Konsumen','Kode Bon','Kg','Ekor','Detail']);
             bons.forEach((b,i)=>{ let kg=0,ek=0; (b.items||[]).forEach(it=>{kg+=(it.netto||0);ek+=Number(it.jmlAyam||0);}); const d=(b.items||[]).map(it=>(it.ukuran||'?')+':'+Number(it.jmlAyam||0)+'ekor/'+(it.netto||0).toFixed(2)+'kg').join(', '); wsData.push([i+1,b.konsumen,b.id,kg,ek,d]); });
+         } else if (mode === 'ukuran') {
+             wsData.push(['--- Rekapitulasi Matrik Ukuran Ayam ---']);
+             wsData.push(['No', 'Mapping Ukuran', 'Jumlah Ekor', 'Jumlah Berat (Netto)']);
+             
+             const bons = getAllBons().filter(b=>!b.isVoid&&b.tanggal===dateStr).sort((a,b) => {
+                 const numA = parseInt(a.id.replace(/\D/g, '')) || 0;
+                 const numB = parseInt(b.id.replace(/\D/g, '')) || 0;
+                 if (numA !== numB) return numA - numB;
+                 return a.id.localeCompare(b.id);
+             });
+             
+             const rekapMap = { 'KTN': { ekor: 0, kg: 0 }, 'K': { ekor: 0, kg: 0 }, 'TB': { ekor: 0, kg: 0 }, 'B': { ekor: 0, kg: 0 }, 'JK': { ekor: 0, kg: 0 }, 'JB': { ekor: 0, kg: 0 } };
+             const detailRows = [];
+             
+             bons.forEach(b => {
+                 (b.items || []).forEach(it => {
+                     const ekor = Number(it.jmlAyam || 0);
+                     const kg = Number(it.netto || 0);
+                     if (ekor > 0) {
+                         const rata = kg / ekor;
+                         let mapping = '';
+                         if (rata < 0.8) mapping = 'KTN';
+                         else if (rata < 1.3) mapping = 'K';
+                         else if (rata < 1.7) mapping = 'TB';
+                         else if (rata < 2.0) mapping = 'B';
+                         else if (rata < 2.3) mapping = 'JK';
+                         else mapping = 'JB';
+                         
+                         rekapMap[mapping].ekor += ekor;
+                         rekapMap[mapping].kg += kg;
+                         
+                         detailRows.push([b.id, b.konsumen, ekor, kg, rata, mapping]);
+                     }
+                 });
+             });
+             
+             const order = ['KTN', 'K', 'TB', 'B', 'JK', 'JB'];
+             let no = 1;
+             order.forEach(key => {
+                 if (rekapMap[key].ekor > 0 || rekapMap[key].kg > 0) {
+                     wsData.push([no++, key, rekapMap[key].ekor, rekapMap[key].kg]);
+                 }
+             });
+             
+             wsData.push(['']);
+             wsData.push(['--- Laporan Matrik Ukuran Ayam ---']);
+             wsData.push(['No Bon', 'Nama Konsumen', 'Jumlah Ayam (ekor)', 'Berat Netto (kg)', 'Rata Rata Ayam (kg)', 'Mapping Ukuran']);
+             detailRows.forEach(row => wsData.push(row));
          } else {
             wsData.push(['Laporan Penerimaan - silakan gunakan mode Cetak PDF untuk jenis ini.']);
          }
