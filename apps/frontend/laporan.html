@@ -355,7 +355,9 @@
                             <th class="px-2 py-2 border-r border-slate-200 text-right w-24">Jumlah Ayam (ekor)</th>
                             <th class="px-2 py-2 border-r border-slate-200 text-right w-24">Berat Netto (kg)</th>
                             <th class="px-2 py-2 border-r border-slate-200 text-right w-24">Rata Rata Ayam (kg)</th>
-                            <th class="px-2 py-2 text-center w-24">Mapping Ukuran</th>
+                            <th class="px-2 py-2 border-r border-slate-200 text-center w-24">Mapping Ukuran</th>
+                            <th class="px-2 py-2 border-r border-slate-200 text-center w-24">Ukuran</th>
+                            <th class="px-2 py-2 text-center w-24">Geser</th>
                          </tr>
                       </thead>
                       <tbody id="tbody-ukuran-detail"></tbody>
@@ -835,6 +837,9 @@
                      rekapMap[mapping].ekor += ekor;
                      rekapMap[mapping].kg += kg;
 
+                     const originalUkuran = (it.ukuran || '').toUpperCase();
+                     const geser = mapping !== originalUkuran ? 'Geser' : '';
+
                      const tr = document.createElement('tr');
                      tr.className = "border-b border-slate-200 hover:bg-slate-50";
                      tr.innerHTML = `
@@ -843,7 +848,9 @@
                         <td class="px-2 py-2 border-r border-slate-200 text-right font-semibold">${ekor.toLocaleString('id-ID')}</td>
                         <td class="px-2 py-2 border-r border-slate-200 text-right font-semibold">${kg.toLocaleString('id-ID', {minimumFractionDigits:2})}</td>
                         <td class="px-2 py-2 border-r border-slate-200 text-right font-bold text-slate-900">${rata.toLocaleString('id-ID', {minimumFractionDigits:2})}</td>
-                        <td class="px-2 py-2 text-center font-bold text-emerald-700 bg-emerald-50/50">${mapping}</td>
+                        <td class="px-2 py-2 border-r border-slate-200 text-center font-bold text-emerald-700 bg-emerald-50/50">${mapping}</td>
+                        <td class="px-2 py-2 border-r border-slate-200 text-center font-bold text-slate-700">${originalUkuran}</td>
+                        <td class="px-2 py-2 text-center font-bold text-rose-600">${geser}</td>
                      `;
                      tbodyDetail.appendChild(tr);
                  }
@@ -959,10 +966,13 @@
                          else if (rata < 2.3) mapping = 'JK';
                          else mapping = 'JB';
                          
+                         const originalUkuran = (it.ukuran || '').toUpperCase();
+                         const geser = mapping !== originalUkuran ? 'Geser' : '';
+                         
                          rekapMap[mapping].ekor += ekor;
                          rekapMap[mapping].kg += kg;
                          
-                         detailRows.push([b.id, b.konsumen, ekor, kg, rata, mapping]);
+                         detailRows.push([b.id, b.konsumen, ekor, kg, rata, mapping, originalUkuran, geser]);
                      }
                  });
              });
@@ -977,7 +987,7 @@
              
              wsData.push(['']);
              wsData.push(['--- Laporan Matrik Ukuran Ayam ---']);
-             wsData.push(['No Bon', 'Nama Konsumen', 'Jumlah Ayam (ekor)', 'Berat Netto (kg)', 'Rata Rata Ayam (kg)', 'Mapping Ukuran']);
+             wsData.push(['No Bon', 'Nama Konsumen', 'Jumlah Ayam (ekor)', 'Berat Netto (kg)', 'Rata Rata Ayam (kg)', 'Mapping Ukuran', 'Ukuran', 'Geser']);
              detailRows.forEach(row => wsData.push(row));
          } else {
             wsData.push(['Laporan Penerimaan - silakan gunakan mode Cetak PDF untuk jenis ini.']);
