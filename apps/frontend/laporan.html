@@ -841,7 +841,10 @@
              'TB': { ekor: 0, kg: 0 },
              'B': { ekor: 0, kg: 0 },
              'JK': { ekor: 0, kg: 0 },
-             'JB': { ekor: 0, kg: 0 }
+             'K/PK': { ekor: 0, kg: 0 },
+             'JB': { ekor: 0, kg: 0 },
+             'B/PK': { ekor: 0, kg: 0 },
+             'JB/PK': { ekor: 0, kg: 0 }
          };
          
          const auditMap = {
@@ -850,7 +853,10 @@
              'TB': { ekor: 0, kg: 0 },
              'B': { ekor: 0, kg: 0 },
              'JK': { ekor: 0, kg: 0 },
-             'JB': { ekor: 0, kg: 0 }
+             'K/PK': { ekor: 0, kg: 0 },
+             'JB': { ekor: 0, kg: 0 },
+             'B/PK': { ekor: 0, kg: 0 },
+             'JB/PK': { ekor: 0, kg: 0 }
          };
 
          let totalPesanan = 0;
@@ -910,7 +916,7 @@
 
          const tbodyRekap = document.getElementById('tbody-ukuran-rekap');
          tbodyRekap.innerHTML = '';
-         const order = ['KTN', 'K', 'TB', 'B', 'JK', 'JB'];
+         const order = ['KTN', 'K', 'TB', 'B', 'JK', 'K/PK', 'JB', 'B/PK', 'JB/PK'];
          let no = 1;
          order.forEach(key => {
              if (rekapMap[key].ekor > 0 || rekapMap[key].kg > 0) {
@@ -1044,7 +1050,7 @@
                  return a.id.localeCompare(b.id);
              });
              
-             const rekapMap = { 'KTN': { ekor: 0, kg: 0 }, 'K': { ekor: 0, kg: 0 }, 'TB': { ekor: 0, kg: 0 }, 'B': { ekor: 0, kg: 0 }, 'JK': { ekor: 0, kg: 0 }, 'JB': { ekor: 0, kg: 0 } };
+             const rekapMap = { 'KTN': { ekor: 0, kg: 0 }, 'K': { ekor: 0, kg: 0 }, 'TB': { ekor: 0, kg: 0 }, 'B': { ekor: 0, kg: 0 }, 'JK': { ekor: 0, kg: 0 }, 'K/PK': { ekor: 0, kg: 0 }, 'JB': { ekor: 0, kg: 0 }, 'B/PK': { ekor: 0, kg: 0 }, 'JB/PK': { ekor: 0, kg: 0 } }; const auditMap = { 'KTN': { ekor: 0, kg: 0 }, 'K': { ekor: 0, kg: 0 }, 'TB': { ekor: 0, kg: 0 }, 'B': { ekor: 0, kg: 0 }, 'JK': { ekor: 0, kg: 0 }, 'K/PK': { ekor: 0, kg: 0 }, 'JB': { ekor: 0, kg: 0 }, 'B/PK': { ekor: 0, kg: 0 }, 'JB/PK': { ekor: 0, kg: 0 } };
              const detailRows = [];
              
              bons.forEach(b => {
