@@ -341,6 +341,11 @@
                       <tbody id="tbody-ukuran-rekap"></tbody>
                    </table>
                 </div>
+                <!-- Task A: Information below Table A -->
+                <div class="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200 text-sm font-semibold text-slate-800 space-y-1">
+                   <p>Total Jumlah Pesanan : <span id="total-pesanan-info">0</span></p>
+                   <p>Total Jumlah Geser : <span id="total-geser-info">0, 0%</span></p>
+                </div>
              </div>
 
              <!-- Laporan Matrik Ukuran Ayam -->
@@ -348,8 +353,9 @@
                 <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-4 uppercase text-[13px] tracking-widest">B. Laporan Matrik Ukuran Ayam</h3>
                 <div class="overflow-x-auto">
                    <table class="w-full text-left text-[11px] text-slate-600 border-collapse border border-slate-200">
-                      <thead>
+                       <thead>
                          <tr class="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold uppercase">
+                            <th class="px-2 py-2 border-r border-slate-200 text-center w-10">No</th>
                             <th class="px-2 py-2 border-r border-slate-200 text-center w-24">No Bon</th>
                             <th class="px-2 py-2 border-r border-slate-200">Nama Konsumen</th>
                             <th class="px-2 py-2 border-r border-slate-200 text-right w-24">Jumlah Ayam (ekor)</th>
@@ -820,6 +826,10 @@
              'JB': { ekor: 0, kg: 0 }
          };
 
+         let totalPesanan = 0;
+         let totalGeser = 0;
+         let noDetail = 1;
+
          dailyBons.forEach(b => {
              (b.items || []).forEach(it => {
                  const ekor = Number(it.jmlAyam || 0);
@@ -840,9 +850,13 @@
                      const originalUkuran = (it.ukuran || '').toUpperCase();
                      const geser = mapping !== originalUkuran ? 'Geser' : '';
 
+                     if (geser) totalGeser++;
+                     totalPesanan++;
+
                      const tr = document.createElement('tr');
                      tr.className = "border-b border-slate-200 hover:bg-slate-50";
                      tr.innerHTML = `
+                        <td class="px-2 py-2 border-r border-slate-200 text-center font-medium">${noDetail++}</td>
                         <td class="px-2 py-2 border-r border-slate-200 text-center font-semibold text-blue-600">${b.id}</td>
                         <td class="px-2 py-2 border-r border-slate-200 font-bold text-slate-800">${b.konsumen}</td>
                         <td class="px-2 py-2 border-r border-slate-200 text-right font-semibold">${ekor.toLocaleString('id-ID')}</td>
@@ -856,6 +870,11 @@
                  }
              });
          });
+
+         // Update Task A info
+         const persentaseGeser = totalPesanan > 0 ? (totalGeser / totalPesanan * 100).toFixed(0) : 0;
+         document.getElementById('total-pesanan-info').textContent = totalPesanan;
+         document.getElementById('total-geser-info').textContent = `${totalGeser}, ${persentaseGeser}%`;
 
          const tbodyRekap = document.getElementById('tbody-ukuran-rekap');
          tbodyRekap.innerHTML = '';
@@ -972,7 +991,7 @@
                          rekapMap[mapping].ekor += ekor;
                          rekapMap[mapping].kg += kg;
                          
-                         detailRows.push([b.id, b.konsumen, ekor, kg, rata, mapping, originalUkuran, geser]);
+                         detailRows.push([detailRows.length + 1, b.id, b.konsumen, ekor, kg, rata, mapping, originalUkuran, geser]);
                      }
                  });
              });
@@ -984,10 +1003,18 @@
                      wsData.push([no++, key, rekapMap[key].ekor, rekapMap[key].kg]);
                  }
              });
+
+             // Add Task A info to Excel
+             const tPesanan = detailRows.length;
+             const tGeser = detailRows.filter(r => r[8] === 'Geser').length;
+             const pGeser = tPesanan > 0 ? (tGeser / tPesanan * 100).toFixed(0) : 0;
+             wsData.push(['']);
+             wsData.push(['Total Jumlah Pesanan', tPesanan]);
+             wsData.push(['Total Jumlah Geser', `${tGeser}, ${pGeser}%`]);
              
              wsData.push(['']);
              wsData.push(['--- Laporan Matrik Ukuran Ayam ---']);
-             wsData.push(['No Bon', 'Nama Konsumen', 'Jumlah Ayam (ekor)', 'Berat Netto (kg)', 'Rata Rata Ayam (kg)', 'Mapping Ukuran', 'Ukuran', 'Geser']);
+             wsData.push(['No', 'No Bon', 'Nama Konsumen', 'Jumlah Ayam (ekor)', 'Berat Netto (kg)', 'Rata Rata Ayam (kg)', 'Mapping Ukuran', 'Ukuran', 'Geser']);
              detailRows.forEach(row => wsData.push(row));
          } else {
             wsData.push(['Laporan Penerimaan - silakan gunakan mode Cetak PDF untuk jenis ini.']);
