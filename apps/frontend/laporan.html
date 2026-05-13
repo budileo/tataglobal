@@ -346,6 +346,25 @@
                    <p>Total Jumlah Pesanan : <span id="total-pesanan-info">0</span></p>
                    <p>Total Jumlah Geser : <span id="total-geser-info">0, 0%</span></p>
                 </div>
+
+                <div class="mt-8">
+                   <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-4 uppercase text-[13px] tracking-widest">Data Audit Matrik dengan Realisasi penjualan</h3>
+                   <div class="overflow-x-auto">
+                      <table class="w-full text-left text-xs text-slate-600 border-collapse border border-slate-200">
+                         <thead>
+                            <tr class="bg-slate-100 border-b border-slate-300 text-slate-800 font-bold uppercase">
+                               <th class="px-3 py-2 border-r border-slate-200 w-10 text-center">No</th>
+                               <th class="px-3 py-2 border-r border-slate-200">Jenis Ukuran</th>
+                               <th class="px-3 py-2 border-r border-slate-200 text-center">Audit</th>
+                               <th class="px-3 py-2 border-r border-slate-200 text-right">Audit Jumlah Ekor</th>
+                               <th class="px-3 py-2 border-r border-slate-200 text-right">Jumlah Ekor</th>
+                               <th class="px-3 py-2 text-right">Jumlah Kg</th>
+                            </tr>
+                         </thead>
+                         <tbody id="tbody-ukuran-audit"></tbody>
+                      </table>
+                   </div>
+                </div>
              </div>
 
              <!-- Laporan Matrik Ukuran Ayam -->
@@ -825,6 +844,15 @@
              'JK': { ekor: 0, kg: 0 },
              'JB': { ekor: 0, kg: 0 }
          };
+         
+         const auditMap = {
+             'KTN': { ekor: 0, kg: 0 },
+             'K': { ekor: 0, kg: 0 },
+             'TB': { ekor: 0, kg: 0 },
+             'B': { ekor: 0, kg: 0 },
+             'JK': { ekor: 0, kg: 0 },
+             'JB': { ekor: 0, kg: 0 }
+         };
 
          let totalPesanan = 0;
          let totalGeser = 0;
@@ -849,6 +877,11 @@
 
                      const originalUkuran = (it.ukuran || '').toUpperCase();
                      const geser = mapping !== originalUkuran ? 'Geser' : '';
+                     
+                     if (auditMap[originalUkuran]) {
+                        auditMap[originalUkuran].ekor += ekor;
+                        auditMap[originalUkuran].kg += kg;
+                     }
 
                      if (geser) totalGeser++;
                      totalPesanan++;
@@ -892,6 +925,52 @@
                  `;
                  tbodyRekap.appendChild(tr);
              }
+         });
+
+         const tbodyAudit = document.getElementById('tbody-ukuran-audit');
+         tbodyAudit.innerHTML = '';
+         let auditNo = 1;
+         order.forEach(key => {
+            const auditData = auditMap[key];
+            const realData = rekapMap[key];
+            if (auditData.ekor > 0 || realData.ekor > 0) {
+               // Row 1: Audit (Blue)
+               const tr1 = document.createElement('tr');
+               tr1.className = "border-b border-slate-100 text-blue-600 font-semibold";
+               tr1.innerHTML = `
+                  <td rowspan="3" class="px-3 py-2 border-r border-slate-200 text-center text-slate-800 font-medium">${auditNo++}</td>
+                  <td rowspan="3" class="px-3 py-2 border-r border-slate-200 font-bold text-slate-800">${key}</td>
+                  <td class="px-3 py-2 border-r border-slate-200 text-center italic">Audit Ukuran</td>
+                  <td class="px-3 py-2 border-r border-slate-200 text-right">${auditData.ekor.toLocaleString('id-ID')}</td>
+                  <td class="px-3 py-2 border-r border-slate-200 text-right">${auditData.ekor.toLocaleString('id-ID')}</td>
+                  <td class="px-3 py-2 text-right">${auditData.kg.toLocaleString('id-ID', {minimumFractionDigits:2})}</td>
+               `;
+               tbodyAudit.appendChild(tr1);
+
+               // Row 2: Mapping (Black)
+               const tr2 = document.createElement('tr');
+               tr2.className = "border-b border-slate-100 text-slate-900 font-semibold";
+               tr2.innerHTML = `
+                  <td class="px-3 py-2 border-r border-slate-200 text-center italic">Mapping Realisasi</td>
+                  <td class="px-3 py-2 border-r border-slate-200 text-right">${realData.ekor.toLocaleString('id-ID')}</td>
+                  <td class="px-3 py-2 border-r border-slate-200 text-right">${realData.ekor.toLocaleString('id-ID')}</td>
+                  <td class="px-3 py-2 text-right">${realData.kg.toLocaleString('id-ID', {minimumFractionDigits:2})}</td>
+               `;
+               tbodyAudit.appendChild(tr2);
+
+               // Row 3: Selisih (Red)
+               const diffEkor = auditData.ekor - realData.ekor;
+               const diffKg = auditData.kg - realData.kg;
+               const tr3 = document.createElement('tr');
+               tr3.className = "border-b border-slate-200 text-rose-600 font-bold";
+               tr3.innerHTML = `
+                  <td class="px-3 py-2 border-r border-slate-200 text-center italic">Selisih</td>
+                  <td class="px-3 py-2 border-r border-slate-200 text-right">${diffEkor.toLocaleString('id-ID')}</td>
+                  <td class="px-3 py-2 border-r border-slate-200 text-right">${diffEkor.toLocaleString('id-ID')}</td>
+                  <td class="px-3 py-2 text-right">${diffKg.toLocaleString('id-ID', {minimumFractionDigits:2})}</td>
+               `;
+               tbodyAudit.appendChild(tr3);
+            }
          });
       }
 
