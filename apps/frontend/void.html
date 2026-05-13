@@ -428,7 +428,7 @@
         }
 
         // Token Guard: VOID
-        if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('void','VOID data')) { pendingVoid=null; return; }
+        if(typeof AuthGuard!=='undefined' && !(await AuthGuard.consumeToken('void','VOID data'))) { pendingVoid=null; return; }
         modal.classList.add('hidden'); modal.classList.remove('flex');
         pendingVoid = null;
 

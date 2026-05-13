@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -883,7 +883,7 @@
          targetBon.status = sc.code === 'L' ? 'LUNAS' : (sc.code === 'S' ? 'SEBAGIAN' : 'PIUTANG');
 
          // Token Guard: PAYMENT
-         if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('create','Pembayaran '+targetBon.id)) return;
+         if(typeof AuthGuard!=='undefined' && !(await AuthGuard.consumeToken('create','Pembayaran '+targetBon.id))) return;
          
          if(window.DataLayer) await window.DataLayer.savePembayaran(targetBon, payEvent);
          

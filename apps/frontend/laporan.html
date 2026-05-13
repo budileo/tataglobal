@@ -768,9 +768,9 @@
       document.getElementById('rekap-end').addEventListener('change', calculateRekap);
 
       // Print events
-      const handlePrint = () => {
+      const handlePrint = async () => {
         if (typeof AuthGuard !== 'undefined') {
-          if (!AuthGuard.consumeToken('download', 'Cetak Laporan')) return;
+          if (!(await AuthGuard.consumeToken('download', 'Cetak Laporan'))) return;
         }
         window.print();
       };

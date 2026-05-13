@@ -255,127 +255,232 @@ const AuthGuard = (function() {
     return getDepartmentById(user.departmentId);
   }
 
-  // ==================== TOKEN ENGINE ====================
-  function getTokenTarif() { return _get(KEYS.tokenTarif); }
-  function saveTokenTarif(t) { 
-     _set(KEYS.tokenTarif, t); 
-     // Cloud Sync
-     if (window.supabaseClient) {
-        t.forEach(tarif => {
-           window.supabaseClient.from('token_tarif').upsert({
-              code: tarif.code, label: tarif.label, cost: tarif.cost
-           }).then();
-        });
-     }
+  // ==================== TOKEN ENGINE (CLOUD-FIRST) ====================
+
+  // --- Token Tarif: Cloud-First ---
+  async function getTokenTarif() {
+    if (window.supabaseClient) {
+      try {
+        const { data, error } = await window.supabaseClient.from('token_tarif').select('*');
+        if (!error && data && data.length > 0) {
+          const mapped = data.map(t => ({ code: t.code, label: t.label, cost: Number(t.cost) }));
+          _set(KEYS.tokenTarif, mapped);
+          return mapped;
+        }
+      } catch(e) { console.warn('getTokenTarif cloud error, fallback lokal:', e.message); }
+    }
+    return _get(KEYS.tokenTarif);
   }
 
-  function getTarifCost(actionCode) {
+  async function saveTokenTarif(t) {
+    _set(KEYS.tokenTarif, t);
+    if (window.supabaseClient) {
+      for (const tarif of t) {
+        await window.supabaseClient.from('token_tarif').upsert({
+          code: tarif.code, label: tarif.label, cost: tarif.cost
+        });
+      }
+    }
+  }
+
+  async function getTarifCost(actionCode) {
+    if (window.supabaseClient) {
+      try {
+        const { data, error } = await window.supabaseClient.from('token_tarif').select('cost').eq('code', actionCode).single();
+        if (!error && data) return Number(data.cost);
+      } catch(e) { /* fallback */ }
+    }
     const tarif = _get(KEYS.tokenTarif);
     const entry = tarif.find(t => t.code === actionCode);
     return entry ? entry.cost : 1;
   }
 
-  function getDeptTokenBalance() {
+  // --- Saldo Token: Cloud-First ---
+  async function getDeptTokenBalance() {
+    const user = getCurrentUser();
+    if (!user) return 0;
+    if (window.supabaseClient) {
+      try {
+        const { data, error } = await window.supabaseClient.from('departments').select('token_balance').eq('id', user.departmentId).single();
+        if (!error && data) {
+          // Update local cache
+          const depts = _get(KEYS.departments);
+          const d = depts.find(x => x.id === user.departmentId);
+          if (d) { d.tokenBalance = Number(data.token_balance); _set(KEYS.departments, depts); }
+          return Number(data.token_balance);
+        }
+      } catch(e) { /* fallback */ }
+    }
     const dept = getUserDepartment();
     return dept ? dept.tokenBalance : 0;
   }
 
-  function canAfford(actionCode) {
-    const cost = getTarifCost(actionCode);
-    return getDeptTokenBalance() >= cost;
+  async function canAfford(actionCode) {
+    const cost = await getTarifCost(actionCode);
+    const balance = await getDeptTokenBalance();
+    return balance >= cost;
   }
 
-  function consumeToken(actionCode, description) {
+  // --- Consume Token: Cloud-First (async) ---
+  async function consumeToken(actionCode, description) {
     const user = getCurrentUser();
     if (!user) return false;
 
-    const cost = getTarifCost(actionCode);
-    const depts = _get(KEYS.departments);
-    const dept = depts.find(d => d.id === user.departmentId);
-    if (!dept) return false;
+    const cost = await getTarifCost(actionCode);
 
-    if (dept.tokenBalance < cost) {
-      alert('⚠️ Token tidak cukup!\n\nSaldo departemen: ' + dept.tokenBalance + ' token\nBiaya aksi: ' + cost + ' token\n\nHubungi Owner untuk mengisi token.');
+    // Baca saldo terbaru dari Supabase
+    let currentBalance = 0;
+    let deptId = user.departmentId;
+    if (window.supabaseClient) {
+      try {
+        const { data, error } = await window.supabaseClient.from('departments').select('token_balance').eq('id', deptId).single();
+        if (!error && data) currentBalance = Number(data.token_balance);
+        else { const dept = getUserDepartment(); currentBalance = dept ? dept.tokenBalance : 0; }
+      } catch(e) { const dept = getUserDepartment(); currentBalance = dept ? dept.tokenBalance : 0; }
+    } else {
+      const dept = getUserDepartment();
+      currentBalance = dept ? dept.tokenBalance : 0;
+    }
+
+    if (currentBalance < cost) {
+      alert('⚠️ Token tidak cukup!\n\nSaldo departemen: ' + currentBalance + ' token\nBiaya aksi: ' + cost + ' token\n\nHubungi Owner untuk mengisi token.');
       return false;
     }
 
-    dept.tokenBalance -= cost;
-    _set(KEYS.departments, depts);
+    const newBalance = currentBalance - cost;
 
-    // Record history
-    const history = _get(KEYS.tokenHistory);
+    // Tulis ke Supabase DULU
     const historyEntry = {
       id: 'tkn-' + _id(),
-      departmentId: dept.id,
+      departmentId: deptId,
       userId: user.id,
       userName: user.name,
       type: 'consume',
       amount: -cost,
       actionCode: actionCode,
       description: description || actionCode,
-      balanceAfter: dept.tokenBalance,
+      balanceAfter: newBalance,
       createdAt: new Date().toISOString()
     };
+
+    if (window.supabaseClient) {
+      try {
+        await window.supabaseClient.from('departments').update({ token_balance: newBalance }).eq('id', deptId);
+        await window.supabaseClient.from('token_history').insert([{
+          id: historyEntry.id, department_id: historyEntry.departmentId, user_id: historyEntry.userId,
+          user_name: historyEntry.userName, type: historyEntry.type, amount: historyEntry.amount,
+          action_code: historyEntry.actionCode, description: historyEntry.description,
+          balance_after: historyEntry.balanceAfter, created_at: historyEntry.createdAt
+        }]);
+      } catch(e) { console.error('consumeToken cloud write error:', e); }
+    }
+
+    // Update local cache
+    const depts = _get(KEYS.departments);
+    const dept = depts.find(d => d.id === deptId);
+    if (dept) { dept.tokenBalance = newBalance; _set(KEYS.departments, depts); }
+    const history = _get(KEYS.tokenHistory);
     history.unshift(historyEntry);
     if (history.length > 5000) history.length = 5000;
     _set(KEYS.tokenHistory, history);
 
-    // Push to Cloud
-    if (window.supabaseClient) {
-       window.supabaseClient.from('departments').update({ token_balance: dept.tokenBalance }).eq('id', dept.id).then();
-       window.supabaseClient.from('token_history').insert([{
-          id: historyEntry.id, department_id: historyEntry.departmentId, user_id: historyEntry.userId,
-          user_name: historyEntry.userName, type: historyEntry.type, amount: historyEntry.amount,
-          action_code: historyEntry.actionCode, description: historyEntry.description,
-          balance_after: historyEntry.balanceAfter, created_at: historyEntry.createdAt
-       }]).then();
-    }
-
-    // Update current user cache
     setCurrentUser({ ...user });
+
+    // Refresh sidebar token badge
+    refreshSidebarToken();
 
     return true;
   }
 
-  function topUpToken(departmentId, amount, note, byUserId) {
-    const depts = _get(KEYS.departments);
-    const dept = depts.find(d => d.id === departmentId);
-    if (!dept) return false;
+  // --- Top-Up Token: Cloud-First (async) ---
+  async function topUpToken(departmentId, amount, note, byUserId) {
+    // Baca saldo terbaru dari Supabase
+    let currentBalance = 0;
+    if (window.supabaseClient) {
+      try {
+        const { data, error } = await window.supabaseClient.from('departments').select('token_balance').eq('id', departmentId).single();
+        if (!error && data) currentBalance = Number(data.token_balance);
+        else { const dept = getDepartmentById(departmentId); currentBalance = dept ? dept.tokenBalance : 0; }
+      } catch(e) { const dept = getDepartmentById(departmentId); currentBalance = dept ? dept.tokenBalance : 0; }
+    } else {
+      const dept = getDepartmentById(departmentId);
+      currentBalance = dept ? dept.tokenBalance : 0;
+    }
 
-    dept.tokenBalance += amount;
-    _set(KEYS.departments, depts);
+    const newBalance = currentBalance + amount;
+    const user = getCurrentUser();
 
-    const history = _get(KEYS.tokenHistory);
     const historyEntry = {
       id: 'tkn-' + _id(),
       departmentId: departmentId,
       userId: byUserId,
-      userName: 'Owner',
+      userName: user ? user.name : 'Owner',
       type: 'topup',
       amount: amount,
       actionCode: 'topup',
       description: note || 'Top-up token oleh Owner',
-      balanceAfter: dept.tokenBalance,
+      balanceAfter: newBalance,
       createdAt: new Date().toISOString()
     };
-    history.unshift(historyEntry);
-    _set(KEYS.tokenHistory, history);
-    
-    // Push to Cloud
+
+    // Tulis ke Supabase DULU
     if (window.supabaseClient) {
-       window.supabaseClient.from('departments').update({ token_balance: dept.tokenBalance }).eq('id', dept.id).then();
-       window.supabaseClient.from('token_history').insert([{
+      try {
+        await window.supabaseClient.from('departments').update({ token_balance: newBalance }).eq('id', departmentId);
+        await window.supabaseClient.from('token_history').insert([{
           id: historyEntry.id, department_id: historyEntry.departmentId, user_id: historyEntry.userId,
           user_name: historyEntry.userName, type: historyEntry.type, amount: historyEntry.amount,
           action_code: historyEntry.actionCode, description: historyEntry.description,
           balance_after: historyEntry.balanceAfter, created_at: historyEntry.createdAt
-       }]).then();
+        }]);
+      } catch(e) { console.error('topUpToken cloud write error:', e); }
     }
-    return dept.tokenBalance;
+
+    // Update local cache
+    const depts = _get(KEYS.departments);
+    const dept = depts.find(d => d.id === departmentId);
+    if (dept) { dept.tokenBalance = newBalance; _set(KEYS.departments, depts); }
+    const history = _get(KEYS.tokenHistory);
+    history.unshift(historyEntry);
+    _set(KEYS.tokenHistory, history);
+
+    // Refresh sidebar token badge
+    refreshSidebarToken();
+
+    return newBalance;
   }
 
-  function getTokenHistory(departmentId) {
+  // --- Token History: Cloud-First (async) ---
+  async function getTokenHistory(departmentId) {
+    if (window.supabaseClient) {
+      try {
+        const { data, error } = await window.supabaseClient.from('token_history').select('*')
+          .eq('department_id', departmentId)
+          .order('created_at', { ascending: false })
+          .limit(500);
+        if (!error && data) {
+          return data.map(h => ({
+            id: h.id, departmentId: h.department_id, userId: h.user_id, userName: h.user_name,
+            type: h.type, amount: Number(h.amount), actionCode: h.action_code, description: h.description,
+            balanceAfter: Number(h.balance_after), createdAt: h.created_at
+          }));
+        }
+      } catch(e) { console.warn('getTokenHistory cloud error, fallback lokal:', e.message); }
+    }
     return _get(KEYS.tokenHistory).filter(h => h.departmentId === departmentId);
+  }
+
+  // --- Refresh Sidebar Token Badge ---
+  async function refreshSidebarToken() {
+    const balance = await getDeptTokenBalance();
+    const el = document.getElementById('sidebar-token-info');
+    if (el) {
+      const valEl = el.querySelector('.token-balance-value');
+      if (valEl) valEl.textContent = balance.toLocaleString('id-ID') + ' Token';
+    }
+    // Also update header badge if present
+    const headerBadge = document.getElementById('dept-token-badge');
+    if (headerBadge) headerBadge.textContent = '🪙 ' + balance.toLocaleString('id-ID') + ' Token';
   }
 
   // ==================== USERS CRUD ====================
@@ -577,7 +682,7 @@ const AuthGuard = (function() {
     getDepartments, saveDepartments, getDepartmentById, getUserDepartment,
     // Token
     getTokenTarif, saveTokenTarif, getTarifCost,
-    getDeptTokenBalance, canAfford, consumeToken, topUpToken, getTokenHistory,
+    getDeptTokenBalance, canAfford, consumeToken, topUpToken, getTokenHistory, refreshSidebarToken,
     // Users
     getUsers, saveUsers, getUsersByDepartment,
     // Invite

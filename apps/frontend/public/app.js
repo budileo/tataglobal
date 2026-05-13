@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (sidebar && toggleBtn && mainWrapper) {
     // Inject Token Badge if not present
     if (typeof AuthGuard !== 'undefined' && !document.getElementById('sidebar-token-info')) {
-      const dept = AuthGuard.getUserDepartment();
       const tokenDiv = document.createElement('div');
       tokenDiv.id = 'sidebar-token-info';
       tokenDiv.className = 'px-6 py-2 border-t border-slate-800 sidebar-text';
@@ -45,12 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="text-amber-500 font-black text-xs">🪙</span>
           <span class="text-[10px] font-bold text-slate-400">SALDO TOKEN:</span>
         </div>
-        <div class="text-xs font-black text-amber-500 mt-0.5">${dept ? dept.tokenBalance.toLocaleString('id-ID') : 0} Token</div>
+        <div class="text-xs font-black text-amber-500 mt-0.5 token-balance-value">memuat...</div>
       `;
       // Insert before logout
-      const logoutLink = sidebar.querySelector('a[href="index.html"]');
-      if (logoutLink) sidebar.insertBefore(tokenDiv, logoutLink.parentElement);
+      const logoutLink = sidebar.querySelector('a[href="index.html"]') || sidebar.querySelector('a[onclick]');
+      if (logoutLink) sidebar.insertBefore(tokenDiv, logoutLink.parentElement || logoutLink);
       else sidebar.appendChild(tokenDiv);
+
+      // Refresh saldo dari cloud
+      AuthGuard.refreshSidebarToken();
     }
 
     toggleBtn.addEventListener('click', () => {

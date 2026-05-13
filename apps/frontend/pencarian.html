@@ -332,13 +332,13 @@
     }
 
     // --- Search & Filter Logic ---
-    function doSearch(triggeredByUser = false) {
+    async function doSearch(triggeredByUser = false) {
         const queryInput = document.getElementById('global-search');
         const query = queryInput.value.trim().toLowerCase();
         
         // Token Guard
         if (triggeredByUser && typeof AuthGuard !== 'undefined') {
-          if (!AuthGuard.consumeToken('search', 'Pencarian: ' + queryInput.value)) return;
+          if (!(await AuthGuard.consumeToken('search', 'Pencarian: ' + queryInput.value))) return;
         }
        const rangeMode = document.getElementById('filter-range').value;
        

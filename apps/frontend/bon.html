@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -816,7 +816,7 @@
           // Jika belum ada pembayaran, status tetap seperti semula
 
           // Token Guard: UPDATE
-          if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('update','Edit BON '+existing.id)) return;
+          if(typeof AuthGuard!=='undefined' && !(await AuthGuard.consumeToken('update','Edit BON '+existing.id))) return;
           
           if(window.DataLayer) await window.DataLayer.saveBon(existing); // Sync ke Cloud
           
@@ -826,7 +826,7 @@
         }else{
           const newBon = {id:nb, _dbId: crypto.randomUUID(), tanggal:tgl,konsumen:ks,staf:st,marketing:mk,total,status:'PIUTANG',keterangan:kt,items};
           // Token Guard: CREATE
-          if(typeof AuthGuard!=='undefined' && !AuthGuard.consumeToken('create','Buat BON '+nb)) return;
+          if(typeof AuthGuard!=='undefined' && !(await AuthGuard.consumeToken('create','Buat BON '+nb))) return;
           
           if(window.DataLayer) await window.DataLayer.saveBon(newBon); // Sync ke Cloud
           // Audit Log: CREATE

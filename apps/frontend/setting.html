@@ -87,27 +87,40 @@
       </div>
 
       <!-- ===================== TAB 3: ISI TOKEN ===================== -->
-      <div id="panel-topup" class="tab-panel hidden space-y-5">
-        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 class="font-black text-sm uppercase tracking-widest text-slate-800 mb-4">Isi Token Departemen</h3>
-              <div class="bg-amber-50 rounded-xl p-4 border border-amber-200 mb-4">
-                <p class="text-xs font-bold text-amber-700 uppercase tracking-widest">Saldo Saat Ini</p>
-                <p id="topup-balance" class="text-3xl font-black text-amber-900 mt-1">0</p>
-                <p id="topup-dept-name" class="text-xs text-amber-600 font-semibold mt-1">-</p>
-              </div>
-              <div class="space-y-3">
-                <div><label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Jumlah Token</label><input id="topup-amount" type="number" min="1" value="100" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-emerald-400"></div>
-                <div><label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Catatan (opsional)</label><input id="topup-note" type="text" placeholder="Alasan top-up..." class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-400"></div>
-                <button id="btn-topup" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg text-sm uppercase tracking-wider">🪙 ISI TOKEN</button>
-              </div>
+      <div id="panel-topup" class="tab-panel hidden space-y-4">
+        <!-- Row 1: Isi Token + Rekap Harian -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <!-- Kiri: Form Isi Token -->
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <h3 class="font-black text-sm uppercase tracking-widest text-slate-800 mb-3">Isi Token Departemen</h3>
+            <div class="bg-amber-50 rounded-xl p-4 border border-amber-200 mb-3">
+              <p class="text-xs font-bold text-amber-700 uppercase tracking-widest">Saldo Saat Ini</p>
+              <p id="topup-balance" class="text-3xl font-black text-amber-900 mt-1">memuat...</p>
+              <p id="topup-dept-name" class="text-xs text-amber-600 font-semibold mt-1">-</p>
             </div>
-            <div>
-              <h3 class="font-black text-sm uppercase tracking-widest text-slate-800 mb-4">Riwayat Token</h3>
-              <div class="max-h-[400px] overflow-y-auto space-y-2" id="topup-history"></div>
+            <div class="space-y-2">
+              <div><label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Jumlah Token</label><input id="topup-amount" type="number" min="1" value="100" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2 text-sm font-bold focus:outline-none focus:border-emerald-400"></div>
+              <div><label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Catatan (opsional)</label><input id="topup-note" type="text" placeholder="Alasan top-up..." class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-400"></div>
+              <button id="btn-topup" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition-colors shadow-lg text-sm uppercase tracking-wider">🪙 ISI TOKEN</button>
             </div>
           </div>
+          <!-- Kanan: Rekap Harian Bulan Ini -->
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div class="p-3 bg-slate-50 border-b border-slate-100 flex items-center gap-2"><div class="w-1 h-5 bg-emerald-500 rounded-full"></div><h4 class="font-black text-slate-800 uppercase tracking-widest text-[10px]">Rekap Harian Bulan Ini</h4></div>
+            <div class="overflow-y-auto max-h-[360px]">
+              <table class="w-full text-[11px]">
+                <thead class="bg-slate-50 font-bold text-slate-500 border-b text-[10px] uppercase tracking-wider sticky top-0">
+                  <tr><th class="px-3 py-2 text-left">Tanggal</th><th class="px-3 py-2 text-right">Top Up</th><th class="px-3 py-2 text-right">Penggunaan</th><th class="px-3 py-2 text-right">Saldo Akhir</th></tr>
+                </thead>
+                <tbody id="rekap-harian-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- Row 2: Riwayat Hari Ini (Kompak) -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div class="p-3 bg-slate-50 border-b border-slate-100 flex items-center gap-2"><div class="w-1 h-5 bg-amber-500 rounded-full"></div><h4 class="font-black text-slate-800 uppercase tracking-widest text-[10px]">Riwayat Penggunaan Token Hari Ini</h4></div>
+          <div class="max-h-[250px] overflow-y-auto p-2 space-y-1" id="topup-history"></div>
         </div>
       </div>
 
@@ -137,10 +150,10 @@
       // Sidebar user name
       if(user) document.getElementById('sidebar-user-name').textContent = user.name;
 
-      // Update token badge
-      function updateTokenBadge(){
-        const dept = AuthGuard.getUserDepartment();
-        document.getElementById('dept-token-badge').textContent = '🪙 ' + (dept?dept.tokenBalance:0) + ' Token';
+      // Update token badge (cloud-first)
+      async function updateTokenBadge(){
+        const balance = await AuthGuard.getDeptTokenBalance();
+        document.getElementById('dept-token-badge').textContent = '🪙 ' + balance.toLocaleString('id-ID') + ' Token';
       }
       updateTokenBadge();
       
@@ -302,51 +315,86 @@
         })});
       }
 
-      // ========== TAB 3: ISI TOKEN ==========
-      function renderTopup(){
+      // ========== TAB 3: ISI TOKEN (CLOUD-FIRST) ==========
+      async function renderTopup(){
         const dept = AuthGuard.getUserDepartment();
         if(!dept) return;
-        document.getElementById('topup-balance').textContent = dept.tokenBalance.toLocaleString('id-ID');
+        // Saldo dari cloud
+        const balance = await AuthGuard.getDeptTokenBalance();
+        document.getElementById('topup-balance').textContent = balance.toLocaleString('id-ID');
         document.getElementById('topup-dept-name').textContent = dept.name;
 
-        const history = AuthGuard.getTokenHistory(dept.id);
-        const container = document.getElementById('topup-history');
-        if(!history.length){
-          container.innerHTML='<p class="text-center text-slate-400 text-sm py-8">Belum ada riwayat token.</p>';
-          return;
+        // Riwayat dari cloud
+        const history = await AuthGuard.getTokenHistory(dept.id);
+
+        // === REKAP HARIAN BULAN INI ===
+        const now = new Date();
+        const yyyy = now.getFullYear(), mm = now.getMonth();
+        const monthHistory = history.filter(h => {
+          const d = new Date(h.createdAt);
+          return d.getFullYear() === yyyy && d.getMonth() === mm;
+        });
+        // Group by day
+        const dayMap = {};
+        monthHistory.forEach(h => {
+          const day = new Date(h.createdAt).getDate();
+          if(!dayMap[day]) dayMap[day] = { topup: 0, usage: 0, lastBalance: 0 };
+          if(h.type === 'topup') dayMap[day].topup += Math.abs(Number(h.amount));
+          else dayMap[day].usage += Math.abs(Number(h.amount));
+          dayMap[day].lastBalance = Number(h.balanceAfter);
+        });
+        const days = Object.keys(dayMap).map(Number).sort((a,b) => b - a);
+        const rekapTbody = document.getElementById('rekap-harian-tbody');
+        if(days.length === 0) {
+          rekapTbody.innerHTML = '<tr><td colspan="4" class="px-3 py-4 text-center text-slate-400 text-[11px]">Belum ada data bulan ini</td></tr>';
+        } else {
+          rekapTbody.innerHTML = days.map(day => {
+            const r = dayMap[day];
+            return `<tr class="border-b border-slate-50 hover:bg-slate-50">
+              <td class="px-3 py-1.5 font-semibold text-slate-700">${day} ${now.toLocaleString('id-ID',{month:'short'})}</td>
+              <td class="px-3 py-1.5 text-right font-bold text-emerald-600">${r.topup > 0 ? '+'+r.topup.toLocaleString('id-ID') : '-'}</td>
+              <td class="px-3 py-1.5 text-right font-bold text-rose-500">${r.usage > 0 ? '-'+r.usage.toLocaleString('id-ID') : '-'}</td>
+              <td class="px-3 py-1.5 text-right font-black text-slate-800">${r.lastBalance.toLocaleString('id-ID')}</td>
+            </tr>`;
+          }).join('');
         }
-        container.innerHTML = history.slice(0,50).map(h=>{
-          const isTopup = h.type==='topup';
-          return `<div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100 text-xs">
-            <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isTopup?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'} font-black text-sm">${isTopup?'+':'−'}</div>
-            <div class="flex-1 min-w-0">
-              <p class="font-bold text-slate-800 truncate">${h.description}</p>
-              <p class="text-[10px] text-slate-400">${h.userName} • ${new Date(h.createdAt).toLocaleString('id-ID', {timeZone:'Asia/Jakarta'})}</p>
-            </div>
-            <div class="text-right shrink-0">
-              <p class="font-black ${isTopup?'text-emerald-700':'text-rose-600'}">${isTopup?'+':''} ${h.amount}</p>
-              <p class="text-[10px] text-slate-400">Sisa: ${h.balanceAfter}</p>
-            </div>
-          </div>`;
-        }).join('');
+
+        // === RIWAYAT HARI INI (kompak) ===
+        const todayStr = now.toISOString().slice(0,10);
+        const todayHistory = history.filter(h => h.createdAt && h.createdAt.slice(0,10) === todayStr);
+        const container = document.getElementById('topup-history');
+        if(!todayHistory.length){
+          container.innerHTML='<p class="text-center text-slate-400 text-[11px] py-4">Belum ada aktivitas token hari ini.</p>';
+        } else {
+          container.innerHTML = todayHistory.map(h=>{
+            const isTopup = h.type==='topup';
+            const time = new Date(h.createdAt).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'});
+            return `<div class="flex items-center gap-2 px-2 py-1.5 bg-slate-50 rounded-lg border border-slate-100 text-[11px]">
+              <span class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${isTopup?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'} font-black text-[10px]">${isTopup?'+':'−'}</span>
+              <span class="flex-1 min-w-0 truncate font-medium text-slate-700">${h.description}</span>
+              <span class="text-[10px] text-slate-400 shrink-0">${h.userName} • ${time}</span>
+              <span class="font-black shrink-0 ${isTopup?'text-emerald-600':'text-rose-500'}">${isTopup?'+':''}${h.amount}</span>
+            </div>`;
+          }).join('');
+        }
         updateTokenBadge();
       }
 
-      document.getElementById('btn-topup').addEventListener('click',()=>{
+      document.getElementById('btn-topup').addEventListener('click', async ()=>{
         const dept = AuthGuard.getUserDepartment();if(!dept)return;
         const amount = parseInt(document.getElementById('topup-amount').value)||0;
         if(amount<=0){alert('Masukkan jumlah token yang valid.');return;}
         const note = document.getElementById('topup-note').value.trim()||'Top-up token';
-        const newBalance = AuthGuard.topUpToken(dept.id, amount, note, user?user.id:'');
+        const newBalance = await AuthGuard.topUpToken(dept.id, amount, note, user?user.id:'');
         if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'CREATE',entityType:'TOKEN',entityId:dept.id,newData:{amount,note,balanceAfter:newBalance},isCritical:true,message:'Top-up '+amount+' token ke '+dept.name});
         document.getElementById('topup-amount').value='100';document.getElementById('topup-note').value='';
-        renderTopup();
+        await renderTopup();
         alert('✅ Berhasil menambahkan '+amount+' token!');
       });
 
-      // ========== TAB 4: TARIF TOKEN ==========
-      function renderTarif(){
-        const tarifs = AuthGuard.getTokenTarif();
+      // ========== TAB 4: TARIF TOKEN (CLOUD-FIRST) ==========
+      async function renderTarif(){
+        const tarifs = await AuthGuard.getTokenTarif();
         document.getElementById('tarif-tbody').innerHTML = tarifs.map(t=>{
           return `<tr class="border-b border-slate-100 hover:bg-slate-50">
             <td class="px-4 py-3 font-bold text-slate-800 uppercase text-xs tracking-wider">${t.code}</td>
@@ -356,13 +404,13 @@
           </tr>`;
         }).join('');
 
-        document.querySelectorAll('.btn-save-tarif').forEach(btn=>{btn.addEventListener('click',()=>{
+        document.querySelectorAll('.btn-save-tarif').forEach(btn=>{btn.addEventListener('click', async ()=>{
           const code=btn.dataset.code;
           const inp=document.querySelector(`.tarif-input[data-code="${code}"]`);
           const newCost=parseInt(inp.value)||0;
-          const tarifs=AuthGuard.getTokenTarif();
+          const tarifs=await AuthGuard.getTokenTarif();
           const t=tarifs.find(x=>x.code===code);
-          if(t){const old=t.cost;t.cost=newCost;AuthGuard.saveTokenTarif(tarifs);
+          if(t){const old=t.cost;t.cost=newCost;await AuthGuard.saveTokenTarif(tarifs);
             if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'TOKEN_TARIF',entityId:code,oldData:{cost:old},newData:{cost:newCost},isCritical:true,message:'Tarif '+code+' diubah dari '+old+' → '+newCost});
             alert('✅ Tarif '+code+' disimpan: '+newCost+' token');
           }
@@ -381,5 +429,6 @@
     <script src="app.js"></script>
   </body>
 </html>
+
 
 

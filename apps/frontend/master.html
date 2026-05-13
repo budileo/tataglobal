@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -363,7 +363,7 @@
           const isNew = !db[type].some(x => x.id === id);
           const actionCode = isNew ? 'create' : 'update';
           const actionMsg = (isNew ? 'Tambah ' : 'Edit ') + type + ': ' + nama;
-          if (typeof AuthGuard !== 'undefined' && !AuthGuard.consumeToken(actionCode, actionMsg)) return;
+          if (typeof AuthGuard !== 'undefined' && !(await AuthGuard.consumeToken(actionCode, actionMsg))) return;
 
           const payload = {
              id: id,
