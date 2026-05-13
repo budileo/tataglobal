@@ -288,7 +288,9 @@
        function renderAll() { UI_TABS.forEach(t => renderTable(t)); }
        
        function renderTable(type, query = '') {
-          const list = db[type].filter(item => item.nama.toLowerCase().includes(query) || (item.telp && item.telp.includes(query)));
+          const list = db[type]
+            .filter(item => item.nama.toLowerCase().includes(query) || (item.telp && item.telp.includes(query)))
+            .sort((a, b) => a.nama.localeCompare(b.nama));
           const tbody = document.getElementById('table-' + type);
           const empty = document.getElementById('empty-' + type);
           document.getElementById('count-' + type).textContent = list.length + ' Data';
