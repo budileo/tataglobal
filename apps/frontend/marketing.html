@@ -532,7 +532,7 @@
         }
 
         // Run initially
-        if(window.DataLayer) window.DataLayer.fetchBons().then(renderData).catch(renderData);
+        if(window.DataLayer) window.DataLayer.init().then(renderData).catch(renderData);
         else renderData();
 
         // Export PDF
