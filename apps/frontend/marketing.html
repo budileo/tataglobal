@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Marketing - TATA GLOBAL</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+      tailwind.config = { theme: { extend: { colors: { emerald: { 600: '#059669', 700: '#047857' }, navy: { 900: '#0f172a' } } } } }
+    </script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+      .tab-btn.active { border-color: #059669; color: #059669; background: #f0fdf4; }
+      @media print {
+         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+         @page { size: landscape; margin: 15mm; }
+         .print\:hidden { display: none !important; }
+         body { padding-bottom: 0 !important; background: white !important; margin: 0 !important; padding: 0 !important; }
+         .no-print { display: none !important; }
+         main { margin: 0 !important; padding: 0 !important; max-width: 100% !important; border: none !important; box-shadow: none !important; }
+         .print\:block { display: block !important; }
+      }
+    </style>
+  </head>
+  <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
+    
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between print:hidden">
+      <h2 class="text-xl font-bold text-slate-900">Marketing Dashboard</h2>
+    </header>
+
+    <!-- Sidebar Section -->
+    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300 print:hidden">
+      
+      <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
+          <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
+        </div>
+        <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+
+      <div class="flex md:flex-col md:w-full w-max md:space-y-1">
+        <a href="dashboard.html" title="Dashboard" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span>
+        </a>
+        <a href="bon.html" title="Bon Penjualan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Bon Penjualan</span>
+        </a>
+        <a href="pembayaran.html" title="Pembayaran & Potongan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pembayaran</span>
+        </a>
+        <a href="pelanggan.html" title="Pelanggan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pelanggan</span></a>
+        <!-- Marketing -->
+        <a href="marketing.html" title="Marketing" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-emerald-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0"><svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg><span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Marketing</span></a>
+        <a href="laporan.html" title="Laporan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Laporan</span>
+        </a>
+        <a href="master.html" title="Master Data" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Master Data</span>
+        </a>
+        <a href="histori.html" title="Histori Aktivitas" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Histori</span>
+        </a>
+        <a href="void.html" title="Void" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Void</span>
+        </a>
+        <a href="pencarian.html" title="Pencarian" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pencarian</span>
+        </a>
+        <a href="setting.html" title="Pengaturan" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Pengaturan</span>
+        </a>
+      </div>
+
+      <div class="hidden md:block md:mt-auto w-full">
+        <div class="px-6 py-3 border-t border-slate-800">
+          <p id="sidebar-user-name" class="text-sm font-semibold text-white sidebar-text">-</p>
+          <p id="sidebar-user-email" class="text-[11px] text-slate-500 sidebar-text">-</p>
+        </div>
+        <a href="#" onclick="AuthGuard.logout(); return false;" title="Keluar" class="flex items-center md:items-start gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          <span class="sidebar-text">Keluar</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
+      <!-- Tabs -->
+      <div class="flex flex-wrap gap-1 border-b border-slate-200 print:hidden">
+        <button data-tab="penjualan" class="tab-btn active text-sm font-bold px-5 py-3 border-b-2 border-transparent transition-all">📊 Rekap Penjualan (RFM)</button>
+        <button data-tab="produk" class="tab-btn text-sm font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 transition-all">📦 Rekap Produk</button>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="p-4 border border-slate-200 rounded-xl bg-white flex flex-wrap justify-between items-center gap-4 print:hidden">
+        <div class="flex items-center gap-3">
+            <span class="text-sm font-bold text-slate-700">Periode:</span>
+            <select id="filter-periode" class="border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-emerald-500 bg-slate-50 font-medium">
+                <option value="minggu-ini">Minggu Ini</option>
+                <option value="bulan-ini" selected>Bulan Ini</option>
+                <option value="range">Rentang Tanggal</option>
+            </select>
+            <input id="filter-start" type="date" class="border border-slate-300 rounded-lg px-2 py-1.5 text-sm outline-emerald-500 hidden">
+            <input id="filter-end" type="date" class="border border-slate-300 rounded-lg px-2 py-1.5 text-sm outline-emerald-500 hidden">
+            <button id="btn-terapkan" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-lg text-sm font-bold transition-colors shadow-sm">Terapkan</button>
+        </div>
+        <div class="flex items-center gap-2">
+            <button id="btn-pdf" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg> Download PDF
+            </button>
+            <button id="btn-excel" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Download Excel
+            </button>
+        </div>
+      </div>
+
+      <!-- KOP SURAT PRINT -->
+      <div class="hidden print:block text-center mb-6">
+          <h1 id="print-title" class="text-2xl font-black uppercase text-slate-900">CV. Global Putra Swasembada</h1>
+          <h2 id="print-subtitle" class="text-lg font-bold text-slate-700 mt-1">LAPORAN REKAP PENJUALAN</h2>
+          <p class="text-sm font-semibold text-slate-500 mt-1">Periode: <span id="print-periode"></span></p>
+          <hr class="border-t-2 border-slate-800 mt-4">
+      </div>
+
+      <!-- ===================== TAB 1: REKAP PENJUALAN ===================== -->
+      <div id="panel-penjualan" class="tab-panel space-y-6">
+        <!-- Dashboard Summary RFM -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 print:hidden">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-[10px] uppercase tracking-widest font-bold text-slate-500">Total Omzet</p>
+                <h3 id="sum-omzet" class="text-xl font-black text-emerald-700 mt-1">Rp 0</h3>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-[10px] uppercase tracking-widest font-bold text-slate-500">Top Customer</p>
+                <h3 id="sum-top" class="text-xl font-black text-blue-600 mt-1">0</h3>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-[10px] uppercase tracking-widest font-bold text-slate-500">Middle Customer</p>
+                <h3 id="sum-mid" class="text-xl font-black text-amber-600 mt-1">0</h3>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-[10px] uppercase tracking-widest font-bold text-slate-500">Low Customer</p>
+                <h3 id="sum-low" class="text-xl font-black text-rose-600 mt-1">0</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2 print:gap-4">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <h4 class="font-black text-slate-800 uppercase tracking-widest text-xs border-b border-slate-100 pb-2 mb-3">Analisis Customer RFM</h4>
+                <ul class="space-y-2 text-xs font-medium text-slate-600">
+                    <li class="flex justify-between">Customer Paling Loyal: <span id="rfm-loyal" class="font-bold text-emerald-700">-</span></li>
+                    <li class="flex justify-between">Customer Paling Berkembang: <span id="rfm-berkembang" class="font-bold text-blue-600">-</span></li>
+                    <li class="flex justify-between">Customer Menurun: <span id="rfm-menurun" class="font-bold text-amber-600">-</span></li>
+                    <li class="flex justify-between">Customer Dormant/Risiko Hilang: <span id="rfm-dormant" class="font-bold text-rose-600">-</span></li>
+                    <li class="flex justify-between">Potensi Naik Kelas: <span id="rfm-potensi" class="font-bold text-indigo-600">-</span></li>
+                </ul>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <h4 class="font-black text-slate-800 uppercase tracking-widest text-xs border-b border-slate-100 pb-2 mb-3">Kontribusi Omzet RFM</h4>
+                <ul class="space-y-2 text-xs font-medium text-slate-600">
+                    <li class="flex justify-between">Top Customer: <span id="kontribusi-top" class="font-bold text-slate-800">0%</span></li>
+                    <li class="flex justify-between">Middle Customer: <span id="kontribusi-mid" class="font-bold text-slate-800">0%</span></li>
+                    <li class="flex justify-between">Low Customer: <span id="kontribusi-low" class="font-bold text-slate-800">0%</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table id="table-penjualan" class="w-full text-left text-[11px]">
+              <thead class="bg-slate-100 text-slate-600 font-bold border-b border-slate-300 uppercase tracking-wider">
+                <tr>
+                  <th class="px-3 py-3 w-10 text-center border-r border-slate-200">No</th>
+                  <th class="px-3 py-3 border-r border-slate-200">Nama Pelanggan</th>
+                  <th class="px-3 py-3 text-right border-r border-slate-200">Netto (Kg)</th>
+                  <th class="px-3 py-3 text-right border-r border-slate-200">Ekor</th>
+                  <th class="px-3 py-3 text-center border-r border-slate-200 w-20">Hari Belanja</th>
+                  <th class="px-3 py-3 text-right border-r border-slate-200">Total Belanja</th>
+                  <th class="px-3 py-3 text-right border-r border-slate-200">Total Piutang</th>
+                  <th class="px-3 py-3 text-right border-r border-slate-200">Total Potongan</th>
+                  <th class="px-3 py-3 text-center border-r border-slate-200 w-16">% Omset</th>
+                  <th class="px-3 py-3 text-center">Keterangan (RFM)</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-penjualan"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== TAB 2: REKAP PRODUK ===================== -->
+      <div id="panel-produk" class="tab-panel hidden space-y-6">
+        <!-- Table 1 -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-4 bg-emerald-50 border-b border-emerald-100 flex items-center gap-2">
+              <div class="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
+              <h4 class="font-black text-emerald-900 uppercase tracking-widest text-xs">Tabel 1: Rekap Berdasarkan Ukuran</h4>
+          </div>
+          <div class="overflow-x-auto">
+            <table id="table-ukuran" class="w-full text-left text-xs">
+              <thead class="bg-slate-100 text-slate-600 font-bold border-b border-slate-300 uppercase tracking-wider">
+                <tr>
+                  <th class="px-3 py-2.5 w-10 text-center border-r border-slate-200">No</th>
+                  <th class="px-3 py-2.5 border-r border-slate-200">Ukuran</th>
+                  <th class="px-3 py-2.5 text-right border-r border-slate-200">Jumlah Netto (Kg)</th>
+                  <th class="px-3 py-2.5 text-right border-r border-slate-200">Jumlah Ekor</th>
+                  <th class="px-3 py-2.5 text-right border-r border-slate-200">Total Penjualan</th>
+                  <th class="px-3 py-2.5 text-center">% Terhadap Omset</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-ukuran"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Table 2 -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="p-4 bg-blue-50 border-b border-blue-100 flex items-center gap-2">
+              <div class="w-1.5 h-6 bg-blue-500 rounded-full"></div>
+              <h4 class="font-black text-blue-900 uppercase tracking-widest text-xs">Tabel 2: Detail Penjualan Per Hari</h4>
+          </div>
+          <div class="overflow-x-auto">
+            <table id="table-harian" class="w-full text-left text-xs">
+              <thead class="bg-slate-100 text-slate-600 font-bold border-b border-slate-300 uppercase tracking-wider">
+                <tr>
+                  <th class="px-3 py-2.5 w-10 text-center border-r border-slate-200">No</th>
+                  <th class="px-3 py-2.5 border-r border-slate-200">Tanggal</th>
+                  <th class="px-3 py-2.5 text-right border-r border-slate-200">Netto (Kg)</th>
+                  <th class="px-3 py-2.5 text-right border-r border-slate-200">Ekor</th>
+                  <th class="px-3 py-2.5 text-center border-r border-slate-200 w-24">Jml Pelanggan</th>
+                  <th class="px-3 py-2.5 text-right border-r border-slate-200">Total Penjualan</th>
+                  <th class="px-3 py-2.5 text-center">Ket (Target 10 Ton)</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-harian"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <script src="auth-guard.js"></script>
+    <script src="activity-logger.js"></script>
+    <script type="module" src="cloud-auth-guard.js"></script>
+    <script type="module" src="data-layer.js"></script>
+    <script src="app.js"></script>
+    <script>
+      (function(){
+        // Check Auth
+        if(typeof AuthGuard!=='undefined'){
+            if(!AuthGuard.requireAuth()) return;
+            if(!AuthGuard.requirePermission('marketing.view')) return;
+        }
+
+        const formatRp = (num) => 'Rp ' + (num||0).toLocaleString('id-ID');
+        const formatKg = (num) => (num||0).toLocaleString('id-ID', {minimumFractionDigits: 1, maximumFractionDigits: 2});
+        
+        let activeTab = 'penjualan';
+        const tabs = document.querySelectorAll('.tab-btn');
+        const panels = document.querySelectorAll('.tab-panel');
+        
+        tabs.forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            tabs.forEach(b=>{b.classList.remove('active');b.classList.add('text-slate-400')});
+            btn.classList.add('active');btn.classList.remove('text-slate-400');
+            panels.forEach(p=>p.classList.add('hidden'));
+            activeTab = btn.dataset.tab;
+            document.getElementById('panel-'+activeTab).classList.remove('hidden');
+            renderData();
+          });
+        });
+
+        const selFilter = document.getElementById('filter-periode');
+        const inpStart = document.getElementById('filter-start');
+        const inpEnd = document.getElementById('filter-end');
+
+        selFilter.addEventListener('change', ()=>{
+          if(selFilter.value === 'range'){
+            inpStart.classList.remove('hidden'); inpEnd.classList.remove('hidden');
+          } else {
+            inpStart.classList.add('hidden'); inpEnd.classList.add('hidden');
+          }
+        });
+
+        document.getElementById('btn-terapkan').addEventListener('click', renderData);
+
+        function getDateRange() {
+          const now = new Date();
+          const ts = now.toISOString().split('T')[0];
+          let from, to;
+          if(selFilter.value === 'minggu-ini') {
+             const d = now.getDay(), diff = now.getDate() - d + (d === 0 ? -6 : 1);
+             const m = new Date(now); m.setDate(diff);
+             from = m.toISOString().split('T')[0]; to = ts;
+             return { from, to, label: 'Minggu Ini' };
+          } else if(selFilter.value === 'bulan-ini') {
+             from = ts.substring(0,8) + '01'; to = ts;
+             return { from, to, label: 'Bulan Ini' };
+          } else {
+             from = inpStart.value || ts; to = inpEnd.value || ts;
+             return { from, to, label: from + ' s/d ' + to };
+          }
+        }
+
+        function calculateRFMScore(recencyDays, freq, monetary) {
+            let r=1, f=1, m=1;
+            if(recencyDays <= 3) r=5;
+            else if(recencyDays <= 7) r=4;
+            else if(recencyDays <= 14) r=3;
+            else if(recencyDays <= 30) r=2;
+            else r=1;
+
+            if(freq > 20) f=5;
+            else if(freq >= 15) f=4;
+            else if(freq >= 10) f=3;
+            else if(freq >= 5) f=2;
+            else f=1;
+
+            if(monetary > 100000000) m=5;
+            else if(monetary >= 50000000) m=4;
+            else if(monetary >= 20000000) m=3;
+            else if(monetary >= 5000000) m=2;
+            else m=1;
+
+            const avg = (r+f+m)/3;
+            let segment = 'Low Customer';
+            let cls = 'bg-rose-100 text-rose-700';
+            if(avg >= 4) { segment = 'Top Customer'; cls = 'bg-blue-100 text-blue-700'; }
+            else if(avg >= 2.5) { segment = 'Middle Customer'; cls = 'bg-amber-100 text-amber-700'; }
+
+            return { r, f, m, avg, segment, cls };
+        }
+
+        function renderData() {
+            const bons = window.DataLayer ? window.DataLayer.getBons() : [];
+            const range = getDateRange();
+            document.getElementById('print-periode').textContent = range.label;
+
+            const filteredBons = bons.filter(b => !b.isVoid && b.tanggal >= range.from && b.tanggal <= range.to);
+            let totalOmzetAll = 0;
+
+            // ==================== TAB 1: REKAP PENJUALAN (RFM) ====================
+            const customerMap = {};
+            filteredBons.forEach(b => {
+                const k = b.konsumen || 'TANPA NAMA';
+                if(!customerMap[k]) {
+                    customerMap[k] = { 
+                        nama: k, netto: 0, ekor: 0, 
+                        dates: new Set(), totalBelanja: 0, 
+                        totalPiutang: 0, totalPotongan: 0, lastDate: b.tanggal, count: 0 
+                    };
+                }
+                const c = customerMap[k];
+                c.count++;
+                c.dates.add(b.tanggal);
+                if(b.tanggal > c.lastDate) c.lastDate = b.tanggal;
+                c.totalBelanja += b.total;
+                totalOmzetAll += b.total;
+
+                (b.items || []).forEach(it => {
+                    c.netto += (it.netto || 0);
+                    c.ekor += parseInt(it.jmlAyam || 0);
+                });
+
+                const paidAtDate = (b.historiBayar || []).filter(h => !h.isVoid && h.tanggal <= range.to).reduce((s, h) => s + (h.nominal || 0) + (h.totalPotongan || 0), 0);
+                const pot = (b.historiBayar || []).filter(h => !h.isVoid && h.tanggal <= range.to).reduce((s, h) => s + (h.totalPotongan || 0), 0);
+                const sisa = b.total - paidAtDate;
+                if(sisa > 0) c.totalPiutang += sisa;
+                c.totalPotongan += pot;
+            });
+
+            // Calculate RFM
+            const endPeriodObj = new Date(range.to);
+            const rfmList = Object.values(customerMap).map(c => {
+                const lastTransObj = new Date(c.lastDate);
+                const diffTime = Math.abs(endPeriodObj - lastTransObj);
+                const recencyDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                const rfm = calculateRFMScore(recencyDays, c.count, c.totalBelanja);
+                c.rfm = rfm;
+                c.pct = totalOmzetAll > 0 ? ((c.totalBelanja / totalOmzetAll) * 100).toFixed(1) : 0;
+                return c;
+            }).sort((a,b) => b.rfm.avg - a.rfm.avg); // Sort by highest score
+
+            const tbodyPenjualan = document.getElementById('tbody-penjualan');
+            tbodyPenjualan.innerHTML = '';
+            
+            let sumTop=0, sumMid=0, sumLow=0;
+            let valTop=0, valMid=0, valLow=0;
+
+            if(rfmList.length === 0) {
+                tbodyPenjualan.innerHTML = `<tr><td colspan="10" class="py-12 text-center text-slate-400 font-medium">Belum ada data penjualan.</td></tr>`;
+            } else {
+                rfmList.forEach((c, i) => {
+                    if(c.rfm.segment === 'Top Customer') { sumTop++; valTop+=c.totalBelanja; }
+                    else if(c.rfm.segment === 'Middle Customer') { sumMid++; valMid+=c.totalBelanja; }
+                    else { sumLow++; valLow+=c.totalBelanja; }
+
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-slate-100 hover:bg-slate-50 transition-colors";
+                    tr.innerHTML = `
+                        <td class="px-3 py-2 text-center font-medium">${i+1}</td>
+                        <td class="px-3 py-2 font-bold text-slate-800">${c.nama}</td>
+                        <td class="px-3 py-2 text-right">${formatKg(c.netto)}</td>
+                        <td class="px-3 py-2 text-right">${c.ekor.toLocaleString('id-ID')}</td>
+                        <td class="px-3 py-2 text-center font-bold text-blue-600">${c.dates.size}</td>
+                        <td class="px-3 py-2 text-right font-bold text-emerald-700">${formatRp(c.totalBelanja)}</td>
+                        <td class="px-3 py-2 text-right text-rose-600 font-semibold">${formatRp(c.totalPiutang)}</td>
+                        <td class="px-3 py-2 text-right">${formatRp(c.totalPotongan)}</td>
+                        <td class="px-3 py-2 text-center font-black">${c.pct}%</td>
+                        <td class="px-3 py-2 text-center"><span class="px-2 py-1 rounded text-[10px] font-black uppercase ${c.rfm.cls}">${c.rfm.segment}</span></td>
+                    `;
+                    tbodyPenjualan.appendChild(tr);
+                });
+            }
+
+            // Summary Info
+            document.getElementById('sum-omzet').textContent = formatRp(totalOmzetAll);
+            document.getElementById('sum-top').textContent = sumTop;
+            document.getElementById('sum-mid').textContent = sumMid;
+            document.getElementById('sum-low').textContent = sumLow;
+
+            document.getElementById('kontribusi-top').textContent = totalOmzetAll > 0 ? ((valTop/totalOmzetAll)*100).toFixed(1)+'%' : '0%';
+            document.getElementById('kontribusi-mid').textContent = totalOmzetAll > 0 ? ((valMid/totalOmzetAll)*100).toFixed(1)+'%' : '0%';
+            document.getElementById('kontribusi-low').textContent = totalOmzetAll > 0 ? ((valLow/totalOmzetAll)*100).toFixed(1)+'%' : '0%';
+
+            // Simple heuristics for analysis text
+            document.getElementById('rfm-loyal').textContent = sumTop > 0 ? rfmList[0].nama : '-';
+            const midList = rfmList.filter(x=>x.rfm.segment==='Middle Customer' && x.rfm.m >= 3).sort((a,b)=>b.rfm.f - a.rfm.f);
+            document.getElementById('rfm-potensi').textContent = midList.length > 0 ? midList[0].nama : '-';
+            document.getElementById('rfm-berkembang').textContent = midList.length > 1 ? midList[1].nama : (midList.length>0?midList[0].nama:'-');
+            
+            const lowList = rfmList.filter(x=>x.rfm.segment==='Low Customer').sort((a,b)=>b.totalBelanja - a.totalBelanja);
+            document.getElementById('rfm-menurun').textContent = lowList.length > 0 ? lowList[0].nama : '-';
+            const dormantList = rfmList.filter(x=>x.rfm.r === 1).sort((a,b)=>b.totalBelanja - a.totalBelanja);
+            document.getElementById('rfm-dormant').textContent = dormantList.length > 0 ? dormantList[0].nama : '-';
+
+
+            // ==================== TAB 2: REKAP PRODUK ====================
+            const mapUkuran = {};
+            const dailyMap = {};
+
+            filteredBons.forEach(b => {
+                // Table 2 (Harian)
+                if(!dailyMap[b.tanggal]) dailyMap[b.tanggal] = { tgl: b.tanggal, netto: 0, ekor: 0, pel: new Set(), total: 0 };
+                const dm = dailyMap[b.tanggal];
+                dm.pel.add(b.konsumen);
+                dm.total += b.total;
+
+                (b.items || []).forEach(it => {
+                    const uk = (it.ukuran || 'TDK DIKETAHUI').toUpperCase();
+                    if(!mapUkuran[uk]) mapUkuran[uk] = { ukuran: uk, netto: 0, ekor: 0, total: 0 };
+                    
+                    const kg = (it.netto || 0);
+                    const ekor = parseInt(it.jmlAyam || 0);
+                    const jual = kg * (it.harga || 0);
+
+                    mapUkuran[uk].netto += kg;
+                    mapUkuran[uk].ekor += ekor;
+                    mapUkuran[uk].total += jual;
+
+                    dm.netto += kg;
+                    dm.ekor += ekor;
+                });
+            });
+
+            // Render Table 1 (Ukuran)
+            const tbodyUkuran = document.getElementById('tbody-ukuran');
+            tbodyUkuran.innerHTML = '';
+            const listUkuran = Object.values(mapUkuran).sort((a,b)=>b.netto - a.netto);
+            if(listUkuran.length === 0) {
+                tbodyUkuran.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-400">Belum ada data.</td></tr>`;
+            } else {
+                listUkuran.forEach((u, i) => {
+                    const pct = totalOmzetAll > 0 ? ((u.total / totalOmzetAll) * 100).toFixed(1) : 0;
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-slate-100 hover:bg-slate-50";
+                    tr.innerHTML = `
+                        <td class="px-3 py-2.5 text-center font-medium">${i+1}</td>
+                        <td class="px-3 py-2.5 font-bold">${u.ukuran}</td>
+                        <td class="px-3 py-2.5 text-right font-medium">${formatKg(u.netto)}</td>
+                        <td class="px-3 py-2.5 text-right font-medium">${u.ekor.toLocaleString('id-ID')}</td>
+                        <td class="px-3 py-2.5 text-right font-bold text-slate-800">${formatRp(u.total)}</td>
+                        <td class="px-3 py-2.5 text-center font-black">${pct}%</td>
+                    `;
+                    tbodyUkuran.appendChild(tr);
+                });
+            }
+
+            // Render Table 2 (Harian)
+            const tbodyHarian = document.getElementById('tbody-harian');
+            tbodyHarian.innerHTML = '';
+            const listHarian = Object.values(dailyMap).sort((a,b)=>a.tgl.localeCompare(b.tgl));
+            if(listHarian.length === 0) {
+                tbodyHarian.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-400">Belum ada data.</td></tr>`;
+            } else {
+                listHarian.forEach((d, i) => {
+                    const targetHit = d.netto >= 10000;
+                    const ketCls = targetHit ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
+                    const ketTxt = targetHit ? 'Target Terpenuhi' : 'Target Tidak Terpenuhi';
+
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-slate-100 hover:bg-slate-50";
+                    tr.innerHTML = `
+                        <td class="px-3 py-2.5 text-center font-medium">${i+1}</td>
+                        <td class="px-3 py-2.5 font-bold">${new Date(d.tgl).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})}</td>
+                        <td class="px-3 py-2.5 text-right font-bold text-slate-700">${formatKg(d.netto)}</td>
+                        <td class="px-3 py-2.5 text-right font-medium">${d.ekor.toLocaleString('id-ID')}</td>
+                        <td class="px-3 py-2.5 text-center font-bold text-blue-600">${d.pel.size}</td>
+                        <td class="px-3 py-2.5 text-right font-bold text-emerald-700">${formatRp(d.total)}</td>
+                        <td class="px-3 py-2.5 text-center"><span class="px-2 py-1 rounded text-[10px] font-black uppercase ${ketCls}">${ketTxt}</span></td>
+                    `;
+                    tbodyHarian.appendChild(tr);
+                });
+            }
+        }
+
+        // Run initially
+        if(window.DataLayer) window.DataLayer.fetchBons().then(renderData).catch(renderData);
+        else renderData();
+
+        // Export PDF
+        document.getElementById('btn-pdf').addEventListener('click', async () => {
+           if(typeof AuthGuard!=='undefined' && !(await AuthGuard.consumeToken('download','Print PDF Dashboard Marketing'))) return;
+           
+           if(activeTab === 'penjualan') {
+               document.getElementById('print-subtitle').textContent = 'LAPORAN REKAP PENJUALAN';
+           } else {
+               document.getElementById('print-subtitle').textContent = 'LAPORAN PRODUK TERJUAL';
+           }
+           window.print();
+        });
+
+        // Export Excel
+        document.getElementById('btn-excel').addEventListener('click', async () => {
+           if(typeof AuthGuard!=='undefined' && !(await AuthGuard.consumeToken('download','Download Excel Dashboard Marketing'))) return;
+           
+           if(activeTab === 'penjualan') {
+               const wb = XLSX.utils.table_to_book(document.getElementById('table-penjualan'), {sheet:"Rekap Penjualan"});
+               XLSX.writeFile(wb, "Marketing_Rekap_Penjualan.xlsx");
+           } else {
+               const wb = XLSX.utils.book_new();
+               const ws1 = XLSX.utils.table_to_sheet(document.getElementById('table-ukuran'));
+               XLSX.utils.book_append_sheet(wb, ws1, "Rekap Ukuran");
+               const ws2 = XLSX.utils.table_to_sheet(document.getElementById('table-harian'));
+               XLSX.utils.book_append_sheet(wb, ws2, "Detail Harian");
+               XLSX.writeFile(wb, "Marketing_Rekap_Produk.xlsx");
+           }
+        });
+
+      })();
+    </script>
+  </body>
+</html>

@@ -57,8 +57,8 @@ const AuthGuard = (function() {
 
     // 3. Default Role Permissions (Force Update to latest)
     _set(KEYS.rolePerms, [
-      { role: 'OWNER', permissions: ['dashboard.view','bon.create','bon.update','bon.delete','pembayaran.create','laporan.view','void.approve','search.view','master_data.manage','history.view','setting.manage'] },
-      { role: 'MANAGER', permissions: ['dashboard.view','bon.create','bon.update','pembayaran.create','laporan.view','void.approve','search.view','master_data.manage','history.view'] },
+      { role: 'OWNER', permissions: ['dashboard.view','bon.create','bon.update','bon.delete','pembayaran.create','laporan.view','marketing.view','void.approve','search.view','master_data.manage','history.view','setting.manage'] },
+      { role: 'MANAGER', permissions: ['dashboard.view','bon.create','bon.update','pembayaran.create','laporan.view','marketing.view','void.approve','search.view','master_data.manage','history.view'] },
       { role: 'STAFF', permissions: ['dashboard.view','bon.create','pembayaran.create','search.view'] }
     ]);
 
@@ -573,6 +573,8 @@ const AuthGuard = (function() {
     'dashboard.html': 'dashboard.view',
     'bon.html': 'bon.create',
     'pembayaran.html': 'pembayaran.create',
+    'pelanggan.html': 'pelanggan.view',
+    'marketing.html': 'marketing.view',
     'laporan.html': 'laporan.view',
     'master.html': 'master_data.manage',
     'histori.html': 'history.view',
