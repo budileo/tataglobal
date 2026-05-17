@@ -212,7 +212,7 @@
         <h4 class="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wider">Info Header</h4>
         <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div><label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal</label><input id="form-tanggal" type="date" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"></div>
-          <div><label class="block text-xs font-semibold text-slate-500 mb-1">No Bon</label><input id="form-no-bon" type="text" placeholder="BN-001" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"></div>
+          <div><label class="block text-xs font-semibold text-slate-500 mb-1">No Bon</label><input id="form-no-bon" type="text" placeholder="BN-001" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500"><p id="warning-no-bon" class="hidden text-rose-500 text-xs mt-1 font-semibold">NO BON INI sudah di Input</p></div>
            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Konsumen</label>
               <input list="konsumen-list" id="form-konsumen" autocomplete="off" placeholder="Ketik nama konsumen..." class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-sm focus:outline-emerald-500">
               <datalist id="konsumen-list"></datalist>
@@ -232,11 +232,14 @@
             <div class="col-span-2 md:col-span-1"><label class="block text-xs font-semibold text-slate-500 mb-1">Jml Ayam</label><input type="number" class="calc-input jml-ayam w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500" value=""></div>
             <div><label class="block text-xs font-semibold text-slate-500 mb-1">Bruto (Kg)</label><input type="number" step="0.01" class="calc-input berat-bruto w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500" value=""></div>
             <div><label class="block text-xs font-semibold text-slate-500 mb-1">Br. Kotak</label><select class="calc-input berat-kotak w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500"><option value="6.2">6,2 Kg (1)</option><option value="12.4">12,4 Kg (2)</option><option value="18.6">18,6 Kg (3)</option><option value="24.8">24,8 Kg (4)</option><option value="31">31,0 Kg (5)</option><option value="37.2">37,2 Kg (6)</option><option value="43.4">43,4 Kg (7)</option><option value="49.6">49,6 Kg (8)</option><option value="55.8">55,8 Kg (9)</option><option value="62">62,0 Kg (10)</option><option value="68.2">68,2 Kg (11)</option><option value="74.4">74,4 Kg (12)</option><option value="80.6">80,6 Kg (13)</option><option value="86.8">86,8 Kg (14)</option><option value="93">93,0 Kg (15)</option><option value="99.2">99,2 Kg (16)</option><option value="105.4">105,4 Kg (17)</option><option value="111.6">111,6 Kg (18)</option><option value="117.8">117,8 Kg (19)</option><option value="124">124,0 Kg (20)</option><option value="130.2">130,2 Kg (21)</option><option value="136.4">136,4 Kg (22)</option><option value="142.6">142,6 Kg (23)</option><option value="148.8">148,8 Kg (24)</option><option value="155">155,0 Kg (25)</option><option value="161.2">161,2 Kg (26)</option><option value="167.4">167,4 Kg (27)</option><option value="173.6">173,6 Kg (28)</option><option value="179.8">179,8 Kg (29)</option><option value="186">186,0 Kg (30)</option></select></div>
-            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ukuran</label><select class="ukuran-select w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500"><option>B</option><option>K</option><option>K/PK</option><option>PK</option><option>JK</option><option>JK/PK</option><option>JB</option><option>JB/PK</option><option>KTB</option><option>KTN</option><option>TB</option><option>TK</option></select></div>
+            <div><label class="block text-xs font-semibold text-slate-500 mb-1">Ukuran</label><select class="ukuran-select w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500"><option>KTN</option><option>K</option><option>K/PK</option><option>TB</option><option>B</option><option>B/PK</option><option>JK</option><option>JB</option><option>JB/PK</option></select><div class="mt-1"><span class="rekomendasi-text hidden text-[10px] font-semibold text-slate-500"></span><span class="geser-text hidden text-[10px] font-bold text-rose-600 ml-1">Geser</span></div></div>
             <div class="col-span-2 md:col-span-2"><label class="block text-xs font-semibold text-slate-500 mb-1">Harga Satuan (Rp)</label><input type="number" class="calc-input harga-satuan w-full border border-slate-200 rounded px-2 py-1.5 text-sm outline-emerald-500 font-medium" value=""></div>
           </div>
           <div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-200">
-            <div class="text-xs font-semibold text-slate-500">Netto: <span class="netto-display text-slate-900 font-bold ml-1 text-sm">0.00 kg</span></div>
+            <div class="flex gap-4">
+              <div class="text-xs font-semibold text-slate-500">Netto: <span class="netto-display text-slate-900 font-bold ml-1 text-sm">0.00 kg</span></div>
+              <div class="text-xs font-semibold text-slate-500">Rata-rata: <span class="rata-rata-display text-slate-800 font-bold ml-1 text-sm">0.00 kg</span></div>
+            </div>
             <div class="text-xs font-semibold text-slate-500">Subtotal: <span class="subtotal-display text-emerald-700 font-bold ml-1 text-base">Rp 0</span></div>
           </div>
         </div>
@@ -479,6 +482,16 @@
       // ==============================
       // BUTTONS
       // ==============================
+      document.getElementById('form-no-bon').addEventListener('input', function() {
+        const val = this.value.trim().toLowerCase();
+        if(!val) { document.getElementById('warning-no-bon').classList.add('hidden'); return; }
+        const isEdit = editingBonIndex >= 0;
+        const currentId = isEdit ? getAllBons()[editingBonIndex].id.toLowerCase() : null;
+        const exists = getAllBons().some(b => b.id.toLowerCase() === val && (!isEdit || b.id.toLowerCase() !== currentId));
+        if(exists) document.getElementById('warning-no-bon').classList.remove('hidden');
+        else document.getElementById('warning-no-bon').classList.add('hidden');
+      });
+
       document.getElementById('btn-buat-bon').addEventListener('click',()=>showFormView(false));
       document.getElementById('btn-kembali-form').addEventListener('click',showListView);
       document.getElementById('btn-kembali-detail').addEventListener('click',showListView);
@@ -728,10 +741,50 @@
         const br=parseFloat(row.querySelector('.berat-bruto')?.value)||0;
         const kt=parseFloat(row.querySelector('.berat-kotak')?.value)||0;
         const hr=parseFloat(row.querySelector('.harga-satuan')?.value)||0;
+        const jml=parseInt(row.querySelector('.jml-ayam')?.value)||0;
         const nt=Math.max(0,br-kt),st=nt*hr;
-        const ne=row.querySelector('.netto-display'),se=row.querySelector('.subtotal-display');
+        const ne=row.querySelector('.netto-display'),se=row.querySelector('.subtotal-display'),re=row.querySelector('.rata-rata-display');
         if(ne)ne.innerText=nt.toFixed(2)+' kg';
         if(se)se.innerText='Rp '+st.toLocaleString('id-ID');
+        
+        let rata = 0;
+        if(jml > 0) rata = nt / jml;
+        if(re)re.innerText=rata.toFixed(2)+' kg';
+
+        const rekEl = row.querySelector('.rekomendasi-text');
+        const geserEl = row.querySelector('.geser-text');
+        const ukSelect = row.querySelector('.ukuran-select');
+        
+        if(rekEl && ukSelect) {
+            let rek = '', rekList = [];
+            if(rata > 0) {
+                if(rata < 0.8) { rek = 'KTN'; rekList=['KTN']; }
+                else if(rata < 1.3) { rek = 'K'; rekList=['K', 'K/PK']; }
+                else if(rata < 1.7) { rek = 'TB'; rekList=['TB', 'B/PK']; }
+                else if(rata < 2.0) { rek = 'B'; rekList=['B']; }
+                else if(rata < 2.3) { rek = 'JK'; rekList=['JK', 'JB/PK']; }
+                else { rek = 'JB'; rekList=['JB']; }
+            }
+
+            if(rek) {
+                rekEl.innerText = 'Rekomendasi: ' + rekList.join(' atau ');
+                rekEl.classList.remove('hidden');
+                
+                if(row.dataset.userEditedUkuran !== 'true') {
+                   setSelectValueEl(ukSelect, rek);
+                }
+
+                if(!rekList.includes(ukSelect.value)) {
+                   if(geserEl) geserEl.classList.remove('hidden');
+                } else {
+                   if(geserEl) geserEl.classList.add('hidden');
+                }
+            } else {
+                rekEl.classList.add('hidden');
+                if(geserEl) geserEl.classList.add('hidden');
+            }
+        }
+
         return st;
       }
       function calculateGrandTotal(){
@@ -740,6 +793,13 @@
       }
       function attachCalcListeners(row){
         row.querySelectorAll('.calc-input').forEach(input=>{input.addEventListener('input',calculateGrandTotal);input.addEventListener('change',calculateGrandTotal);});
+        const ukSelect = row.querySelector('.ukuran-select');
+        if(ukSelect) {
+            ukSelect.addEventListener('change', () => {
+                row.dataset.userEditedUkuran = 'true';
+                calculateGrandTotal();
+            });
+        }
         const d=row.querySelector('.delete-item-btn');
         if(d)d.addEventListener('click',()=>{if(document.querySelectorAll('#items-container .item-row').length>1){row.remove();calculateGrandTotal();}});
       }
@@ -747,6 +807,7 @@
 
       document.getElementById('add-item-btn').addEventListener('click',()=>{
         const c=document.getElementById('items-container'),tpl=c.querySelector('.item-row'),nr=tpl.cloneNode(true);
+        nr.dataset.userEditedUkuran = 'false';
         nr.querySelector('.jml-ayam').value='';nr.querySelector('.berat-bruto').value='';nr.querySelector('.harga-satuan').value='';
         nr.querySelector('.delete-item-btn').classList.remove('hidden');
         c.appendChild(nr);attachCalcListeners(nr);
@@ -762,6 +823,15 @@
         const ks=document.getElementById('form-konsumen').value,st=document.getElementById('form-staf').value;
         const mk=document.getElementById('form-marketing').value,kt=document.getElementById('form-keterangan').value;
         if(!nb||!ks||ks==='--Pilih--'||ks===''){alert('Harap isi No Bon dan pilih Konsumen.');return;}
+
+        const bons=getAllBons();
+        const isEdit = editingBonIndex >= 0;
+        const currentId = isEdit ? bons[editingBonIndex].id.toLowerCase() : null;
+        const exists = bons.some(b => b.id.toLowerCase() === nb.toLowerCase() && (!isEdit || b.id.toLowerCase() !== currentId));
+        if(exists) {
+            alert('Gagal: No Bon ini sudah ada di database. Silakan gunakan No Bon yang lain.');
+            return;
+        }
 
         // Collect items
         const items=[];let total=0;
