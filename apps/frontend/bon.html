@@ -848,8 +848,6 @@
         });
         if(total<=0){alert('Total tagihan tidak boleh 0.');return;}
 
-        const bons=getAllBons();
-
         // === VALIDASI: Cek pembayaran yang sudah masuk ===
         if(editingBonIndex>=0){
           const existing = bons[editingBonIndex];
