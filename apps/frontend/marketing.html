@@ -532,8 +532,23 @@
         }
 
         // Run initially
-        if(window.DataLayer) window.DataLayer.init().then(renderData).catch(renderData);
-        else renderData();
+        const initData = async () => {
+            if (!window.DataLayer) {
+                await new Promise(resolve => {
+                    const intv = setInterval(() => {
+                        if(window.DataLayer) { clearInterval(intv); resolve(); }
+                    }, 50);
+                });
+            }
+            try { await window.DataLayer.init(); } catch(e) {}
+            renderData();
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initData);
+        } else {
+            initData();
+        }
 
         // Export PDF
         document.getElementById('btn-pdf').addEventListener('click', async () => {
