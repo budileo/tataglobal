@@ -19,7 +19,8 @@ export default defineConfig({
         pencarian: resolve(__dirname, 'pencarian.html'),
         setting: resolve(__dirname, 'setting.html'),
         join: resolve(__dirname, 'join.html'),
-        pelanggan: resolve(__dirname, 'pelanggan.html')
+        pelanggan: resolve(__dirname, 'pelanggan.html'),
+        marketing: resolve(__dirname, 'marketing.html')
       }
     }
   }
