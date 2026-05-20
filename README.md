@@ -1,22 +1,4 @@
-Nama proyek GITHUB
-------------------------------------
-tataglobal
-link reposrorinya
-https://github.com/budileo/tataglobal.git
 
-
-nama repositorinya = tataglobal
-git config --global user.name "Budi Ariadi"
-git config --global user.email "budileo@gmail.com"
-git remote add origin https://github.com/budileo/tataglobal.git
-token nya : 
-
-link public nya :
-------------------------------------
-https://github.com/budileo/tataglobal
-
-Token GITHUB
-------------------------------------
 
 
 
