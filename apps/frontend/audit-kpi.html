@@ -22,41 +22,33 @@
       }
     </script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
-      body { font-family: 'Outfit', sans-serif; }
+      @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
       
-      .kpi-section-card {
-        @apply bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/30 transition-all duration-300;
-      }
-      .kpi-section-card:hover {
-        @apply shadow-2xl border-emerald-100/50;
+      body {
+        font-family: 'Outfit', sans-serif;
       }
       
-      .tab-header-btn {
-        @apply flex items-center gap-2 px-5 py-3 text-sm font-bold border-b-2 border-transparent transition-all;
-      }
-      .tab-header-btn.active {
-        @apply border-emerald-600 text-emerald-600 bg-emerald-50/50 rounded-t-xl;
+      .mono-text {
+        font-family: 'Fira Mono', monospace;
       }
 
-      /* Scrollbar Custom */
-      ::-webkit-scrollbar { width: 6px; height: 6px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+      /* Paper sheet layout */
+      .paper-sheet {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      }
 
       @media print {
         .no-print { display: none !important; }
         body { padding: 0 !important; background: white !important; }
-        .print-landscape { width: 100% !important; max-width: 100% !important; margin: 0 !important; box-shadow: none !important; border: none !important; }
-        table { page-break-inside: auto; }
-        tr { page-break-inside: avoid; page-break-after: auto; }
+        .paper-sheet { border: none !important; box-shadow: none !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
       }
     </style>
   </head>
   <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
     
-    <!-- Header Utama -->
+    <!-- Header Utama (No Print) -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between no-print">
       <div class="flex items-center gap-3">
         <h2 class="text-xl font-bold text-slate-900">Audit & Kinerja Sistem (KPI)</h2>
@@ -67,7 +59,7 @@
       </div>
     </header>
 
-    <!-- Sidebar Section -->
+    <!-- Sidebar Section (No Print) -->
     <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300 no-print">
       
       <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
@@ -154,7 +146,7 @@
         </a>
       </div>
 
-      <!-- User Info -->
+      <!-- User Info (No Print) -->
       <div class="hidden md:block md:mt-auto w-full no-print">
         <div class="px-6 py-3 border-t border-slate-800">
           <p id="sidebar-user-name" class="text-sm font-semibold text-white sidebar-text">-</p>
@@ -168,322 +160,41 @@
     </nav>
 
     <!-- Main Content Area -->
-    <main class="p-4 md:p-8 max-w-screen-2xl mx-auto space-y-6 print-landscape">
+    <main class="p-4 md:p-8 max-w-4xl mx-auto space-y-6">
       
-      <!-- KOP SURAT PRINT ONLY -->
-      <div class="hidden print:block text-center border-b-4 border-double border-slate-900 pb-3 mb-6">
-        <h1 class="text-2xl font-black uppercase text-slate-900">CV. Global Putra Swasembada</h1>
-        <p class="text-sm font-bold text-slate-600 mt-1">Laporan Audit Sistem & Kinerja Utama (KPI)</p>
-        <p class="text-xs font-semibold text-slate-500 mt-0.5">Periode Audit: <span id="print-periode-lbl" class="font-bold text-slate-800">Bulan Ini</span></p>
-      </div>
-
-      <!-- Toolbar Filter / Glassmorphism panel -->
-      <div class="flex flex-wrap items-center justify-between gap-6 bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-white shadow-xl shadow-slate-200/50 sticky top-20 z-20 no-print">
-         <div class="flex items-center gap-4">
-            <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 p-3 rounded-xl shadow-lg shadow-indigo-200">
-               <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-            </div>
-            <div>
-               <h3 class="font-extrabold text-slate-900 text-lg tracking-tight">Audit & KPI Dashboard</h3>
-               <p id="display-range" class="text-xs text-slate-500 font-bold uppercase tracking-tighter opacity-70">Bulan Ini</p>
-            </div>
-         </div>
-         <div class="flex flex-wrap items-center gap-3">
-            <select id="filter-range" class="bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-700 focus:border-emerald-500 focus:ring-0 transition-all outline-none">
+      <!-- Toolbar Filter / Glassmorphism Panel (No Print) -->
+      <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm no-print">
+         <div class="flex items-center gap-3">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Periode:</span>
+            <select id="filter-range" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold text-slate-700 focus:border-emerald-500 focus:ring-0 outline-none">
                <option value="bulan-ini">Bulan Ini</option>
                <option value="bulan-lalu">Bulan Lalu</option>
                <option value="custom">Rentang Kustom</option>
             </select>
-            <div id="custom-date-inputs" class="hidden flex items-center gap-2 bg-slate-50 p-1.5 rounded-xl border-2 border-slate-100">
-               <input type="date" id="start-date" class="bg-transparent border-none rounded-lg px-2 py-1 text-xs font-bold outline-none">
+            <div id="custom-date-inputs" class="hidden flex items-center gap-2 bg-slate-50 p-1.5 rounded-xl border border-slate-200">
+               <input type="date" id="start-date" class="bg-transparent border-none rounded-lg px-2 py-0.5 text-xs font-bold outline-none">
                <span class="text-slate-300 font-black">—</span>
-               <input type="date" id="end-date" class="bg-transparent border-none rounded-lg px-2 py-1 text-xs font-bold outline-none">
+               <input type="date" id="end-date" class="bg-transparent border-none rounded-lg px-2 py-0.5 text-xs font-bold outline-none">
             </div>
-            <button id="apply-filter" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl text-sm font-black transition-all shadow-lg active:scale-95">TERAPKAN</button>
-            
-            <button id="btn-print" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md active:scale-95 flex items-center gap-2">
-               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-               Cetak
+            <button id="apply-filter" class="bg-slate-900 hover:bg-emerald-600 text-white px-5 py-2 rounded-xl text-xs font-bold transition-all shadow active:scale-95">PROSES</button>
+         </div>
+         
+         <div class="flex items-center gap-2">
+            <button onclick="copyAuditText()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5">
+               <span id="copy-btn-txt">📋 Salin Teks</span>
             </button>
-            <button id="btn-export" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md active:scale-95 flex items-center gap-2">
-               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-               Excel
+            <button id="btn-print" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5">
+               <span>🖨️</span> Cetak
+            </button>
+            <button id="btn-export" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5">
+               <span>📊</span> Excel
             </button>
          </div>
       </div>
 
-      <!-- TEXT-BASED DASHBOARD CONTENT (RAMAH SALIN / AUDIT CHEAT SHEET) -->
-      <div class="kpi-section-card bg-slate-900 border border-slate-800 text-slate-100 p-6 rounded-3xl relative overflow-hidden">
-        <div class="absolute top-0 right-0 p-8 text-slate-800/10 pointer-events-none">
-          <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A1 1 0 0112 2.586L15.414 6A1 1 0 0116 6.586V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
-        </div>
-        
-        <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
-          <div>
-            <h3 class="font-extrabold text-emerald-400 text-lg uppercase tracking-wider">Laporan Teks Audit Sistem</h3>
-            <p class="text-xs text-slate-400">CV. Global Putra Swasembada</p>
-          </div>
-          <button onclick="copyAuditText()" class="no-print bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5">
-            <span id="copy-btn-txt">📋 Salin Teks</span>
-          </button>
-        </div>
-        
-        <!-- PREFORMATTED TEXT EXACTLY AS REQUESTED -->
-        <pre id="audit-text-block" class="font-mono text-xs md:text-sm whitespace-pre-wrap leading-relaxed select-all bg-slate-950 p-4 rounded-xl border border-slate-800 max-h-96 overflow-y-auto text-emerald-300">Memuat data audit...</pre>
-      </div>
-
-      <!-- VISUAL DASHBOARD TABS -->
-      <div class="flex border-b border-slate-200 no-print">
-        <button id="tab-operasional-btn" class="tab-header-btn active" onclick="switchTab('operasional')">
-          <span>🚜</span> 1. Operasional
-        </button>
-        <button id="tab-keuangan-btn" class="tab-header-btn text-slate-400" onclick="switchTab('keuangan')">
-          <span>💼</span> 2. Keuangan
-        </button>
-        <button id="tab-marketing-btn" class="tab-header-btn text-slate-400" onclick="switchTab('marketing')">
-          <span>📣</span> 3. Marketing
-        </button>
-      </div>
-
-      <!-- ===================== PANEL 1: OPERASIONAL ===================== -->
-      <div id="panel-operasional" class="space-y-6">
-        <!-- 4 Grid Operasional -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl font-bold">🛒</div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Penjualan</p>
-              <h4 id="op-total-jual" class="text-lg font-black text-slate-900 mt-0.5">Rp 0</h4>
-            </div>
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 text-xl font-bold">🐓</div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Ekor</p>
-              <h4 id="op-total-ekor" class="text-lg font-black text-slate-900 mt-0.5">0 Ekor</h4>
-            </div>
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 text-xl font-bold">⚖️</div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Berat</p>
-              <h4 id="op-total-kg" class="text-lg font-black text-slate-900 mt-0.5">0 Kg</h4>
-            </div>
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600 text-xl font-bold">📄</div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Jumlah Bon (Rerata)</p>
-              <h4 id="op-total-bon" class="text-lg font-black text-slate-900 mt-0.5">0 Bon (0/hari)</h4>
-            </div>
-          </div>
-        </div>
-
-        <!-- Matrik Ayam Bergeser Info Card -->
-        <div class="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
-          <div class="absolute right-0 bottom-0 p-6 text-white/5 pointer-events-none">
-             <svg class="w-48 h-48" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"></path></svg>
-          </div>
-          <div class="max-w-xl">
-            <span class="bg-indigo-600 text-indigo-100 text-[10px] font-black tracking-widest px-2.5 py-1 rounded-full uppercase">Kualitas Input Kasir</span>
-            <h4 class="text-xl font-black mt-2">Matrik Ukuran Ayam Bergeser</h4>
-            <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-              Dihitung berdasarkan selisih klasifikasi ukuran yang diinput oleh kasir/staf penjualan secara manual dengan klasifikasi ukuran rekomendasi yang didasarkan pada rata-rata berat per ekor ayam riil.
-            </p>
-            <div class="flex items-baseline mt-4 gap-2">
-              <span id="op-matrix-pct" class="text-3xl font-black text-rose-500">0%</span>
-              <span class="text-xs text-slate-400 font-bold uppercase tracking-widest">Dari total pesanan telah mengalami pergeseran ukuran</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quota Ayam Tables -->
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          
-          <!-- Table A: Rekapitulasi Matrik Ukuran Ayam -->
-          <div class="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/30 overflow-hidden">
-            <div class="p-4 bg-emerald-50 border-b border-emerald-100 flex items-center gap-3">
-               <div class="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
-               <div>
-                 <h4 class="font-black text-emerald-950 uppercase tracking-widest text-xs">A. Rekapitulasi Matrik Ukuran Ayam</h4>
-                 <p class="text-[10px] text-emerald-600 font-semibold mt-0.5">Klasifikasi data berdasarkan ukuran berat rekomendasi rata-rata</p>
-               </div>
-            </div>
-            <div class="overflow-x-auto">
-               <table class="w-full text-left text-xs border-collapse">
-                  <thead>
-                     <tr class="bg-slate-100 border-b border-slate-200 text-slate-800 font-bold uppercase tracking-wider text-[10px]">
-                        <th class="px-4 py-3 border-r border-slate-200 text-center w-12">No</th>
-                        <th class="px-4 py-3 border-r border-slate-200">Mapping Ukuran</th>
-                        <th class="px-4 py-3 border-r border-slate-200 text-right">Jumlah Ekor</th>
-                        <th class="px-4 py-3 text-right">Jumlah Berat (Kg)</th>
-                     </tr>
-                  </thead>
-                  <tbody id="op-table-a-tbody"></tbody>
-               </table>
-            </div>
-          </div>
-
-          <!-- Table B: Data Audit Matrik dengan Realisasi penjualan -->
-          <div class="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/30 overflow-hidden">
-            <div class="p-4 bg-indigo-50 border-b border-indigo-100 flex items-center gap-3">
-               <div class="w-1.5 h-6 bg-indigo-500 rounded-full"></div>
-               <div>
-                 <h4 class="font-black text-indigo-950 uppercase tracking-widest text-xs">B. Data Audit Matrik dengan Realisasi penjualan</h4>
-                 <p class="text-[10px] text-indigo-600 font-semibold mt-0.5">Komparasi audit ukuran penjualan tercatat vs rekomendasi riil</p>
-               </div>
-            </div>
-            <div class="overflow-x-auto">
-               <table class="w-full text-left text-[11px] border-collapse">
-                  <thead>
-                     <tr class="bg-slate-100 border-b border-slate-200 text-slate-800 font-bold uppercase tracking-wider text-[9px]">
-                        <th class="px-3 py-3 border-r border-slate-200 text-center w-10">No</th>
-                        <th class="px-3 py-3 border-r border-slate-200 w-16">Ukuran</th>
-                        <th class="px-3 py-3 border-r border-slate-200">Audit / Keterangan</th>
-                        <th class="px-3 py-3 border-r border-slate-200 text-right w-24">Jumlah Ekor</th>
-                        <th class="px-3 py-3 text-right w-24">Jumlah Kg</th>
-                     </tr>
-                  </thead>
-                  <tbody id="op-table-b-tbody"></tbody>
-               </table>
-            </div>
-          </div>
-          
-        </div>
-      </div>
-
-      <!-- ===================== PANEL 2: KEUANGAN ===================== -->
-      <div id="panel-keuangan" class="space-y-6 hidden">
-        <!-- Keuangan 2 Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="kpi-section-card border-l-4 border-l-emerald-500 flex flex-col justify-between">
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">Pembayaran Diterima</p>
-              <h3 id="fin-total-terima" class="text-3xl font-black text-emerald-600">Rp 0</h3>
-              <p class="text-xs font-bold text-slate-500 mt-2">
-                Persentase Penjualan Lunas: <span id="fin-terima-pct" class="text-emerald-700 font-black">0%</span>
-              </p>
-            </div>
-            <div class="mt-4 bg-slate-100 h-2.5 w-full rounded-full overflow-hidden">
-               <div id="fin-terima-bar" class="bg-emerald-500 h-full transition-all duration-1000" style="width:0%"></div>
-            </div>
-          </div>
-          
-          <div class="kpi-section-card border-l-4 border-l-rose-500 flex flex-col justify-between">
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-1">Total Piutang Berjalan</p>
-              <h3 id="fin-total-piutang" class="text-3xl font-black text-rose-600">Rp 0</h3>
-              <p class="text-xs font-bold text-slate-500 mt-2">
-                Rasio Piutang Berjalan: <span id="fin-piutang-pct" class="text-rose-700 font-black">0%</span>
-              </p>
-            </div>
-            <div class="mt-4 bg-slate-100 h-2.5 w-full rounded-full overflow-hidden">
-               <div id="fin-piutang-bar" class="bg-rose-500 h-full transition-all duration-1000" style="width:0%"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="kpi-section-card bg-slate-50 border border-slate-200">
-           <h4 class="font-extrabold text-slate-800 uppercase tracking-widest text-xs mb-3 flex items-center gap-2">
-             <span>💡</span> Informasi Audit Keuangan
-           </h4>
-           <p class="text-xs text-slate-500 leading-relaxed">
-             Metrik Keuangan di atas dikalkulasikan murni dari bon-bon penjualan yang diterbitkan **dalam rentang periode terpilih** serta pelunasan historis yang juga dibukukan dalam periode yang sama. Status piutang berjalan dipantau secara riil dari Supabase DB. Penjualan berstatus VOID tidak dihitung.
-           </p>
-        </div>
-      </div>
-
-      <!-- ===================== PANEL 3: MARKETING ===================== -->
-      <div id="panel-marketing" class="space-y-6 hidden">
-        <!-- Marketing 3 Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 text-xl font-bold">👥</div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Jumlah Pelanggan Piutang</p>
-              <h4 id="mkt-pelanggan-piutang" class="text-lg font-black text-slate-900 mt-0.5">0 Pelanggan</h4>
-            </div>
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 text-xl font-bold">🎯</div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Target Penjualan (10 Ton)</p>
-              <h4 id="mkt-target-hari" class="text-lg font-black text-slate-900 mt-0.5">Terpenuhi: 0 hari / Tidak: 0 hari</h4>
-            </div>
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 text-xl font-bold">📈</div>
-            <div>
-              <p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Pertumbuhan Pelanggan</p>
-              <h4 id="mkt-pertumbuhan" class="text-lg font-black text-slate-900 mt-0.5">0% (0 vs 0 bln lalu)</h4>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Retensi Pelanggan (Omzet RFM) -->
-          <div class="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/30 p-6 space-y-4">
-             <div>
-               <h4 class="font-black text-slate-800 uppercase tracking-widest text-xs">Retensi Pelanggan (Kontribusi Omzet RFM)</h4>
-               <p class="text-[10px] text-slate-400 mt-0.5">Kontribusi nilai omzet belanja berdasarkan penggolongan segmentasi RFM</p>
-             </div>
-             <div class="space-y-4 pt-2">
-               <div>
-                 <div class="flex justify-between text-xs font-bold mb-1">
-                   <span class="text-blue-600 font-extrabold uppercase">Top Customer (Loyal & Aktif)</span>
-                   <span id="mkt-rfm-top-pct" class="text-blue-700 font-black">0%</span>
-                 </div>
-                 <div class="bg-slate-100 h-2.5 w-full rounded-full overflow-hidden border border-slate-200/60">
-                   <div id="mkt-rfm-top-bar" class="bg-blue-500 h-full transition-all duration-1000" style="width:0%"></div>
-                 </div>
-               </div>
-               
-               <div>
-                 <div class="flex justify-between text-xs font-bold mb-1">
-                   <span class="text-amber-600 font-extrabold uppercase">Middle Customer (Potensial)</span>
-                   <span id="mkt-rfm-mid-pct" class="text-amber-700 font-black">0%</span>
-                 </div>
-                 <div class="bg-slate-100 h-2.5 w-full rounded-full overflow-hidden border border-slate-200/60">
-                   <div id="mkt-rfm-mid-bar" class="bg-amber-500 h-full transition-all duration-1000" style="width:0%"></div>
-                 </div>
-               </div>
-               
-               <div>
-                 <div class="flex justify-between text-xs font-bold mb-1">
-                   <span class="text-rose-600 font-extrabold uppercase">Low Customer (Transaksi Rendah)</span>
-                   <span id="mkt-rfm-low-pct" class="text-rose-700 font-black">0%</span>
-                 </div>
-                 <div class="bg-slate-100 h-2.5 w-full rounded-full overflow-hidden border border-slate-200/60">
-                   <div id="mkt-rfm-low-bar" class="bg-rose-500 h-full transition-all duration-1000" style="width:0%"></div>
-                 </div>
-               </div>
-             </div>
-          </div>
-
-          <!-- Churn List: Pelanggan Bulan Lalu yg Tidak Belanja -->
-          <div class="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/30 overflow-hidden flex flex-col h-[280px]">
-            <div class="p-4 bg-slate-900 border-b border-slate-800 text-white flex justify-between items-center shrink-0">
-               <div>
-                 <h4 class="font-black uppercase tracking-widest text-xs text-rose-400">Churn Analysis (Customer Lost)</h4>
-                 <p class="text-[10px] text-slate-400 mt-0.5">Pelanggan bulan lalu yang tidak melakukan pembelanjaan bulan ini</p>
-               </div>
-               <span id="mkt-churn-count" class="bg-rose-600 text-white px-2 py-0.5 rounded-full font-bold text-[10px]">0</span>
-            </div>
-            <div class="overflow-y-auto flex-1">
-               <table class="w-full text-left text-xs border-collapse">
-                  <thead>
-                     <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[9px] sticky top-0">
-                        <th class="px-4 py-2 w-12 text-center">No</th>
-                        <th class="px-4 py-2">Nama Pelanggan</th>
-                     </tr>
-                  </thead>
-                  <tbody id="mkt-churn-tbody">
-                     <tr><td colspan="2" class="text-center text-slate-400 py-12">Memuat data...</td></tr>
-                  </tbody>
-               </table>
-            </div>
-          </div>
-        </div>
+      <!-- PURE TEXT DASHBOARD CONTENT (POLOS, RAPI, SANGAT RINGAN DI BACA, TANPA TAB & BLOCKS) -->
+      <div class="paper-sheet p-8 sm:p-10 rounded-2xl">
+        <pre id="audit-text-block" class="mono-text text-[11px] sm:text-xs md:text-sm whitespace-pre-wrap text-slate-800 leading-relaxed max-w-full">Menghitung dan memformat data audit...</pre>
       </div>
       
     </main>
@@ -546,25 +257,8 @@
           return { r, f, m, avg, segment };
       }
 
-      // Tab Switcher
-      function switchTab(tabId) {
-         document.querySelectorAll('.tab-header-btn').forEach(btn => {
-           btn.classList.remove('active');
-           btn.classList.add('text-slate-400');
-         });
-         document.getElementById('tab-' + tabId + '-btn').classList.add('active');
-         document.getElementById('tab-' + tabId + '-btn').classList.remove('text-slate-400');
-
-         document.getElementById('panel-operasional').classList.add('hidden');
-         document.getElementById('panel-keuangan').classList.add('hidden');
-         document.getElementById('panel-marketing').classList.add('hidden');
-         document.getElementById('panel-' + tabId).classList.remove('hidden');
-      }
-
       // Main Calculation Engine
       async function calculateAuditKPI() {
-         console.log("AuditKPI: Recalculating dashboard values...");
-         
          const bons = globalBons;
          const rangeMode = document.getElementById('filter-range').value;
          const now = new Date();
@@ -590,21 +284,18 @@
 
          const fmtHeader = (d) => new Date(d).toLocaleDateString('id-ID', {day:'2-digit', month:'short', year:'numeric', timeZone: 'Asia/Jakarta'});
          const headerPeriodText = `${fmtHeader(fromDate)} s/d ${fmtHeader(toDate)}`;
-         document.getElementById('display-range').textContent = `${rangeMode.toUpperCase()}: ${headerPeriodText}`;
-         document.getElementById('print-periode-lbl').textContent = headerPeriodText;
-
+         
          // FILTER NON-VOID BONS
          const filteredBons = bons.filter(b => !b.isVoid && b.tanggal >= fromDate && b.tanggal <= toDate);
          
          // ============================================
-         // 1. OPERASIONAL
+         // 1. OPERASIONAL CALCULATIONS
          // ============================================
          let totalJual = 0;
          let totalEkor = 0;
          let totalKg = 0;
          let jumlahBon = filteredBons.length;
          
-         // Matrix recommendation and shifting
          const rekapMap = { KTN: { ekor: 0, kg: 0 }, K: { ekor: 0, kg: 0 }, TB: { ekor: 0, kg: 0 }, B: { ekor: 0, kg: 0 }, JK: { ekor: 0, kg: 0 }, 'K/PK': { ekor: 0, kg: 0 }, JB: { ekor: 0, kg: 0 }, 'B/PK': { ekor: 0, kg: 0 }, 'JB/PK': { ekor: 0, kg: 0 } };
          const auditMap = { KTN: { ekor: 0, kg: 0 }, K: { ekor: 0, kg: 0 }, TB: { ekor: 0, kg: 0 }, B: { ekor: 0, kg: 0 }, JK: { ekor: 0, kg: 0 }, 'K/PK': { ekor: 0, kg: 0 }, JB: { ekor: 0, kg: 0 }, 'B/PK': { ekor: 0, kg: 0 }, 'JB/PK': { ekor: 0, kg: 0 } };
          
@@ -651,75 +342,75 @@
 
          const activeDaysCount = datesWithBons.size;
          const rataBonPerHari = activeDaysCount > 0 ? (jumlahBon / activeDaysCount).toFixed(1) : 0;
-         const matrixGeserPctVal = totalPesanan > 0 ? (totalGeser / totalPesanan * 100).toFixed(1) : 0;
+         const matrixGeserPctVal = totalPesanan > 0 ? (totalGeser / totalPesanan * 100).toFixed(0) : 0;
 
-         // Fill Operasional DOM
-         document.getElementById('op-total-jual').textContent = formatRp(totalJual);
-         document.getElementById('op-total-ekor').textContent = totalEkor.toLocaleString('id-ID') + ' Ekor';
-         document.getElementById('op-total-kg').textContent = totalKg.toLocaleString('id-ID', {minimumFractionDigits: 1}) + ' Kg';
-         document.getElementById('op-total-bon').textContent = `${jumlahBon} Bon (Rerata ${rataBonPerHari}/hari aktif)`;
-         document.getElementById('op-matrix-pct').textContent = matrixGeserPctVal + '%';
-
-         // Render Table A
-         const tbodyA = document.getElementById('op-table-a-tbody');
-         tbodyA.innerHTML = '';
+         // Generate Text Table A (Rekapitulasi Matrik Ukuran Ayam)
+         let tableAText = "  A. Rekapitulasi Matrik Ukuran Ayam\n";
+         tableAText += "     +------------------+---------------+-----------------+\n";
+         tableAText += "     | MAPPING UKURAN   |  JUMLAH EKOR  |   JUMLAH BERAT  |\n";
+         tableAText += "     +------------------+---------------+-----------------+\n";
+         
          const order = ['KTN', 'K', 'TB', 'B', 'JK', 'K/PK', 'JB', 'B/PK', 'JB/PK'];
-         let noA = 1;
+         let hasDataA = false;
          order.forEach(key => {
             if (rekapMap[key].ekor > 0 || rekapMap[key].kg > 0) {
-               tbodyA.innerHTML += `
-                  <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                     <td class="px-4 py-2.5 border-r border-slate-100 text-center font-semibold text-slate-400">${noA++}</td>
-                     <td class="px-4 py-2.5 border-r border-slate-100 font-bold text-slate-800">${key}</td>
-                     <td class="px-4 py-2.5 border-r border-slate-100 text-right font-medium">${rekapMap[key].ekor.toLocaleString('id-ID')} Ekor</td>
-                     <td class="px-4 py-2.5 text-right font-bold text-slate-900">${rekapMap[key].kg.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
-                  </tr>
-               `;
+               hasDataA = true;
+               const padKey = key.padEnd(16);
+               const padEkor = (rekapMap[key].ekor.toLocaleString('id-ID') + " Ekor").padStart(13);
+               const padKg = (rekapMap[key].kg.toLocaleString('id-ID', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + " Kg").padStart(15);
+               tableAText += `     | ${padKey} | ${padEkor} | ${padKg} |\n`;
             }
          });
-         if(noA === 1) {
-            tbodyA.innerHTML = '<tr><td colspan="4" class="text-center text-slate-400 py-6 font-semibold">Tidak ada transaksi ayam pada periode ini</td></tr>';
+         if (!hasDataA) {
+            tableAText += "     |         (Belum ada data transaksi ukuran ayam)         |\n";
          }
+         tableAText += "     +------------------+---------------+-----------------+";
 
-         // Render Table B
-         const tbodyB = document.getElementById('op-table-b-tbody');
-         tbodyB.innerHTML = '';
-         let noB = 1;
+         // Generate Text Table B (Data Audit Matrik dengan Realisasi penjualan)
+         let tableBText = "  B. Data Audit Matrik dengan Realisasi penjualan\n";
+         tableBText += "     +--------+----------------------+---------------+-----------------+\n";
+         tableBText += "     | UKURAN | AUDIT / KETERANGAN   |  JUMLAH EKOR  |   JUMLAH BERAT  |\n";
+         tableBText += "     +--------+----------------------+---------------+-----------------+\n";
+         
+         let hasDataB = false;
          order.forEach(key => {
             const ad = auditMap[key];
             const rd = rekapMap[key];
             if (ad.ekor > 0 || rd.ekor > 0) {
+               hasDataB = true;
                const diffEkor = ad.ekor - rd.ekor;
                const diffKg = ad.kg - rd.kg;
                const pDiff = ad.ekor > 0 ? (Math.abs(diffEkor) / ad.ekor * 100).toFixed(0) : 0;
                
-               tbodyB.innerHTML += `
-                  <tr class="border-b border-slate-50 text-blue-600 font-semibold bg-blue-50/10">
-                     <td rowspan="3" class="px-2 py-2 border-r border-slate-200 text-center text-slate-800 font-medium">${noB++}</td>
-                     <td rowspan="3" class="px-2 py-2 border-r border-slate-200 font-bold text-slate-800 bg-slate-50/50">${key}</td>
-                     <td class="px-2.5 py-1.5 border-r border-slate-200 text-left italic font-medium">Ukuran Bon Fix</td>
-                     <td class="px-2.5 py-1.5 border-r border-slate-200 text-right">${ad.ekor.toLocaleString('id-ID')} Ekor</td>
-                     <td class="px-2.5 py-1.5 text-right">${ad.kg.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
-                  </tr>
-                  <tr class="border-b border-slate-50 text-slate-900 font-semibold">
-                     <td class="px-2.5 py-1.5 border-r border-slate-200 text-left italic font-medium">Ukuran Rekomendasi</td>
-                     <td class="px-2.5 py-1.5 border-r border-slate-200 text-right">${rd.ekor.toLocaleString('id-ID')} Ekor</td>
-                     <td class="px-2.5 py-1.5 text-right">${rd.kg.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
-                  </tr>
-                  <tr class="border-b border-slate-200 text-rose-600 font-bold bg-rose-50/10">
-                     <td class="px-2.5 py-1.5 border-r border-slate-200 text-left italic font-bold">Jumlah Geser (${pDiff}%)</td>
-                     <td class="px-2.5 py-1.5 border-r border-slate-200 text-right">${diffEkor.toLocaleString('id-ID')} Ekor</td>
-                     <td class="px-2.5 py-1.5 text-right">${diffKg.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
-                  </tr>
-               `;
+               const padKey = key.padEnd(6);
+               
+               // Row 1: Bon Fix
+               const padEkor1 = (ad.ekor.toLocaleString('id-ID') + " Ekor").padStart(13);
+               const padKg1 = (ad.kg.toLocaleString('id-ID', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + " Kg").padStart(15);
+               tableBText += `     | ${padKey} | Ukuran Bon Fix       | ${padEkor1} | ${padKg1} |\n`;
+               
+               // Row 2: Rekomendasi
+               const padEkor2 = (rd.ekor.toLocaleString('id-ID') + " Ekor").padStart(13);
+               const padKg2 = (rd.kg.toLocaleString('id-ID', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + " Kg").padStart(15);
+               tableBText += `     |        | Ukuran Rekomendasi   | ${padEkor2} | ${padKg2} |\n`;
+               
+               // Row 3: Geser
+               const labelGeser = `Jumlah Geser (${pDiff}%)`.padEnd(20);
+               const padEkor3 = (diffEkor.toLocaleString('id-ID') + " Ekor").padStart(13);
+               const padKg3 = (diffKg.toLocaleString('id-ID', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + " Kg").padStart(15);
+               tableBText += `     |        | ${labelGeser} | ${padEkor3} | ${padKg3} |\n`;
+               tableBText += "     +--------+----------------------+---------------+-----------------+\n";
             }
          });
-         if(noB === 1) {
-            tbodyB.innerHTML = '<tr><td colspan="5" class="text-center text-slate-400 py-12 font-semibold">Tidak ada data komparasi audit ukuran</td></tr>';
+         if (!hasDataB) {
+            tableBText += "     |            (Belum ada data audit matriks ayam)                  |\n";
+            tableBText += "     +--------+----------------------+---------------+-----------------+\n";
          }
+         // Remove trailing newline if it's there
+         tableBText = tableBText.trim();
 
          // ============================================
-         // 2. KEUANGAN
+         // 2. KEUANGAN CALCULATIONS
          // ============================================
          let totalPenerimaan = 0;
          let totalPiutang = 0;
@@ -747,20 +438,11 @@
             }
          });
 
-         const terimaPct = totalJual > 0 ? (totalPenerimaan / totalJual * 100).toFixed(1) : 0;
-         const piutangPct = totalJual > 0 ? (totalPiutang / totalJual * 100).toFixed(1) : 0;
-
-         // Fill Keuangan DOM
-         document.getElementById('fin-total-terima').textContent = formatRp(totalPenerimaan);
-         document.getElementById('fin-terima-pct').textContent = terimaPct + '%';
-         document.getElementById('fin-terima-bar').style.width = terimaPct + '%';
-
-         document.getElementById('fin-total-piutang').textContent = formatRp(totalPiutang);
-         document.getElementById('fin-piutang-pct').textContent = piutangPct + '%';
-         document.getElementById('fin-piutang-bar').style.width = piutangPct + '%';
+         const terimaPct = totalJual > 0 ? (totalPenerimaan / totalJual * 100).toFixed(0) : 0;
+         const piutangPct = totalJual > 0 ? (totalPiutang / totalJual * 100).toFixed(0) : 0;
 
          // ============================================
-         // 3. MARKETING
+         // 3. MARKETING CALCULATIONS
          // ============================================
          // A. Jumlah Pelanggan Piutang
          const uniqueCustomersWithPiutang = new Set();
@@ -774,7 +456,6 @@
                uniqueCustomersWithPiutang.add(b.konsumen.trim());
             }
          });
-         document.getElementById('mkt-pelanggan-piutang').textContent = uniqueCustomersWithPiutang.size + ' Pelanggan';
 
          // B. Target Penjualan (Harian >= 10 Ton)
          const dailyWeightMap = {};
@@ -809,7 +490,6 @@
                targetUnmetDays++;
             }
          });
-         document.getElementById('mkt-target-hari').textContent = `Terpenuhi: ${targetMetDays}x, Tidak Terpenuhi: ${targetUnmetDays} hari (Total ${totalPeriodDays} hari)`;
 
          // C. Retensi Pelanggan (Omzet RFM)
          const customerRFMMap = {};
@@ -837,19 +517,11 @@
             else valLow += c.totalBelanja;
          });
 
-         const topPct = totalJual > 0 ? (valTop / totalJual * 100).toFixed(1) : 0;
-         const midPct = totalJual > 0 ? (valMid / totalJual * 100).toFixed(1) : 0;
-         const lowPct = totalJual > 0 ? (valLow / totalJual * 100).toFixed(1) : 0;
-
-         document.getElementById('mkt-rfm-top-pct').textContent = topPct + '%';
-         document.getElementById('mkt-rfm-top-bar').style.width = topPct + '%';
-         document.getElementById('mkt-rfm-mid-pct').textContent = midPct + '%';
-         document.getElementById('mkt-rfm-mid-bar').style.width = midPct + '%';
-         document.getElementById('mkt-rfm-low-pct').textContent = lowPct + '%';
-         document.getElementById('mkt-rfm-low-bar').style.width = lowPct + '%';
+         const topPct = totalJual > 0 ? (valTop / totalJual * 100).toFixed(0) : 0;
+         const midPct = totalJual > 0 ? (valMid / totalJual * 100).toFixed(0) : 0;
+         const lowPct = totalJual > 0 ? (valLow / totalJual * 100).toFixed(0) : 0;
 
          // D. Pertumbuhan Pelanggan (Bulan Ini vs Bulan Lalu)
-         // Hitung bulan lalu
          const startLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
          const endLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
          const fromLastMonthYMD = toLocalYMD(startLastMonth);
@@ -875,91 +547,72 @@
          const thisMonthCount = consumersThisMonth.size;
          const lastMonthCount = consumersLastMonth.size;
          const growthVal = thisMonthCount - lastMonthCount;
-         const growthPct = lastMonthCount > 0 ? (growthVal / lastMonthCount * 100).toFixed(1) : 0;
+         const growthPct = lastMonthCount > 0 ? (growthVal / lastMonthCount * 100).toFixed(0) : 0;
          const growthSymbol = growthVal >= 0 ? '+' : '';
 
-         document.getElementById('mkt-pertumbuhan').textContent = `${growthSymbol}${growthVal} pelanggan (${growthSymbol}${growthPct}%, ${thisMonthCount} vs ${lastMonthCount} bln lalu)`;
-
-         // E. Pelanggan Bulan Lalu yg Tidak Belanja Bulan Ini (Churn)
-         const churnTbody = document.getElementById('mkt-churn-tbody');
-         churnTbody.innerHTML = '';
-         
+         // E. Pelanggan Churn
          const churnCustomers = [];
          consumersLastMonth.forEach(cName => {
             if (!consumersThisMonth.has(cName)) {
                churnCustomers.push(cName);
             }
          });
-
-         document.getElementById('mkt-churn-count').textContent = churnCustomers.length;
-         if(churnCustomers.length === 0) {
-            churnTbody.innerHTML = '<tr><td colspan="2" class="text-center text-slate-400 py-12">Tidak ada customer hilang di bulan ini. Kinerja retensi luar biasa! 🌟</td></tr>';
-         } else {
-            churnCustomers.forEach((c, idx) => {
-               churnTbody.innerHTML += `
-                  <tr class="border-b border-slate-100 hover:bg-rose-50/20 transition-colors">
-                     <td class="px-4 py-2 text-center text-slate-400 font-semibold">${idx + 1}</td>
-                     <td class="px-4 py-2 font-bold text-slate-800">${c}</td>
-                  </tr>
-               `;
-            });
-         }
+         const churnListStr = churnCustomers.length > 0 ? churnCustomers.map((x, i) => `     ${i + 1}. ${x}`).join('\n') : '     - Tidak ada';
 
          // ============================================
-         // 4. PREFORMATTED TEXT GENERATION
+         // 4. WRITE COMPILED PURE TEXT REPORT
          // ============================================
          const textBlock = document.getElementById('audit-text-block');
          
-         const matrixShiftText = `${matrixGeserPctVal}%`;
-         const retensiRfmText = `Top: ${topPct}%, Middle: ${midPct}%, Low: ${lowPct}%`;
-         const churnListStr = churnCustomers.length > 0 ? churnCustomers.map(x => `- ${x}`).join('\n') : '-';
+         const reportText = `
+AUDIT SISTEM CV.GLOBAL PUTRA SWASEMBADA
+================================================================================
+Periode Audit : ${headerPeriodText}
+Status Bon    : Khusus Penjualan Non VOID (Lunas & Piutang)
+================================================================================
 
-         textBlock.textContent = `
-Audit Sistem CV.Global Putra Swasembada
-Periode = ${headerPeriodText}
+1. OPERASIONAL
+--------------------------------------------------------------------------------
+- Total Penjualan   = ${formatRp(totalJual)}
+- Total Ekor        = ${totalEkor.toLocaleString('id-ID')} Ekor
+- Total Kg          = ${totalKg.toLocaleString('id-ID', {minimumFractionDigits: 1})} Kg
+- Jumlah Bon        = ${jumlahBon} Bon (rata-rata per hari: ${rataBonPerHari} bon)
+- Matrix Ayam Geser = ${matrixGeserPctVal}% dari total pesanan harian
+- Quota Ayam :
+
+${tableAText}
+
+${tableBText}
 
 
-1.Operasional
-- Total Penjualan = ${formatRp(totalJual)}
-- Total Ekor = ${totalEkor.toLocaleString('id-ID')} Ekor
-- Total Kg = ${totalKg.toLocaleString('id-ID', {minimumFractionDigits: 2})} Kg
-- Jumlah Bon = ${jumlahBon} (rata rata perhari ${rataBonPerHari} bon)
-- Matrix Ayam Bergeser = ${matrixShiftText}
-- Quota Ayam (Matrik Laporan) :
-  A. Rekapitulasi Matrik Ukuran Ayam
-     KTN: ${(rekapMap.KTN.ekor)}ekor/${rekapMap.KTN.kg.toFixed(2)}kg
-     K  : ${(rekapMap.K.ekor)}ekor/${rekapMap.K.kg.toFixed(2)}kg
-     TB : ${(rekapMap.TB.ekor)}ekor/${rekapMap.TB.kg.toFixed(2)}kg
-     B  : ${(rekapMap.B.ekor)}ekor/${rekapMap.B.kg.toFixed(2)}kg
-     JK : ${(rekapMap.JK.ekor)}ekor/${rekapMap.JK.kg.toFixed(2)}kg
-     JB : ${(rekapMap.JB.ekor)}ekor/${rekapMap.JB.kg.toFixed(2)}kg
-     K/PK : ${(rekapMap['K/PK'].ekor)}ekor/${rekapMap['K/PK'].kg.toFixed(2)}kg
-     B/PK : ${(rekapMap['B/PK'].ekor)}ekor/${rekapMap['B/PK'].kg.toFixed(2)}kg
-     JB/PK: ${(rekapMap['JB/PK'].ekor)}ekor/${rekapMap['JB/PK'].kg.toFixed(2)}kg
+2. KEUANGAN
+--------------------------------------------------------------------------------
+- Pembayaran Diterima = ${formatRp(totalPenerimaan)} (${terimaPct}% dari Total Penjualan)
+- Total Piutang       = ${formatRp(totalPiutang)} (${piutangPct}% dari Total Penjualan)
 
-  B. Data Audit Matrik dengan Realisasi penjualan (Geser Ekor/Geser Kg)
-     KTN: ${(auditMap.KTN.ekor - rekapMap.KTN.ekor)}ekor/${(auditMap.KTN.kg - rekapMap.KTN.kg).toFixed(2)}kg
-     K  : ${(auditMap.K.ekor - rekapMap.K.ekor)}ekor/${(auditMap.K.kg - rekapMap.K.kg).toFixed(2)}kg
-     TB : ${(auditMap.TB.ekor - rekapMap.TB.ekor)}ekor/${(auditMap.TB.kg - rekapMap.TB.kg).toFixed(2)}kg
-     B  : ${(auditMap.B.ekor - rekapMap.B.ekor)}ekor/${(auditMap.B.kg - rekapMap.B.kg).toFixed(2)}kg
-     JK : ${(auditMap.JK.ekor - rekapMap.JK.ekor)}ekor/${(auditMap.JK.kg - rekapMap.JK.kg).toFixed(2)}kg
-     JB : ${(auditMap.JB.ekor - rekapMap.JB.ekor)}ekor/${(auditMap.JB.kg - rekapMap.JB.kg).toFixed(2)}kg
-     K/PK : ${(auditMap['K/PK'].ekor - rekapMap['K/PK'].ekor)}ekor/${(auditMap['K/PK'].kg - rekapMap['K/PK'].kg).toFixed(2)}kg
-     B/PK : ${(auditMap['B/PK'].ekor - rekapMap['B/PK'].ekor)}ekor/${(auditMap['B/PK'].kg - rekapMap['B/PK'].kg).toFixed(2)}kg
-     JB/PK: ${(auditMap['JB/PK'].ekor - rekapMap['JB/PK'].ekor)}ekor/${(auditMap['JB/PK'].kg - rekapMap['JB/PK'].kg).toFixed(2)}kg
 
-2.Keuangan
-- Pembayaran diterima = ${formatRp(totalPenerimaan)} (${terimaPct}% dari Total Penjualan)
-- Total Piutang = ${formatRp(totalPiutang)} (${piutangPct}% dari Total Penjualan)
-
-3.Marketing
-- Jumlah Pelanggan Piutang (${uniqueCustomersWithPiutang.size})
-- Target Penjualan (dari ${totalPeriodDays} Hari, terpenuhi = ${targetMetDays}x, tidak terpenuhi = ${targetUnmetDays} hari)
-- Retensi Pelanggan (Omzet RFM) = ${retensiRfmText}
-- Pertumbuhan Pelanggan = ${growthSymbol}${growthPct}% (${thisMonthCount} vs ${lastMonthCount} konsumen bulan lalu, selisih ${growthSymbol}${growthVal})
-- Pelanggan bulan lalu yg tidak belanja :
+3. MARKETING
+--------------------------------------------------------------------------------
+- Jumlah Pelanggan Piutang = ${uniqueCustomersWithPiutang.size} pelanggan
+- Target Penjualan         = Dari ${totalPeriodDays} hari aktif:
+                             • Terpenuhi (>=10 Ton) : ${targetMetDays} hari
+                             • Tidak Terpenuhi      : ${targetUnmetDays} hari
+- Retensi Pelanggan (RFM)  = Kontribusi omzet masing-masing segmen pelanggan:
+                             • Top Customer (Loyal) : ${topPct}%
+                             • Middle Customer      : ${midPct}%
+                             • Low Customer         : ${lowPct}%
+- Pertumbuhan Pelanggan    = Selisih konsumen aktif bulan lalu vs bulan ini:
+                             • Bulan Ini            : ${thisMonthCount} pelanggan
+                             • Bulan Lalu           : ${lastMonthCount} pelanggan
+                             • Hasil Pertumbuhan    : ${growthSymbol}${growthVal} pelanggan (${growthSymbol}${growthPct}%)
+- Pelanggan bulan lalu yg tidak belanja bulan ini (Churn):
 ${churnListStr}
+
+================================================================================
+Laporan dibuat otomatis oleh sistem Tata Global - Tanggal cetak: ${new Date().toLocaleDateString('id-ID', {weekday: 'long', day:'2-digit', month:'long', year:'numeric', timeZone: 'Asia/Jakarta'})}
 `.trim();
+
+         textBlock.textContent = reportText;
       }
 
       // Copy to Clipboard
@@ -974,14 +627,10 @@ ${churnListStr}
         });
       }
 
-      // EXCEL EXPORTER USING SHEETJS
+      // EXCEL EXPORTER
       function exportToExcel() {
-        const title = 'Laporan Audit & KPI CV Global Putra Swasembada';
         const rangeMode = document.getElementById('filter-range').value;
-        const displayRange = document.getElementById('display-range').textContent;
         const textContent = document.getElementById('audit-text-block').textContent;
-        
-        // Split text content into rows for spreadsheet structure
         const rows = textContent.split('\n').map(line => [line]);
         
         const wb = XLSX.utils.book_new();
@@ -1020,13 +669,19 @@ ${churnListStr}
            globalMasterKonsumen = window.DataLayer.getMaster('konsumen');
          }
          
+         // Update sidebar permissions & user labels
+         if (typeof AuthGuard !== 'undefined') {
+            const user = AuthGuard.getCurrentUser();
+            if (user) {
+               document.getElementById('sidebar-user-name').textContent = user.name || '-';
+               document.getElementById('sidebar-user-email').textContent = user.email || user.role || '-';
+               document.getElementById('header-role-badge').textContent = 'Role: ' + (user.role || '-');
+               document.getElementById('header-user-avatar').textContent = (user.name || '-').charAt(0).toUpperCase();
+            }
+         }
+         
          // Run main audit calculations
          calculateAuditKPI();
-      });
-      
-      // Hook window resize for sidebar charts/layout if any
-      window.addEventListener('sidebarToggle', () => {
-         console.log("Sidebar toggled!");
       });
     </script>
   </body>
