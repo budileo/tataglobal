@@ -559,6 +559,47 @@
          });
          const churnListStr = churnCustomers.length > 0 ? churnCustomers.map((x, i) => `     ${i + 1}. ${x}`).join('\n') : '     - Tidak ada';
 
+         // F. Rekap Piutang Berdasarkan Marketing (Point 4)
+         const mktPiutangMap = {};
+         filteredBons.forEach(b => {
+            const hist = (b.historiBayar || []).filter(h => !h.isVoid);
+            const paid = hist.reduce((s, h) => s + Number(h.nominal || 0), 0);
+            const pot = hist.reduce((s, h) => s + Number(h.totalPotongan || 0), 0);
+            const sisa = Number(b.total) - pot - paid;
+            
+            if (sisa > 0.01) {
+               const mName = (b.marketing || b.staf || 'TANPA MARKETING').toUpperCase().trim();
+               if (!mktPiutangMap[mName]) {
+                  mktPiutangMap[mName] = { piutang: 0, customers: new Set() };
+               }
+               mktPiutangMap[mName].piutang += sisa;
+               if (b.konsumen) {
+                  mktPiutangMap[mName].customers.add(b.konsumen.trim());
+               }
+            }
+         });
+
+         let rekapPiutangMarketingStr = "";
+         const mktSortedKeys = Object.keys(mktPiutangMap).sort((a,b) => mktPiutangMap[b].piutang - mktPiutangMap[a].piutang);
+         
+         if (mktSortedKeys.length === 0) {
+            rekapPiutangMarketingStr = "     - Tidak ada piutang berjalan pada periode ini.";
+         } else {
+            mktSortedKeys.forEach((mName, idx) => {
+               const item = mktPiutangMap[mName];
+               let displayAmt = "";
+               if (item.piutang >= 1000000) {
+                  const jutaVal = item.piutang / 1000000;
+                  const formattedJuta = jutaVal % 1 === 0 ? jutaVal.toFixed(0) : jutaVal.toFixed(1);
+                  displayAmt = `${formattedJuta} juta (${formatRp(item.piutang)})`;
+               } else {
+                  displayAmt = formatRp(item.piutang);
+               }
+               rekapPiutangMarketingStr += `     ${idx + 1}. ${mName} Jumlah Piutang ${displayAmt} (${item.customers.size} customer)\n`;
+            });
+            rekapPiutangMarketingStr = rekapPiutangMarketingStr.trimEnd();
+         }
+
          // ============================================
          // 4. WRITE COMPILED PURE TEXT REPORT
          // ============================================
@@ -607,6 +648,11 @@ ${tableBText}
                              • Hasil Pertumbuhan    : ${growthSymbol}${growthVal} pelanggan (${growthSymbol}${growthPct}%)
 - Pelanggan bulan lalu yg tidak belanja bulan ini (Churn):
 ${churnListStr}
+
+
+4. REKAP PIUTANG BERDASARKAN MARKETING
+--------------------------------------------------------------------------------
+${rekapPiutangMarketingStr}
 
 ================================================================================
 Laporan dibuat otomatis oleh sistem Tata Global - Tanggal cetak: ${new Date().toLocaleDateString('id-ID', {weekday: 'long', day:'2-digit', month:'long', year:'numeric', timeZone: 'Asia/Jakarta'})}
