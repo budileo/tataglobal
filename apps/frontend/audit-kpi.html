@@ -493,6 +493,7 @@
 
          // C. Retensi Pelanggan (Omzet RFM)
          const customerRFMMap = {};
+         const customerMarketingMap = {};
          filteredBons.forEach(b => {
             const k = b.konsumen || 'TANPA NAMA';
             if(!customerRFMMap[k]) {
@@ -501,6 +502,11 @@
             customerRFMMap[k].count++;
             customerRFMMap[k].totalBelanja += Number(b.total);
             if(b.tanggal > customerRFMMap[k].lastDate) customerRFMMap[k].lastDate = b.tanggal;
+
+            const mName = (b.marketing || b.staf || 'TANPA MARKETING').toUpperCase().trim();
+            if (!customerMarketingMap[k]) {
+               customerMarketingMap[k] = mName;
+            }
          });
 
          const endPeriodObj = new Date(toDate);
@@ -600,6 +606,47 @@
             rekapPiutangMarketingStr = rekapPiutangMarketingStr.trimEnd();
          }
 
+         // G. Porsi Pelanggan (RFM) Terhadap Marketing (Point 5)
+         const mktRFMMap = {};
+         Object.values(customerRFMMap).forEach(c => {
+            const lastTransObj = new Date(c.lastDate);
+            const diffTime = Math.abs(endPeriodObj - lastTransObj);
+            const recencyDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const rfm = calculateRFMScore(recencyDays, c.count, c.totalBelanja);
+            
+            const mName = customerMarketingMap[c.name] || 'TANPA MARKETING';
+            if (!mktRFMMap[mName]) {
+               mktRFMMap[mName] = { top: 0, mid: 0, low: 0 };
+            }
+            if (rfm.segment === 'Top Customer') {
+               mktRFMMap[mName].top++;
+            } else if (rfm.segment === 'Middle Customer') {
+               mktRFMMap[mName].mid++;
+            } else {
+               mktRFMMap[mName].low++;
+            }
+         });
+
+         let porsiRfmMarketingStr = "";
+         const mktRFMSortedKeys = Object.keys(mktRFMMap).sort((a, b) => {
+            const totalA = mktRFMMap[a].top + mktRFMMap[a].mid + mktRFMMap[a].low;
+            const totalB = mktRFMMap[b].top + mktRFMMap[b].mid + mktRFMMap[b].low;
+            return totalB - totalA;
+         });
+
+         if (mktRFMSortedKeys.length === 0) {
+            porsiRfmMarketingStr = "     - Tidak ada data porsi pelanggan marketing pada periode ini.";
+         } else {
+            mktRFMSortedKeys.forEach(mName => {
+               const item = mktRFMMap[mName];
+               porsiRfmMarketingStr += `     ${mName}\n`;
+               porsiRfmMarketingStr += `      • Top Customer (Loyal) : ${item.top} orang\n`;
+               porsiRfmMarketingStr += `      • Middle Customer      : ${item.mid} orang\n`;
+               porsiRfmMarketingStr += `      • Low Customer         : ${item.low} orang\n`;
+            });
+            porsiRfmMarketingStr = porsiRfmMarketingStr.trimEnd();
+         }
+
          // ============================================
          // 4. WRITE COMPILED PURE TEXT REPORT
          // ============================================
@@ -653,6 +700,11 @@ ${churnListStr}
 4. REKAP PIUTANG BERDASARKAN MARKETING
 --------------------------------------------------------------------------------
 ${rekapPiutangMarketingStr}
+
+
+5. PORSI PELANGGAN (RFM) TERHADAP MARKETING
+--------------------------------------------------------------------------------
+${porsiRfmMarketingStr}
 
 ================================================================================
 Laporan dibuat otomatis oleh sistem Tata Global - Tanggal cetak: ${new Date().toLocaleDateString('id-ID', {weekday: 'long', day:'2-digit', month:'long', year:'numeric', timeZone: 'Asia/Jakarta'})}
