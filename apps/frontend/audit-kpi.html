@@ -716,7 +716,39 @@
          }
 
          // ============================================
-         // 4. WRITE COMPILED PURE TEXT REPORT
+         // 5. RIWAYAT VOID
+         // ============================================
+         const voidLogs = typeof ActivityLogger !== 'undefined'
+            ? await ActivityLogger.query({ dateFrom: fromDate, dateTo: toDate, action: 'VOID' })
+            : [];
+
+         let voidTableStr = "";
+         if (voidLogs.length === 0) {
+            voidTableStr = "     - Tidak ada data void pada periode ini.";
+         } else {
+            voidTableStr += "     +-------------+----------+----------------------+--------------+\n";
+            voidTableStr += "     | TGL & JAM   | JENIS    | DESKRIPSI            | USER         |\n";
+            voidTableStr += "     +-------------+----------+----------------------+--------------+\n";
+            voidLogs.forEach(l => {
+               const dt = new Date(l.createdAt);
+               const padZ = (n) => String(n).padStart(2, '0');
+               const fmtDate = `${padZ(dt.getDate())}/${padZ(dt.getMonth()+1)} ${padZ(dt.getHours())}:${padZ(dt.getMinutes())}`.padEnd(11);
+               
+               const jenis = (l.entityType === 'BON' ? 'Isi BON' : 'Bayar').padEnd(8);
+               
+               const nominal = l.oldData ? (l.oldData.total || l.oldData.nominal || 0) : 0;
+               const descVal = l.entityType === 'BON' ? l.entityId : `${l.entityId} (${formatRp(nominal)})`;
+               const desc = descVal.substring(0, 20).padEnd(20);
+               
+               const usr = (l.userName || '-').split('@')[0].substring(0, 12).padEnd(12);
+               
+               voidTableStr += `     | ${fmtDate} | ${jenis} | ${desc} | ${usr} |\n`;
+            });
+            voidTableStr += "     +-------------+----------+----------------------+--------------+";
+         }
+
+         // ============================================
+         // 6. WRITE COMPILED PURE TEXT REPORT
          // ============================================
          const textBlock = document.getElementById('audit-text-block');
          
@@ -778,6 +810,11 @@ ${rekapPiutangMarketingStr}
 5. PORSI PELANGGAN (RFM) TERHADAP MARKETING
 --------------------------------------------------------------------------------
 ${porsiRfmMarketingStr}
+
+
+6. RIWAYAT VOID
+--------------------------------------------------------------------------------
+${voidTableStr}
 
 ================================================================================
 Laporan dibuat otomatis oleh sistem Tata Global - Tanggal cetak: ${new Date().toLocaleDateString('id-ID', {weekday: 'long', day:'2-digit', month:'long', year:'numeric', timeZone: 'Asia/Jakarta'})}
