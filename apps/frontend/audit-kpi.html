@@ -473,27 +473,31 @@
          if (rekapPiutangDates.length === 0) {
             rekapBonPiutangStr = '     - Tidak ada bon piutang pada periode ini.';
          } else {
-            rekapBonPiutangStr += '     +------------+-------------------+---------------------+--------------------+\n';
-            rekapBonPiutangStr += '     | TANGGAL    | SEBAGIAN LUNAS    | BELUM DIBAYAR       | TOTAL PIUTANG      |\n';
-            rekapBonPiutangStr += '     +------------+-------------------+---------------------+--------------------+\n';
-            let grandSebagian = 0, grandBelum = 0, grandPiutang = 0;
+            rekapBonPiutangStr += '     +------------+-------------+-------------------+---------------------+--------------------+\n';
+            rekapBonPiutangStr += '     | TANGGAL    | TOTAL NOTA  | SEBAGIAN LUNAS    | BELUM DIBAYAR       | TOTAL PIUTANG      |\n';
+            rekapBonPiutangStr += '     +------------+-------------+-------------------+---------------------+--------------------+\n';
+            let grandSebagian = 0, grandBelum = 0, grandPiutang = 0, grandNota = 0;
             rekapPiutangDates.forEach(tgl => {
                const d = rekapBonPiutangMap[tgl];
+               const totalNota = d.sebagianLunas + d.belumBayar;
                grandSebagian += d.sebagianLunas;
                grandBelum += d.belumBayar;
                grandPiutang += d.totalPiutang;
+               grandNota += totalNota;
                const fmtTgl = tgl.padEnd(10);
+               const fmtNot = (totalNota + ' Nota').padStart(11);
                const fmtSeb = (d.sebagianLunas + ' Nota').padStart(17);
                const fmtBel = (d.belumBayar + ' Nota').padStart(19);
                const fmtPit = formatRp(d.totalPiutang).padStart(18);
-               rekapBonPiutangStr += `     | ${fmtTgl} | ${fmtSeb} | ${fmtBel} | ${fmtPit} |\n`;
+               rekapBonPiutangStr += `     | ${fmtTgl} | ${fmtNot} | ${fmtSeb} | ${fmtBel} | ${fmtPit} |\n`;
             });
-            rekapBonPiutangStr += '     +------------+-------------------+---------------------+--------------------+\n';
+            rekapBonPiutangStr += '     +------------+-------------+-------------------+---------------------+--------------------+\n';
+            const fmtTotNot = (grandNota + ' Nota').padStart(11);
             const fmtTotSeb = (grandSebagian + ' Nota').padStart(17);
             const fmtTotBel = (grandBelum + ' Nota').padStart(19);
             const fmtTotPit = formatRp(grandPiutang).padStart(18);
-            rekapBonPiutangStr += `     | TOTAL      | ${fmtTotSeb} | ${fmtTotBel} | ${fmtTotPit} |\n`;
-            rekapBonPiutangStr += '     +------------+-------------------+---------------------+--------------------+';
+            rekapBonPiutangStr += `     | TOTAL      | ${fmtTotNot} | ${fmtTotSeb} | ${fmtTotBel} | ${fmtTotPit} |\n`;
+            rekapBonPiutangStr += '     +------------+-------------+-------------------+---------------------+--------------------+';
          }
 
          // ============================================
