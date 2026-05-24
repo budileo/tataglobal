@@ -419,8 +419,12 @@
 
          // Rekap Bon Piutang per Tanggal
          const rekapBonPiutangMap = {};
+         const totalBonsPerDateMap = {};
 
          filteredBons.forEach(b => {
+            const tgl = b.tanggal;
+            totalBonsPerDateMap[tgl] = (totalBonsPerDateMap[tgl] || 0) + 1;
+
             const hist = (b.historiBayar || []).filter(h => !h.isVoid);
             let paidForThisBon = 0;
             let potForThisBon = 0;
@@ -449,9 +453,8 @@
                totalPiutang += sisa;
 
                // Kategorikan bon piutang per tanggal
-               const tgl = b.tanggal;
                if (!rekapBonPiutangMap[tgl]) {
-                  rekapBonPiutangMap[tgl] = { sebagianLunas: 0, belumBayar: 0, totalPiutang: 0 };
+                  rekapBonPiutangMap[tgl] = { sebagianLunas: 0, belumBayar: 0, totalPiutang: 0, totalNota: 0 };
                }
                if (paidForThisBon > 0) {
                   rekapBonPiutangMap[tgl].sebagianLunas++;
@@ -460,6 +463,11 @@
                }
                rekapBonPiutangMap[tgl].totalPiutang += sisa;
             }
+         });
+
+         // Set totalNota berdasarkan jumlah seluruh faktur/bon non-void
+         Object.keys(rekapBonPiutangMap).forEach(tgl => {
+            rekapBonPiutangMap[tgl].totalNota = totalBonsPerDateMap[tgl] || 0;
          });
 
          const terimaPct = totalJual > 0 ? (totalPenerimaan / totalJual * 100).toFixed(0) : 0;
@@ -480,7 +488,7 @@
             let grandSebagian = 0, grandBelum = 0, grandPiutang = 0, grandNota = 0;
             rekapPiutangDates.forEach(tgl => {
                const d = rekapBonPiutangMap[tgl];
-               const totalNota = d.sebagianLunas + d.belumBayar;
+               const totalNota = d.totalNota;
                grandSebagian += d.sebagianLunas;
                grandBelum += d.belumBayar;
                grandPiutang += d.totalPiutang;
