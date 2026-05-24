@@ -474,7 +474,8 @@
             rekapBonPiutangStr = '     - Tidak ada bon piutang pada periode ini.';
          } else {
             rekapBonPiutangStr += '     +------------+-------------+-------------------+---------------------+--------------------+\n';
-            rekapBonPiutangStr += '     | TANGGAL    | TOTAL NOTA  | SEBAGIAN LUNAS    | BELUM DIBAYAR       | TOTAL PIUTANG      |\n';
+            rekapBonPiutangStr += '     | TANGGAL    | TOTAL       | SEBAGIAN          | BELUM               | TOTAL              |\n';
+            rekapBonPiutangStr += '     |            | NOTA        | LUNAS             | DIBAYAR             | PIUTANG            |\n';
             rekapBonPiutangStr += '     +------------+-------------+-------------------+---------------------+--------------------+\n';
             let grandSebagian = 0, grandBelum = 0, grandPiutang = 0, grandNota = 0;
             rekapPiutangDates.forEach(tgl => {
