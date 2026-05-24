@@ -414,6 +414,11 @@
          // ============================================
          let totalPenerimaan = 0;
          let totalPiutang = 0;
+         let totalPotonganKg = 0;
+         let totalPotonganRp = 0;
+
+         // Rekap Bon Piutang per Tanggal
+         const rekapBonPiutangMap = {};
 
          filteredBons.forEach(b => {
             const hist = (b.historiBayar || []).filter(h => !h.isVoid);
@@ -430,16 +435,66 @@
                }
                paidForThisBon += nom;
                potForThisBon += pt;
+
+               // Akumulasi total potongan (kg & Rp)
+               if (h.potongan) {
+                  const pot = h.potongan;
+                  totalPotonganKg += Number(pot.matiKg || 0) + Number(pot.susutKg || 0) + Number(pot.pulangKg || 0);
+                  totalPotonganRp += Number(pot.matiRp || 0) + Number(pot.susutRp || 0) + Number(pot.pulangRp || 0);
+               }
             });
 
             const sisa = Number(b.total) - potForThisBon - paidForThisBon;
             if (sisa > 0.01) {
                totalPiutang += sisa;
+
+               // Kategorikan bon piutang per tanggal
+               const tgl = b.tanggal;
+               if (!rekapBonPiutangMap[tgl]) {
+                  rekapBonPiutangMap[tgl] = { sebagianLunas: 0, belumBayar: 0, totalPiutang: 0 };
+               }
+               if (paidForThisBon > 0) {
+                  rekapBonPiutangMap[tgl].sebagianLunas++;
+               } else {
+                  rekapBonPiutangMap[tgl].belumBayar++;
+               }
+               rekapBonPiutangMap[tgl].totalPiutang += sisa;
             }
          });
 
          const terimaPct = totalJual > 0 ? (totalPenerimaan / totalJual * 100).toFixed(0) : 0;
          const piutangPct = totalJual > 0 ? (totalPiutang / totalJual * 100).toFixed(0) : 0;
+         const potonganKgPct = totalKg > 0 ? (totalPotonganKg / totalKg * 100).toFixed(1) : '0.0';
+         const potonganRpPct = totalJual > 0 ? (totalPotonganRp / totalJual * 100).toFixed(1) : '0.0';
+
+         // Generate Rekap Bon Piutang Table
+         const rekapPiutangDates = Object.keys(rekapBonPiutangMap).sort();
+         let rekapBonPiutangStr = '';
+         if (rekapPiutangDates.length === 0) {
+            rekapBonPiutangStr = '     - Tidak ada bon piutang pada periode ini.';
+         } else {
+            rekapBonPiutangStr += '     +------------+-------------------+---------------------+--------------------+\n';
+            rekapBonPiutangStr += '     | TANGGAL    | SEBAGIAN LUNAS    | BELUM DIBAYAR       | TOTAL PIUTANG      |\n';
+            rekapBonPiutangStr += '     +------------+-------------------+---------------------+--------------------+\n';
+            let grandSebagian = 0, grandBelum = 0, grandPiutang = 0;
+            rekapPiutangDates.forEach(tgl => {
+               const d = rekapBonPiutangMap[tgl];
+               grandSebagian += d.sebagianLunas;
+               grandBelum += d.belumBayar;
+               grandPiutang += d.totalPiutang;
+               const fmtTgl = tgl.padEnd(10);
+               const fmtSeb = (d.sebagianLunas + ' Nota').padStart(17);
+               const fmtBel = (d.belumBayar + ' Nota').padStart(19);
+               const fmtPit = formatRp(d.totalPiutang).padStart(18);
+               rekapBonPiutangStr += `     | ${fmtTgl} | ${fmtSeb} | ${fmtBel} | ${fmtPit} |\n`;
+            });
+            rekapBonPiutangStr += '     +------------+-------------------+---------------------+--------------------+\n';
+            const fmtTotSeb = (grandSebagian + ' Nota').padStart(17);
+            const fmtTotBel = (grandBelum + ' Nota').padStart(19);
+            const fmtTotPit = formatRp(grandPiutang).padStart(18);
+            rekapBonPiutangStr += `     | TOTAL      | ${fmtTotSeb} | ${fmtTotBel} | ${fmtTotPit} |\n`;
+            rekapBonPiutangStr += '     +------------+-------------------+---------------------+--------------------+';
+         }
 
          // ============================================
          // 3. MARKETING CALCULATIONS
@@ -678,9 +733,14 @@ ${tableBText}
 - Pembayaran Diterima = ${formatRp(totalPenerimaan)} (${terimaPct}% dari Total Penjualan)
 - Total Piutang       = ${formatRp(totalPiutang)} (${piutangPct}% dari Total Penjualan)
 
+  Rekap Bon Piutang:
+${rekapBonPiutangStr}
+
 
 3. MARKETING
 --------------------------------------------------------------------------------
+- Jumlah Total Potongan (Kg) = ${formatKg(totalPotonganKg)} (${potonganKgPct}% dari Total Kg)
+- Jumlah Total Potongan (Rp) = ${formatRp(totalPotonganRp)} (${potonganRpPct}% dari Total Penjualan)
 - Jumlah Pelanggan Piutang = ${uniqueCustomersWithPiutang.size} pelanggan
 - Target Penjualan         = Dari ${totalPeriodDays} hari aktif:
                              • Terpenuhi (>=10 Ton) : ${targetMetDays} hari
