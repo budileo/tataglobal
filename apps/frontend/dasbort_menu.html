@@ -23,6 +23,7 @@
       .menu-card:nth-child(3) { animation-delay: 0.18s; }
       .menu-card:nth-child(4) { animation-delay: 0.24s; }
       .menu-card:nth-child(5) { animation-delay: 0.30s; }
+      .menu-card:nth-child(6) { animation-delay: 0.36s; }
 
       @keyframes fadeInHeader {
         from { opacity: 0; transform: translateY(-10px); }
@@ -82,8 +83,8 @@
           <p class="text-slate-400 text-sm font-medium max-w-md mx-auto leading-relaxed">Silakan pilih area kerja yang ingin Anda akses</p>
         </div>
 
-        <!-- 5 Menu Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 max-w-4xl xl:max-w-none mx-auto">
+        <!-- 6 Menu Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-4xl xl:max-w-6xl mx-auto">
 
           <!-- ① Operasional -->
           <a href="dashboard.html" class="menu-card group" id="menu-operasional">
@@ -94,7 +95,7 @@
               </div>
               <div class="relative">
                 <h3 class="font-black text-base text-white tracking-tight">Operasional</h3>
-                <p class="text-[11px] text-slate-400 mt-1.5 font-medium leading-relaxed">Penjualan &amp; Keuangan</p>
+                <p class="text-[11px] text-slate-400 mt-1.5 font-medium leading-relaxed">Stok &amp; Penjualan</p>
               </div>
             </div>
           </a>
@@ -151,6 +152,20 @@
               <div class="relative">
                 <h3 class="font-black text-base text-white tracking-tight">Setting</h3>
                 <p class="text-[11px] text-slate-400 mt-1.5 font-medium leading-relaxed">Pengaturan Sistem</p>
+              </div>
+            </div>
+          </a>
+
+          <!-- ⑥ CRM -->
+          <a href="#" class="menu-card group" id="menu-crm">
+            <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-8 hover:bg-pink-500/10 hover:border-pink-400/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-pink-500/10 text-center h-full flex flex-col items-center justify-center gap-4 overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-pink-500/0 to-pink-500/0 group-hover:from-pink-500/5 group-hover:to-transparent transition-all duration-500"></div>
+              <div class="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-400 to-pink-700 flex items-center justify-center shadow-lg shadow-pink-500/25 group-hover:shadow-pink-500/40 group-hover:scale-110 transition-all duration-300">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+              </div>
+              <div class="relative">
+                <h3 class="font-black text-base text-white tracking-tight">CRM</h3>
+                <p class="text-[11px] text-slate-400 mt-1.5 font-medium leading-relaxed">Customer Relationship</p>
               </div>
             </div>
           </a>
