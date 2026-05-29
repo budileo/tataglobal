@@ -864,10 +864,14 @@
          
          alert('Pembayaran berhasil disimpan!');
          showListView();
-      });
+       });
 
-      // Init
-      showListView();
+       // Expose globally
+       window.renderTable = renderTable;
+       window.showListView = showListView;
+
+       // Init
+       showListView();
 
       const btnExport = document.getElementById('btn-export-excel');
       if(btnExport) btnExport.addEventListener('click',()=>{
