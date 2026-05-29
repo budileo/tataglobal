@@ -703,6 +703,13 @@
             const dataAktual = listHarian.map(d => d.netto);
             const dataTarget = listHarian.map(() => 10000); // Target 10 Ton = 10000 Kg
 
+            const dataColors = dataAktual.map(netto => {
+                if (netto > 10500) return '#3b82f6'; // Biru (Lebih dari Target)
+                if (netto >= 10000) return '#10b981'; // Hijau (Dapat Target)
+                if (netto >= 7000) return '#eab308'; // Kuning (Tidak Tercapai)
+                return '#ef4444'; // Merah (Sangat Jauh dari Target)
+            });
+
             targetChartInst = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -711,7 +718,7 @@
                         {
                             label: 'Aktual Penjualan (Kg)',
                             data: dataAktual,
-                            backgroundColor: '#10b981', // emerald-500
+                            backgroundColor: dataColors,
                             borderRadius: 4,
                             order: 2
                         },
