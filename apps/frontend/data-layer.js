@@ -7,7 +7,8 @@ window.DataLayer = {
     pembayaran: [],
     master_konsumen: [],
     master_marketing: [],
-    master_operasional: []
+    master_operasional: [],
+    master_jalur: []
   },
 
   async init() {
@@ -18,13 +19,15 @@ window.DataLayer = {
         { data: pembayaran },
         { data: konsumen },
         { data: marketing },
-        { data: operasional }
+        { data: operasional },
+        { data: jalur }
       ] = await Promise.all([
         supabase.from('bons').select('*').order('created_at', { ascending: false }),
         supabase.from('pembayaran').select('*').order('created_at', { ascending: true }),
         supabase.from('master_konsumen').select('*').order('created_at', { ascending: false }),
         supabase.from('master_marketing').select('*').order('created_at', { ascending: false }),
-        supabase.from('master_operasional').select('*').order('created_at', { ascending: false })
+        supabase.from('master_operasional').select('*').order('created_at', { ascending: false }),
+        supabase.from('jalur_distribusi').select('*').order('created_at', { ascending: false })
       ]);
 
       // Process Bons
@@ -67,12 +70,15 @@ window.DataLayer = {
 
       // Process Master
       this.data.master_konsumen = (konsumen || []).map(d => ({
-        id: d.id, nama: d.nama, alamat: d.alamat || '', updatedAt: new Date(d.created_at).getTime()
+        id: d.id, nama: d.nama, alamat: d.alamat || '', jalur: d.jalur || '', updatedAt: new Date(d.created_at).getTime()
       }));
       this.data.master_marketing = (marketing || []).map(d => ({
         id: d.id, nama: d.nama, updatedAt: new Date(d.created_at).getTime()
       }));
       this.data.master_operasional = (operasional || []).map(d => ({
+        id: d.id, nama: d.nama, updatedAt: new Date(d.created_at).getTime()
+      }));
+      this.data.master_jalur = (jalur || []).map(d => ({
         id: d.id, nama: d.nama, updatedAt: new Date(d.created_at).getTime()
       }));
 
@@ -87,7 +93,7 @@ window.DataLayer = {
   },
 
   getMaster(type) {
-    const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional' };
+    const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional', 'jalur': 'master_jalur' };
     return this.data[tableMap[type]] || [];
   },
 
@@ -175,7 +181,7 @@ window.DataLayer = {
   },
 
   async saveMaster(type, payload, isDelete = false) {
-    const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional' };
+    const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional', 'jalur': 'jalur_distribusi' };
     const tableName = tableMap[type];
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { alert("Sesi cloud tidak ditemukan! Harap login ulang."); return; }
@@ -190,6 +196,7 @@ window.DataLayer = {
            user_id: user.id
         };
         if (type === 'konsumen') dbPayload.alamat = payload.alamat || '';
+        if (type === 'konsumen') dbPayload.jalur = payload.jalur || '';
         
         const { data: existing } = await supabase.from(tableName).select('id').eq('id', payload.id);
         if (existing && existing.length > 0) {

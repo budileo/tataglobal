@@ -59,6 +59,7 @@
          <button id="tab-konsumen" class="tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-emerald-50 text-emerald-700 font-bold border-b-2 border-emerald-600 transition-all">Data Konsumen</button>
          <button id="tab-marketing" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Data Marketing</button>
          <button id="tab-operasional" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Staf Operasional</button>
+         <button id="tab-jalur" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Jalur Distribusi</button>
       </div>
 
       <!-- Tab Content: Konsumen -->
@@ -84,6 +85,7 @@
                        <th class="px-4 py-3 border-r border-slate-100 w-12 text-center">No</th>
                        <th class="px-4 py-3 border-r border-slate-100">Nama Konsumen</th>
                        <th class="px-4 py-3 border-r border-slate-100">Alamat Lengkap</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Jalur</th>
                        <th class="px-4 py-3 text-center">Aksi</th>
                     </tr>
                  </thead>
@@ -158,6 +160,38 @@
         </div>
       </div>
 
+      <!-- Tab Content: Jalur Distribusi -->
+      <div id="content-jalur" class="tab-content hidden relative">
+        <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+           <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
+              <div class="flex items-center gap-3">
+                 <h3 class="font-bold text-slate-800">Jalur Distribusi</h3>
+                 <span id="count-jalur" class="bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">0 Data</span>
+              </div>
+              <div class="flex items-center gap-2 w-full md:w-auto">
+                 <div class="relative flex-1 md:w-64">
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="search-jalur" placeholder="Cari jalur..." class="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded text-sm focus:outline-emerald-500">
+                 </div>
+                 <button onclick="openModal('jalur')" class="bg-teal-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-teal-700 shrink-0 shadow-lg shadow-teal-600/20">+ Tambah</button>
+              </div>
+           </div>
+           <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-600 whitespace-nowrap">
+                 <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                    <tr>
+                       <th class="px-4 py-3 border-r border-slate-100 w-12 text-center">No</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Nama Jalur</th>
+                       <th class="px-4 py-3 text-center w-24">Aksi</th>
+                    </tr>
+                 </thead>
+                 <tbody id="table-jalur" class="divide-y divide-slate-100"></tbody>
+              </table>
+              <div id="empty-jalur" class="hidden p-8 text-center text-slate-400"><p class="font-medium text-sm">Belum ada data jalur distribusi.</p></div>
+           </div>
+        </div>
+      </div>
+
     </main>
 
     <!-- Modal Form (Unified) -->
@@ -171,12 +205,18 @@
              <input type="hidden" id="form-tipe">
              <input type="hidden" id="form-id">
              <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Lengkap *</label>
+                <label id="label-nama" class="block text-xs font-semibold text-slate-500 mb-1">Nama Lengkap *</label>
                 <input id="input-nama" type="text" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 focus:bg-white transition-colors" required>
              </div>
              <div id="field-alamat" class="hidden">
                 <label class="block text-xs font-semibold text-slate-500 mb-1">Alamat Lengkap</label>
                 <textarea id="input-alamat" rows="2" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 focus:bg-white transition-colors"></textarea>
+             </div>
+             <div id="field-jalur" class="hidden">
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Jalur Distribusi</label>
+                <select id="input-jalur" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 focus:bg-white transition-colors">
+                   <option value="">-- Pilih Jalur --</option>
+                </select>
              </div>
           </div>
           <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
@@ -188,13 +228,11 @@
 
     <script type="module" src="data-layer.js"></script>
     <script>
-       const UI_TABS = ['konsumen', 'marketing', 'operasional'];
-       
-       // Helper localstorage (Removed in favor of DataLayer)
+       const UI_TABS = ['konsumen', 'marketing', 'operasional', 'jalur'];
        
        // State
        let activeTab = 'konsumen';
-       let db = { konsumen: [], marketing: [], operasional: [] };
+       let db = { konsumen: [], marketing: [], operasional: [], jalur: [] };
 
        // Initialize
        async function initApp() {
@@ -215,13 +253,9 @@
                 document.getElementById('content-' + t).classList.add('hidden');
              });
              e.target.className = "tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-emerald-50 text-emerald-700 font-bold border-b-2 border-emerald-600 transition-all";
-             if(type === 'marketing') e.target.classList.replace('text-emerald-700', 'text-blue-700');
-             if(type === 'marketing') e.target.classList.replace('border-emerald-600', 'border-blue-600');
-             if(type === 'marketing') e.target.classList.replace('bg-emerald-50', 'bg-blue-50');
-             
-             if(type === 'operasional') e.target.classList.replace('text-emerald-700', 'text-amber-700');
-             if(type === 'operasional') e.target.classList.replace('border-emerald-600', 'border-amber-600');
-             if(type === 'operasional') e.target.classList.replace('bg-emerald-50', 'bg-amber-50');
+             if(type === 'marketing') e.target.classList.replace('text-emerald-700', 'text-blue-700'), e.target.classList.replace('border-emerald-600', 'border-blue-600'), e.target.classList.replace('bg-emerald-50', 'bg-blue-50');
+             if(type === 'operasional') e.target.classList.replace('text-emerald-700', 'text-amber-700'), e.target.classList.replace('border-emerald-600', 'border-amber-600'), e.target.classList.replace('bg-emerald-50', 'bg-amber-50');
+             if(type === 'jalur') e.target.classList.replace('text-emerald-700', 'text-teal-700'), e.target.classList.replace('border-emerald-600', 'border-teal-600'), e.target.classList.replace('bg-emerald-50', 'bg-teal-50');
 
              document.getElementById('content-' + type).classList.remove('hidden');
              activeTab = type;
@@ -251,12 +285,16 @@
           empty.classList.add('hidden');
           
           tbody.innerHTML = list.map((d, i) => {
-             const alamatTd = type === 'konsumen' ? `<td class="px-4 py-3 border-r border-slate-100 max-w-[200px] truncate" title="${d.alamat||'-'}">${d.alamat||'-'}</td>` : '';
-             const color = type === 'konsumen' ? 'emerald' : (type === 'marketing' ? 'blue' : 'amber');
+             const color = type === 'konsumen' ? 'emerald' : (type === 'marketing' ? 'blue' : (type === 'jalur' ? 'teal' : 'amber'));
+             let extraCols = '';
+             if (type === 'konsumen') {
+                 extraCols = `<td class="px-4 py-3 border-r border-slate-100 max-w-[200px] truncate" title="${d.alamat||'-'}">${d.alamat||'-'}</td>
+                              <td class="px-4 py-3 border-r border-slate-100">${d.jalur ? '<span class="inline-block bg-teal-50 text-teal-700 text-[11px] font-semibold px-2 py-0.5 rounded-full">' + d.jalur + '</span>' : '<span class="text-slate-300">-</span>'}</td>`;
+             }
              return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                 <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-400">${i+1}</td>
                 <td class="px-4 py-3 border-r border-slate-100 font-bold text-slate-800 capitalize">${d.nama}</td>
-                ${alamatTd}
+                ${extraCols}
                 <td class="px-4 py-3 text-center">
                    <button onclick="editData('${type}', '${d.id}')" class="text-${color}-600 hover:underline font-semibold text-xs mr-2">Edit</button>
                    <button onclick="deleteData('${type}', '${d.id}')" class="text-rose-500 hover:underline font-semibold text-xs">Hapus</button>
@@ -271,29 +309,37 @@
        
        function openModal(type, editId = null) {
           const isEdit = editId !== null;
-          document.getElementById('modal-title').textContent = isEdit ? 'Edit Data ' + type : 'Tambah Data ' + type;
+          const labelMap = { konsumen: 'Konsumen', marketing: 'Marketing', operasional: 'Staf Operasional', jalur: 'Jalur Distribusi' };
+          document.getElementById('modal-title').textContent = isEdit ? 'Edit ' + labelMap[type] : 'Tambah ' + labelMap[type];
           document.getElementById('form-tipe').value = type;
-          
-          // Use UUID instead of Date.now() for Supabase compatibility
           document.getElementById('form-id').value = editId || crypto.randomUUID();
           
           document.getElementById('field-alamat').classList.toggle('hidden', type !== 'konsumen');
+          document.getElementById('field-jalur').classList.toggle('hidden', type !== 'konsumen');
+          document.getElementById('label-nama').textContent = type === 'jalur' ? 'Nama Jalur *' : 'Nama Lengkap *';
+          
+          if (type === 'konsumen') {
+             const jalurSelect = document.getElementById('input-jalur');
+             const jalurList = db.jalur || [];
+             jalurSelect.innerHTML = '<option value="">-- Pilih Jalur --</option>' + 
+                jalurList.sort((a,b) => a.nama.localeCompare(b.nama)).map(j => `<option value="${j.nama}">${j.nama}</option>`).join('');
+          }
           
           if(isEdit) {
              const data = db[type].find(x => x.id === editId);
              document.getElementById('input-nama').value = data.nama;
-             if(type==='konsumen') document.getElementById('input-alamat').value = data.alamat || '';
+             if(type==='konsumen') {
+                 document.getElementById('input-alamat').value = data.alamat || '';
+                 document.getElementById('input-jalur').value = data.jalur || '';
+             }
           } else {
              document.getElementById('input-nama').value = '';
              document.getElementById('input-alamat').value = '';
+             document.getElementById('input-jalur').value = '';
           }
 
           modal.classList.remove('hidden');
-          // slight delay for transition
-          setTimeout(() => {
-             modal.classList.remove('opacity-0');
-             modalContent.classList.remove('scale-95');
-          }, 10);
+          setTimeout(() => { modal.classList.remove('opacity-0'); modalContent.classList.remove('scale-95'); }, 10);
        }
        
        function closeModal() {
@@ -309,24 +355,19 @@
           
           if(!nama) { alert("Nama wajib diisi!"); return; }
 
-          // Token Guard
           const isNew = !db[type].some(x => x.id === id);
-          const actionCode = isNew ? 'create' : 'update';
-          const actionMsg = (isNew ? 'Tambah ' : 'Edit ') + type + ': ' + nama;
-          if (typeof AuthGuard !== 'undefined' && !(await AuthGuard.consumeToken(actionCode, actionMsg))) return;
+          const typeLabel = type === 'jalur' ? 'jalur distribusi' : type;
+          const actionMsg = (isNew ? 'Tambah ' : 'Edit ') + typeLabel + ': ' + nama;
+          if (typeof AuthGuard !== 'undefined' && !(await AuthGuard.consumeToken(isNew ? 'create' : 'update', actionMsg))) return;
 
-          const payload = {
-             id: id,
-             nama: nama,
-             updatedAt: Date.now()
-          };
-          
-          if(type === 'konsumen') payload.alamat = document.getElementById('input-alamat').value.trim();
+          const payload = { id: id, nama: nama, updatedAt: Date.now() };
+          if(type === 'konsumen') {
+             payload.alamat = document.getElementById('input-alamat').value.trim();
+             payload.jalur = document.getElementById('input-jalur').value;
+          }
 
-          // Push to Supabase directly
           if (window.DataLayer) {
              await window.DataLayer.saveMaster(type, payload, false);
-             // Refresh db state
              db[type] = window.DataLayer.getMaster(type);
           }
 
@@ -338,11 +379,8 @@
        
        async function deleteData(type, id) {
           if(!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
-          
-          // Delete from Supabase directly
           if (window.DataLayer) {
              await window.DataLayer.saveMaster(type, {id: id}, true);
-             // Refresh db state
              db[type] = window.DataLayer.getMaster(type);
           }
           renderTable(type, document.getElementById('search-' + type).value.toLowerCase());
