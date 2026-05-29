@@ -61,7 +61,7 @@
                   status: appUser.status,
                   departmentId: appUser.department_id
                });
-               window.location.href = 'dashboard.html';
+               window.location.href = 'dasbort_menu.html';
             } else {
                await supabase.auth.signOut();
                localStorage.removeItem('tata_current_user');
@@ -164,7 +164,7 @@
            });
 
            if (typeof ActivityLogger !== 'undefined') ActivityLogger.log({ action: 'LOGIN', entityType: 'USER', entityId: data.user.id, status: 'success', newData: { name: finalAppUser.name, role: finalAppUser.role }, message: 'Login Cloud berhasil: ' + finalAppUser.name });
-           window.location.href = 'dashboard.html';
+           window.location.href = 'dasbort_menu.html';
         }
       });
     </script>

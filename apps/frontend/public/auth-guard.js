@@ -169,7 +169,7 @@ const AuthGuard = (function() {
   function requireAuth() {
     const user = getCurrentUser();
     const page = window.location.pathname.split('/').pop() || '';
-    const publicPages = ['index.html', 'index', 'join.html', 'join', ''];
+    const publicPages = ['index.html', 'index', 'join.html', 'join', 'dasbort_menu.html', 'dasbort_menu', ''];
     if (publicPages.includes(page)) return true;
     if (!user) { window.location.href = 'index.html'; return false; }
     if (user.status !== 'active') { window.location.href = 'index.html'; return false; }
@@ -225,7 +225,7 @@ const AuthGuard = (function() {
   function requirePermission(permKey) {
     if (!hasPermission(permKey)) {
       alert('⛔ Anda tidak memiliki akses ke fitur ini.');
-      window.location.href = 'dashboard.html';
+      window.location.href = 'dasbort_menu.html';
       return false;
     }
     return true;
@@ -581,7 +581,11 @@ const AuthGuard = (function() {
     'void.html': 'void.approve',
     'pencarian.html': 'search.view',
     'setting.html': 'setting.manage',
-    'audit-kpi.html': 'audit_kpi.view'
+    'audit-kpi.html': 'audit_kpi.view',
+    'dasbort_menu.html': 'dashboard.view',
+    'dasbort_finance.html': 'dashboard.view',
+    'dasbort_marketing.html': 'dashboard.view',
+    'dasbort_hrd.html': 'dashboard.view'
   };
 
   /**

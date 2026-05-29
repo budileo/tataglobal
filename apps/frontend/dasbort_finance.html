@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Finance - TATA GLOBAL</title>
+    <meta name="description" content="Dashboard keuangan dan akunting TATA GLOBAL" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={theme:{extend:{colors:{emerald:{600:'#059669',700:'#047857'},navy:{900:'#0f172a'}}}}}</script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      .fade-in { animation: fadeIn 0.5s ease-out; }
+    </style>
+    <script src="auth-guard.js"></script>
+  </head>
+  <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="dasbort_menu.html" class="p-2 rounded-lg bg-slate-100 hover:bg-blue-100 text-slate-500 hover:text-blue-600 transition-all" title="Kembali ke Menu Utama">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+        </a>
+        <h2 class="text-xl font-bold text-slate-900 hidden md:block">Dashboard Finance</h2>
+        <span class="text-lg font-bold text-slate-900 md:hidden">Finance</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="header-role-badge" class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Role: -</span>
+        <div id="header-user-avatar" class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">-</div>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
+      <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
+          <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
+        </div>
+        <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+
+      <div class="flex md:flex-col md:w-full w-max md:space-y-1">
+        <!-- Menu Utama -->
+        <a href="dasbort_menu.html" title="Menu Utama" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 text-amber-400 hover:text-amber-300 hover:bg-slate-800 transition-colors">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Menu Utama</span>
+        </a>
+        <!-- Dashboard Finance (Active) -->
+        <a href="dasbort_finance.html" title="Dashboard Finance" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 bg-blue-600 text-white rounded-lg md:rounded-none transition-colors mx-1 md:mx-0">
+          <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">Dashboard</span>
+        </a>
+      </div>
+
+      <!-- User Info & Logout -->
+      <div class="hidden md:block md:mt-auto w-full">
+        <div class="px-6 py-3 border-t border-slate-800">
+          <p id="sidebar-user-name" class="text-sm font-semibold text-white sidebar-text">-</p>
+          <p id="sidebar-user-email" class="text-[11px] text-slate-500 sidebar-text">-</p>
+        </div>
+        <a href="#" onclick="AuthGuard.logout(); return false;" title="Keluar" class="flex items-center gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          <span class="sidebar-text">Keluar</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="p-4 md:p-8 max-w-screen-2xl mx-auto">
+      <div class="fade-in flex items-center justify-center min-h-[60vh]">
+        <div class="text-center">
+          <div class="w-24 h-24 bg-blue-50 rounded-3xl mx-auto mb-6 flex items-center justify-center border-2 border-blue-100">
+            <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+          <h2 class="text-2xl font-black text-slate-800 mb-2">Dashboard Finance</h2>
+          <p class="text-slate-400 font-semibold text-sm mb-1">Modul ini sedang dalam pengembangan</p>
+          <p class="text-slate-300 text-xs">Akan segera hadir dengan fitur keuangan &amp; akunting lengkap</p>
+          <a href="dasbort_menu.html" class="inline-flex items-center gap-2 mt-8 px-6 py-2.5 bg-slate-900 hover:bg-blue-600 text-white rounded-xl text-sm font-bold transition-colors shadow-lg active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Kembali ke Menu
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <script src="auth-guard.js"></script>
+    <script type="module" src="cloud-auth-guard.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

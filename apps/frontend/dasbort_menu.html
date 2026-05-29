@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu Utama - TATA GLOBAL</title>
+    <meta name="description" content="Hub navigasi utama TATA GLOBAL Management System" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={theme:{extend:{colors:{emerald:{600:'#059669',700:'#047857'},navy:{900:'#0f172a'}}}}}</script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+
+      /* Staggered entrance animation */
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px) scale(0.96); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      .menu-card { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; }
+      .menu-card:nth-child(1) { animation-delay: 0.06s; }
+      .menu-card:nth-child(2) { animation-delay: 0.12s; }
+      .menu-card:nth-child(3) { animation-delay: 0.18s; }
+      .menu-card:nth-child(4) { animation-delay: 0.24s; }
+      .menu-card:nth-child(5) { animation-delay: 0.30s; }
+
+      @keyframes fadeInHeader {
+        from { opacity: 0; transform: translateY(-10px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      header { animation: fadeInHeader 0.4s ease-out; }
+
+      @keyframes pulse-glow {
+        0%, 100% { opacity: 0.35; }
+        50%      { opacity: 0.65; }
+      }
+      .bg-glow { animation: pulse-glow 8s ease-in-out infinite; }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    </style>
+    <script src="auth-guard.js"></script>
+  </head>
+
+  <body class="min-h-screen text-white antialiased flex flex-col" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);">
+
+    <!-- Subtle background glow -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <div class="bg-glow absolute -top-1/4 -left-[10%] w-[55%] h-[55%] rounded-full" style="background: radial-gradient(circle, rgba(5,150,105,0.09) 0%, transparent 70%);"></div>
+      <div class="bg-glow absolute -bottom-1/4 -right-[10%] w-[55%] h-[55%] rounded-full" style="background: radial-gradient(circle, rgba(59,130,246,0.07) 0%, transparent 70%); animation-delay: 4s;"></div>
+    </div>
+
+    <!-- ═══════════ HEADER ═══════════ -->
+    <header class="relative z-10 px-6 md:px-12 py-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center font-bold text-sm shadow-lg shadow-emerald-600/30">TG</div>
+        <div>
+          <h1 class="font-bold text-lg tracking-wide leading-tight">TATA GLOBAL</h1>
+          <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-[0.2em]">Management System</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-right hidden sm:block">
+          <p id="user-name" class="text-sm font-bold text-white">-</p>
+          <p id="user-role" class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">-</p>
+        </div>
+        <div id="user-avatar" class="w-10 h-10 rounded-full bg-white/10 border-2 border-white/10 flex items-center justify-center text-emerald-400 font-bold text-sm backdrop-blur-sm">-</div>
+        <button onclick="AuthGuard.logout(); return false;" class="text-slate-500 hover:text-rose-400 transition-colors p-2 rounded-lg hover:bg-white/5" title="Keluar">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ═══════════ MAIN MENU ═══════════ -->
+    <main class="relative z-10 flex-1 flex items-center justify-center px-6 md:px-12 pb-12">
+      <div class="w-full max-w-5xl">
+        <!-- Heading -->
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-black tracking-tight mb-3">Pilih Modul</h2>
+          <p class="text-slate-400 text-sm font-medium max-w-md mx-auto leading-relaxed">Silakan pilih area kerja yang ingin Anda akses untuk mengelola bisnis Anda</p>
+        </div>
+
+        <!-- 5 Menu Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 max-w-4xl xl:max-w-none mx-auto">
+
+          <!-- ① Operasional -->
+          <a href="dashboard.html" class="menu-card group" id="menu-operasional">
+            <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-8 hover:bg-emerald-500/10 hover:border-emerald-400/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-emerald-500/10 text-center h-full flex flex-col items-center justify-center gap-4 overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/0 to-emerald-500/0 group-hover:from-emerald-500/5 group-hover:to-transparent transition-all duration-500"></div>
+              <div class="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-700 flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:shadow-emerald-500/40 group-hover:scale-110 transition-all duration-300">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              </div>
+              <div class="relative">
+                <h3 class="font-black text-base text-white tracking-tight">Operasional</h3>
+                <p class="text-[11px] text-slate-400 mt-1.5 font-medium leading-relaxed">Penjualan &amp; Keuangan</p>
+              </div>
+            </div>
+          </a>
+
+          <!-- ② Finance -->
+          <a href="dasbort_finance.html" class="menu-card group" id="menu-finance">
+            <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-8 hover:bg-blue-500/10 hover:border-blue-400/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10 text-center h-full flex flex-col items-center justify-center gap-4 overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:to-transparent transition-all duration-500"></div>
+              <div class="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 group-hover:scale-110 transition-all duration-300">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              </div>
+              <div class="relative">
+                <h3 class="font-black text-base text-white tracking-tight">Finance</h3>
+                <p class="text-[11px] text-slate-400 mt-1.5 font-medium leading-relaxed">Keuangan &amp; Akunting</p>
+              </div>
+            </div>
+          </a>
+
+          <!-- ③ Marketing -->
+          <a href="dasbort_marketing.html" class="menu-card group" id="menu-marketing">
+            <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-8 hover:bg-violet-500/10 hover:border-violet-400/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-violet-500/10 text-center h-full flex flex-col items-center justify-center gap-4 overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-violet-500/0 to-violet-500/0 group-hover:from-violet-500/5 group-hover:to-transparent transition-all duration-500"></div>
+              <div class="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-400 to-violet-700 flex items-center justify-center shadow-lg shadow-violet-500/25 group-hover:shadow-violet-500/40 group-hover:scale-110 transition-all duration-300">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+              </div>
+              <div class="relative">
+                <h3 class="font-black text-base text-white tracking-tight">Marketing</h3>
+                <p class="text-[11px] text-slate-400 mt-1.5 font-medium leading-relaxed">Pemasaran &amp; Promosi</p>
+              </div>
+            </div>
+          </a>
+
+          <!-- ④ HRD -->
+          <a href="dasbort_hrd.html" class="menu-card group" id="menu-hrd">
+            <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-8 hover:bg-amber-500/10 hover:border-amber-400/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-amber-500/10 text-center h-full flex flex-col items-center justify-center gap-4 overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-amber-500/0 to-amber-500/0 group-hover:from-amber-500/5 group-hover:to-transparent transition-all duration-500"></div>
+              <div class="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-500/25 group-hover:shadow-amber-500/40 group-hover:scale-110 transition-all duration-300">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              </div>
+              <div class="relative">
+                <h3 class="font-black text-base text-white tracking-tight">HRD</h3>
+                <p class="text-[11px] text-slate-400 mt-1.5 font-medium leading-relaxed">Sumber Daya Manusia</p>
+              </div>
+            </div>
+          </a>
+
+          <!-- ⑤ Setting -->
+          <a href="setting.html" class="menu-card group" id="menu-setting">
+            <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-8 hover:bg-slate-400/10 hover:border-slate-400/30 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-500/10 text-center h-full flex flex-col items-center justify-center gap-4 overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-slate-400/0 to-slate-400/0 group-hover:from-slate-400/5 group-hover:to-transparent transition-all duration-500"></div>
+              <div class="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-400 to-slate-700 flex items-center justify-center shadow-lg shadow-slate-500/25 group-hover:shadow-slate-400/40 group-hover:scale-110 transition-all duration-300">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              </div>
+              <div class="relative">
+                <h3 class="font-black text-base text-white tracking-tight">Setting</h3>
+                <p class="text-[11px] text-slate-400 mt-1.5 font-medium leading-relaxed">Pengaturan Sistem</p>
+              </div>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 text-center py-6">
+      <p class="text-[10px] text-slate-600 font-semibold uppercase tracking-widest">&copy; 2026 TATA GLOBAL &mdash; Management System</p>
+    </footer>
+
+    <script type="module" src="cloud-auth-guard.js"></script>
+    <script>
+      // Auth guard — redirect to login if not authenticated
+      if (typeof AuthGuard !== 'undefined') {
+        if (!AuthGuard.requireAuth()) { /* guard handles redirect */ }
+        const user = AuthGuard.getCurrentUser();
+        if (user) {
+          document.getElementById('user-name').textContent = user.name || '-';
+          document.getElementById('user-role').textContent = user.role || '-';
+          document.getElementById('user-avatar').textContent = (user.name || '-').charAt(0).toUpperCase();
+        }
+      }
+    </script>
+  </body>
+</html>

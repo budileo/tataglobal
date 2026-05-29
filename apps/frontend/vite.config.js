@@ -21,7 +21,11 @@ export default defineConfig({
         join: resolve(__dirname, 'join.html'),
         pelanggan: resolve(__dirname, 'pelanggan.html'),
         marketing: resolve(__dirname, 'marketing.html'),
-        'audit-kpi': resolve(__dirname, 'audit-kpi.html')
+        'audit-kpi': resolve(__dirname, 'audit-kpi.html'),
+        'dasbort-menu': resolve(__dirname, 'dasbort_menu.html'),
+        'dasbort-finance': resolve(__dirname, 'dasbort_finance.html'),
+        'dasbort-marketing': resolve(__dirname, 'dasbort_marketing.html'),
+        'dasbort-hrd': resolve(__dirname, 'dasbort_hrd.html')
       }
     }
   }

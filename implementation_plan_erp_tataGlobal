@@ -1,0 +1,183 @@
+# Implementasi Dashboard Menu (Hub Navigasi Departemen)
+
+## Latar Belakang
+
+Saat ini, setelah login (`index.html`), user langsung diarahkan ke `dashboard.html` (Dashboard Operasional). Permintaan adalah menambahkan halaman perantara `dasbort_menu.html` yang berfungsi sebagai **hub navigasi** berisi 5 kotak menu: **Operasional, Finance, Marketing, HRD, Setting**.
+
+Halaman ini **TIDAK memiliki sidebar** — hanya tampilan fullscreen yang rapi dan profesional dengan 5 kotak besar.
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Halaman `dasbort_finance.html`, `dasbort_marketing.html`, `dasbort_hrd.html`, `dasbort_setting.html` belum ada.**
+> Pada fase pertama, saya akan membuat file-file tersebut dengan struktur yang **sama dengan `dashboard.html`** (sidebar + header + main content), tetapi isi konten dashboard-nya akan berupa **placeholder KPI** (karena data/logika spesifik belum didefinisikan).
+
+> [!IMPORTANT]
+> **Redirect Login**: Setelah login, redirect akan berubah dari `dashboard.html` → `dasbort_menu.html`. Ini berlaku di 3 titik:
+> - `index.html` baris 64 (auto-session redirect)
+> - `index.html` baris 167 (post-login redirect)
+> - `auth-guard.js` baris 228 (`requirePermission` fallback)
+
+> [!WARNING]
+> **Sidebar link "Dashboard"** di semua halaman existing (bon, pembayaran, laporan, dll) akan tetap mengarah ke `dashboard.html` (Operasional) — **TIDAK berubah**. Tombol "Dashboard" di sidebar bisa ditambahkan link kembali ke `dasbort_menu.html` jika Anda mau, atau tetap langsung ke Dashboard Operasional. Silakan konfirmasi preferensi Anda.
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> 1. **Tombol back ke Menu Hub**: Apakah di setiap halaman dashboard (Operasional, Finance, Marketing, HRD, Setting) perlu ada tombol/link kembali ke `dasbort_menu.html`? Misalnya di header atau sidebar?
+> 2. **Halaman Finance, Marketing, HRD, Setting**: Karena belum ada data/logika spesifik, apakah boleh saya buat dengan layout serupa `dashboard.html` tapi isi kontennya placeholder "Coming Soon" / KPI kosong yang rapi?
+> 3. **Kotak Setting di Menu Hub**: Apakah ini mengarah ke `setting.html` yang sudah ada (pengaturan user/permission/token) atau halaman baru `dasbort_setting.html` yang berbeda?
+
+---
+
+## Proposed Changes
+
+### Komponen 1: Halaman Dashboard Menu Hub
+
+#### [NEW] [dasbort_menu.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/dasbort_menu.html)
+
+Halaman fullscreen **tanpa sidebar**, berisi:
+- Header minimalis dengan logo TATA GLOBAL dan nama user + tombol Logout
+- 5 kotak besar (grid responsive 2-3 kolom) dengan desain premium:
+  - **Operasional** → link ke `dashboard.html`
+  - **Finance** → link ke `dasbort_finance.html`
+  - **Marketing** → link ke `dasbort_marketing.html`
+  - **HRD** → link ke `dasbort_hrd.html`
+  - **Setting** → link ke `dasbort_setting.html`
+- Setiap kotak memiliki:
+  - Icon SVG yang relevan
+  - Nama departemen
+  - Deskripsi singkat
+  - Hover effect (scale, shadow, gradient shift)
+  - Micro-animation entrance (fade-in stagger)
+- Design: glassmorphism cards, gradient background, font Inter
+- Auth guard tetap aktif (memastikan user sudah login)
+- **Tidak ada sidebar navigasi**
+
+---
+
+### Komponen 2: Redirect Login
+
+#### [MODIFY] [index.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/index.html)
+
+Mengubah 2 redirect point:
+- **Baris 64**: `window.location.href = 'dashboard.html'` → `window.location.href = 'dasbort_menu.html'`
+- **Baris 167**: `window.location.href = 'dashboard.html'` → `window.location.href = 'dasbort_menu.html'`
+
+---
+
+### Komponen 3: Cloud Auth Guard Update
+
+#### [MODIFY] [cloud-auth-guard.js](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/cloud-auth-guard.js)
+
+- **Baris 12**: Tambahkan `'dasbort_menu.html'` ke daftar halaman publik (agar guard tidak redirect loop)
+
+  Sebenarnya `dasbort_menu.html` adalah halaman terproteksi (butuh login), jadi TIDAK perlu ditambahkan ke daftar public. Guard tetap bekerja normal.
+
+  Tidak ada perubahan yang diperlukan di file ini.
+
+---
+
+### Komponen 4: Dashboard Sub-Pages
+
+#### [NEW] [dasbort_finance.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/dasbort_finance.html)
+
+Dashboard Finance dengan layout yang sama dengan `dashboard.html`:
+- Sidebar navigasi lengkap (copy dari dashboard.html)
+- Header "Dashboard Finance"
+- Konten placeholder: KPI cards kosong untuk Revenue, Expenses, Profit, Cash Flow, dll
+- Script auth guard + cloud auth guard
+
+#### [NEW] [dasbort_marketing.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/dasbort_marketing.html)
+
+Dashboard Marketing dengan layout yang sama:
+- Sidebar + Header "Dashboard Marketing"
+- Konten placeholder: KPI cards untuk Leads, Conversion, Campaign Performance, dll
+
+#### [NEW] [dasbort_hrd.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/dasbort_hrd.html)
+
+Dashboard HRD dengan layout yang sama:
+- Sidebar + Header "Dashboard HRD"
+- Konten placeholder: KPI cards untuk Total Karyawan, Absensi, Cuti, dll
+
+#### [NEW] [dasbort_setting.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/dasbort_setting.html)
+
+Dashboard Setting dengan layout yang sama:
+- Sidebar + Header "Dashboard Setting"
+- Konten placeholder: Links/cards ke pengaturan sistem
+
+---
+
+### Komponen 5: Vite Config Update
+
+#### [MODIFY] [vite.config.js](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/vite.config.js)
+
+Menambahkan entry point baru untuk semua halaman baru:
+```js
+'dasbort-menu': resolve(__dirname, 'dasbort_menu.html'),
+'dasbort-finance': resolve(__dirname, 'dasbort_finance.html'),
+'dasbort-marketing': resolve(__dirname, 'dasbort_marketing.html'),
+'dasbort-hrd': resolve(__dirname, 'dasbort_hrd.html'),
+'dasbort-setting': resolve(__dirname, 'dasbort_setting.html'),
+```
+
+---
+
+### Komponen 6: Auth Guard — Permission Fallback (Opsional)
+
+#### [MODIFY] [auth-guard.js](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/public/auth-guard.js)
+
+- **Baris 228**: Ubah fallback `requirePermission` dari `dashboard.html` → `dasbort_menu.html`
+- Tambahkan mapping permission untuk halaman-halaman baru di `menuPermissionMap`
+
+---
+
+## Alur Navigasi Baru
+
+```mermaid
+graph LR
+    A["index.html<br/>(Login)"] --> B["dasbort_menu.html<br/>(Hub Menu)"]
+    B --> C["dashboard.html<br/>(Operasional)"]
+    B --> D["dasbort_finance.html<br/>(Finance)"]
+    B --> E["dasbort_marketing.html<br/>(Marketing)"]
+    B --> F["dasbort_hrd.html<br/>(HRD)"]
+    B --> G["dasbort_setting.html<br/>(Setting)"]
+    C --> B
+    D --> B
+    E --> B
+    F --> B
+    G --> B
+```
+
+---
+
+## Dampak pada Fungsi Existing
+
+| Komponen | Dampak | Status |
+|----------|--------|--------|
+| `dashboard.html` | **Tidak berubah** sama sekali | ✅ Aman |
+| `bon.html`, `pembayaran.html`, dll | **Tidak berubah** | ✅ Aman |
+| `setting.html` | **Tidak berubah** | ✅ Aman |
+| Sidebar di semua halaman | **Tidak berubah** | ✅ Aman |
+| Auth Guard + Permissions | Hanya tambah mapping baru | ✅ Aman |
+| Login flow | Redirect berubah ke menu hub | ⚠️ Minor change |
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Jalankan `npm run dev` dan akses `http://localhost:3000/dasbort_menu.html`
+- Verifikasi semua 5 kotak dapat diklik dan mengarah ke halaman yang benar
+- Verifikasi redirect setelah login mengarah ke `dasbort_menu.html`
+- Verifikasi fungsi existing di `dashboard.html` tetap berjalan normal
+
+### Manual Verification
+- Cek tampilan responsif (desktop dan mobile)
+- Cek animasi hover dan entrance
+- Cek auth guard berfungsi (akses tanpa login → redirect ke login)
+- Cek tombol logout di `dasbort_menu.html` berfungsi
