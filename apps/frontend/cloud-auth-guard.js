@@ -7,8 +7,9 @@ import { supabase } from './supabaseClient.js';
  * sesi lokal akan dihapus dan user dipaksa login ulang.
  */
 (async function cloudAuthGuard() {
-  // Jangan jalankan di halaman login/join
-  const page = window.location.pathname.split('/').pop() || '';
+  const paths = window.location.pathname.split('/').filter(Boolean);
+  const rawPage = paths[paths.length - 1] || '';
+  const page = rawPage.replace(/-/g, '_').toLowerCase();
   if (['index.html', 'index', 'join.html', 'join', ''].includes(page)) return;
 
   try {

@@ -168,7 +168,9 @@ const AuthGuard = (function() {
 
   function requireAuth() {
     const user = getCurrentUser();
-    const page = window.location.pathname.split('/').pop() || '';
+    const paths = window.location.pathname.split('/').filter(Boolean);
+    const rawPage = paths[paths.length - 1] || '';
+    const page = rawPage.replace(/-/g, '_').toLowerCase();
     const publicPages = ['index.html', 'index', 'join.html', 'join', 'dasbort_menu.html', 'dasbort_menu', ''];
     if (publicPages.includes(page)) return true;
     if (!user) { window.location.href = 'index.html'; return false; }
