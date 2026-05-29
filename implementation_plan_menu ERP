@@ -1,0 +1,70 @@
+# Rencana Implementasi - Perbaikan Bug Menu Sidebar (Navigasi Kosong)
+
+Rencana ini bertujuan untuk memperbaiki bug kritis di mana menu sidebar kosong (tidak menampilkan tautan apa pun) pada halaman Dashboard Finance, Dashboard Marketing, maupun Dashboard Utama.
+
+## Masalah yang Diidentifikasi & Penyebab Utama
+
+1. **Ketidakcocokan Rute Path & Ekstensi**:
+   Saat berjalan di server dev Vite atau lingkungan routing tanpa ekstensi `.html` eksplisit (misal `/dasbort_finance` vs `/dasbort_finance.html`), pencocokan `currentPath` dan tautan menu di `sidebar.js` tidak sinkron. Hal ini menyebabkan pengecekan `menuPermissionMap` gagal dan menyembunyikan semua elemen.
+2. **Pemetaan Izin (Permission Mapping) yang Rapuh**:
+   Logika pemetaan saat ini memeriksa nilai atribut `href` mentah (`link.getAttribute('href')`). Jika terdapat garis miring di depan atau sub-path relatif (misal `/pembayaran.html` atau `/apps/frontend/...`), kunci pemetaan gagal dicocokkan dengan peta izin yang dikunci.
+3. **Fallback Peran & Izin yang Kurang Fleksibel**:
+   Jika `user.id` belum tersinkronisasi atau tidak cocok persis antara array lokal dan variabel sesi Supabase, fungsi `getUserPermissions` dapat mengembalikan array kosong `[]`, yang secara default menyembunyikan semua tautan menu untuk semua role (termasuk OWNER).
+4. **Urutan Pemuatan & Render (Race Condition)**:
+   File `app.js` berjalan pada event `DOMContentLoaded` dan langsung menerapkan izin pada sidebar yang ada. Namun, `sidebar.js` merender tautan secara dinamis ke `#sidebar-menu-container` *setelah* logika penyembunyian `app.js` selesai dijalankan. Ini membuat tautan baru yang dirender tidak tersaring oleh fungsi izin atau disembunyikan secara keliru.
+
+---
+
+## Rencana Perubahan
+
+Kita akan memodifikasi tiga file utama untuk memastikan sidebar dirender dengan sempurna, cepat, dan tangguh: `auth-guard.js`, `app.js`, dan `sidebar.js`.
+
+### 1. `auth-guard.js`
+
+#### [MODIFY] [auth-guard.js](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/public/auth-guard.js)
+- Perbarui fungsi `getUserPermissions`:
+  - Buat pencarian peran menjadi case-insensitive (`.toUpperCase()`).
+  - Berikan fallback otomatis menggunakan data sesi pengguna saat ini jika parameter `userId` kosong atau tidak ditemukan.
+- Perbarui fungsi `applySidebarPermissions`:
+  - Ambil nama file/rute secara aman dari atribut `href` dengan membersihkan path direktori, query parameters, atau hash.
+  - Cocokkan izin baik untuk rute dengan ekstensi `.html` maupun tanpa ekstensi.
+  - Lakukan perbandingan secara case-insensitive.
+
+---
+
+### 2. `app.js`
+
+#### [MODIFY] [app.js](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/apps/frontend/app.js)
+- Perbarui loop penyembunyian awal (mencegah flash) agar menggunakan metode ekstraksi nama file/rute tangguh yang sama seperti di `applySidebarPermissions`.
+
+---
+
+### 3. `sidebar.js`
+
+#### [MODIFY] [sidebar.js](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/sidebar.js)
+- Perbarui deteksi path aktif agar mendukung pencocokan rute tanpa ekstensi di bawah server Vite (`dasbort_finance` / `dasbort_marketing`).
+- Pastikan `sidebar.js` memanggil fungsi `AuthGuard.applySidebarPermissions()` segera setelah selesai menyisipkan HTML, sehingga izin langsung diterapkan ke elemen DOM dinamis yang baru dibuat tanpa menunggu script lain.
+
+---
+
+## Rencana Verifikasi & Pengujian
+
+### Verifikasi Manual
+1. Buka Menu Utama (`dasbort_menu.html`) dan pastikan semua navigasi kartu berfungsi.
+2. Klik tombol **Finance** dan pastikan Sidebar Finance memuat menu lengkap berikut:
+   - **Menu Utama**
+   - **Dashboard** (Finance)
+   - **Pembayaran**
+   - **Pelanggan**
+   - **Void**
+   - **Master Data**
+   - **Pencarian**
+   - **Laporan**
+3. Klik tombol **Marketing** dan pastikan Sidebar Marketing memuat menu lengkap berikut:
+   - **Menu Utama**
+   - **Dashboard** (Marketing)
+   - **Marketing**
+   - **Pelanggan**
+   - **Laporan**
+   - **Pencarian**
+4. Akses Dashboard Utama (`dashboard.html`) dan pastikan menu sidebar-nya tetap tampil lengkap serta berfungsi dengan normal tanpa tersembunyi.

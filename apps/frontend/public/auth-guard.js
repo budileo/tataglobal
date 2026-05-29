@@ -190,26 +190,28 @@ const AuthGuard = (function() {
   // ==================== PERMISSIONS ====================
   function getUserPermissions(userId) {
     const users = _get(KEYS.users);
-    let user = users.find(u => u.id === userId);
+    let user = userId ? users.find(u => u.id === userId) : null;
     
     // Fallback untuk user baru dari Supabase Auth yang belum ada di local 'users'
     if (!user) {
        const curr = getCurrentUser();
-       if (curr && curr.id === userId) {
+       if (curr && (!userId || curr.id === userId)) {
           user = curr;
-       } else {
-          return [];
        }
+    }
+
+    if (!user) {
+       return [];
     }
 
     // Get role defaults
     const rolePerms = _get(KEYS.rolePerms);
-    const roleEntry = rolePerms.find(r => r.role === user.role);
+    const roleEntry = rolePerms.find(r => r.role.toUpperCase() === (user.role || '').toUpperCase());
     const defaults = roleEntry ? [...roleEntry.permissions] : [];
 
     // Get overrides
     const overrides = _get(KEYS.userPerms);
-    const userOverride = overrides.find(o => o.userId === userId);
+    const userOverride = overrides.find(o => o.userId === user.id);
     if (userOverride) return userOverride.permissions;
 
     return defaults;
@@ -604,7 +606,20 @@ const AuthGuard = (function() {
     const links = sidebar.querySelectorAll('a[href]');
     links.forEach(link => {
       const href = link.getAttribute('href');
-      const requiredPerm = menuPermissionMap[href];
+      if (!href || href === '#' || href === 'index.html') return;
+
+      // Ekstraksi nama file / rute secara aman (strip slashes, hashes, dan query params)
+      let filename = href.split('/').pop().split('#')[0].split('?')[0];
+
+      // Cari permission yang cocok (baik dengan atau tanpa ekstensi .html)
+      let requiredPerm = menuPermissionMap[filename];
+      if (!requiredPerm && !filename.endsWith('.html')) {
+        requiredPerm = menuPermissionMap[filename + '.html'];
+      }
+      if (!requiredPerm && filename.endsWith('.html')) {
+        requiredPerm = menuPermissionMap[filename.slice(0, -5)];
+      }
+
       if (requiredPerm) {
         // Tampilkan jika punya permission, sembunyikan jika tidak
         link.style.display = perms.includes(requiredPerm) ? '' : 'none';
@@ -658,7 +673,7 @@ const AuthGuard = (function() {
 
           // Gunakan default permission berdasarkan role
           const rolePerms = _get(KEYS.rolePerms);
-          const roleEntry = rolePerms.find(r => r.role === user.role);
+          const roleEntry = rolePerms.find(r => r.role.toUpperCase() === (user.role || '').toUpperCase());
           perms = roleEntry ? [...roleEntry.permissions] : [];
           
           // Hapus override lokal yang mungkin basi

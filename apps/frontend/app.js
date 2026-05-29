@@ -13,8 +13,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const menuLinks = sidebar.querySelectorAll('a[href]');
       menuLinks.forEach(link => {
         const href = link.getAttribute('href');
-        // Jangan sembunyikan link logout (yang pakai onclick) 
-        if (href && href !== '#' && AuthGuard.menuPermissionMap[href]) {
+        if (!href || href === '#' || href === 'index.html') return;
+        
+        let filename = href.split('/').pop().split('#')[0].split('?')[0];
+        let requiredPerm = AuthGuard.menuPermissionMap[filename];
+        if (!requiredPerm && !filename.endsWith('.html')) {
+          requiredPerm = AuthGuard.menuPermissionMap[filename + '.html'];
+        }
+        if (!requiredPerm && filename.endsWith('.html')) {
+          requiredPerm = AuthGuard.menuPermissionMap[filename.slice(0, -5)];
+        }
+        
+        if (requiredPerm) {
           link.style.display = 'none';
         }
       });
