@@ -383,15 +383,15 @@
          });
 
          let tableCText = "  C. Rekapitulasi Penjualan PerJalur\n";
-         tableCText += "     +----------------------+----------+--------------+-----------------+-----------------+-----------------+---------------+---------------+\n";
-         tableCText += "     | NAMA JALUR           | JML KONS | BERAT NETTO  | TOTAL TAGIHAN   | TOTAL BAYAR     | SISA PIUTANG    | POTONGAN (KG) | POTONGAN (RP) |\n";
-         tableCText += "     +----------------------+----------+--------------+-----------------+-----------------+-----------------+---------------+---------------+\n";
+         tableCText += "     +----------------------+----------+--------------+---------------+---------------+\n";
+         tableCText += "     | NAMA JALUR           | JML KONS | BERAT NETTO  | POTONGAN (KG) | POTONGAN (RP) |\n";
+         tableCText += "     +----------------------+----------+--------------+---------------+---------------+\n";
          
          let grandK = 0, grandNet = 0, grandTag = 0, grandBayar = 0, grandPiu = 0, grandPotKg = 0, grandPotRp = 0;
          
          if (sortedJalurForAudit.length === 0) {
-            tableCText += "     |                                  (Belum ada data penjualan jalur)                                                                      |\n";
-            tableCText += "     +----------------------+----------+--------------+-----------------+-----------------+-----------------+---------------+---------------+\n";
+            tableCText += "     |                               (Belum ada data penjualan jalur)                                   |\n";
+            tableCText += "     +----------------------+----------+--------------+---------------+---------------+\n";
          } else {
             sortedJalurForAudit.forEach(jalur => {
                const d = jalurMapForAudit[jalur];
@@ -400,24 +400,18 @@
                const nJalur = jalur.substring(0, 20).padEnd(20);
                const nKons = String(d.konsumenSet.size).padStart(8);
                const nNet = (d.beratNetto.toLocaleString('id-ID', {minimumFractionDigits:1, maximumFractionDigits:1}) + " Kg").padStart(12);
-               const nTag = formatRp(d.tagihan).padStart(15);
-               const nBay = formatRp(d.pembayaran).padStart(15);
-               const nPiu = formatRp(d.piutang).padStart(15);
                const nPotKg = (d.potKg.toLocaleString('id-ID', {minimumFractionDigits:1, maximumFractionDigits:1}) + " Kg").padStart(13);
                const nPotRp = formatRp(d.potRp).padStart(13);
                
-               tableCText += `     | ${nJalur} | ${nKons} | ${nNet} | ${nTag} | ${nBay} | ${nPiu} | ${nPotKg} | ${nPotRp} |\n`;
+               tableCText += `     | ${nJalur} | ${nKons} | ${nNet} | ${nPotKg} | ${nPotRp} |\n`;
             });
-            tableCText += "     +----------------------+----------+--------------+-----------------+-----------------+-----------------+---------------+---------------+\n";
+            tableCText += "     +----------------------+----------+--------------+---------------+---------------+\n";
             const gKons = String(grandK).padStart(8);
             const gNet = (grandNet.toLocaleString('id-ID', {minimumFractionDigits:1, maximumFractionDigits:1}) + " Kg").padStart(12);
-            const gTag = formatRp(grandTag).padStart(15);
-            const gBay = formatRp(grandBayar).padStart(15);
-            const gPiu = formatRp(grandPiu).padStart(15);
             const gPotKg = (grandPotKg.toLocaleString('id-ID', {minimumFractionDigits:1, maximumFractionDigits:1}) + " Kg").padStart(13);
             const gPotRp = formatRp(grandPotRp).padStart(13);
-            tableCText += `     | GRAND TOTAL          | ${gKons} | ${gNet} | ${gTag} | ${gBay} | ${gPiu} | ${gPotKg} | ${gPotRp} |\n`;
-            tableCText += "     +----------------------+----------+--------------+-----------------+-----------------+-----------------+---------------+---------------+";
+            tableCText += `     | GRAND TOTAL          | ${gKons} | ${gNet} | ${gPotKg} | ${gPotRp} |\n`;
+            tableCText += "     +----------------------+----------+--------------+---------------+---------------+";
          }
 
          // ============================================
