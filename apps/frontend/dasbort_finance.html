@@ -224,9 +224,7 @@
                   <tr class="bg-slate-50 border-b-2 border-slate-200">
                      <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest">Tanggal</th>
                      <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-center">Total Nota</th>
-                     <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Total Tagihan</th>
                      <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-center">Sebagian Lunas</th>
-                     <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Di Bayar</th>
                      <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-center">Belum Dibayar</th>
                      <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Total Piutang</th>
                   </tr>
@@ -457,7 +455,7 @@
                  tfoot.innerHTML = '';
              } else {
                  let rowsHtml = '';
-                 let grandSebagian = 0, grandBelum = 0, grandPiutang = 0, grandNota = 0, grandTagihan = 0, grandDibayar = 0;
+                 let grandSebagian = 0, grandBelum = 0, grandPiutang = 0, grandNota = 0;
                  
                  dates.forEach(tgl => {
                      const d = rekapBonPiutangMap[tgl];
@@ -466,16 +464,12 @@
                      grandBelum += d.belumBayar;
                      grandPiutang += d.totalPiutang;
                      grandNota += totalNota;
-                     grandTagihan += d.totalTagihan;
-                     grandDibayar += d.diBayar;
                      
                      rowsHtml += `
                         <tr class="hover:bg-blue-50/50 transition-colors">
                            <td class="px-4 py-3 text-sm font-bold text-slate-700 whitespace-nowrap">${tgl}</td>
                            <td class="px-4 py-3 text-sm font-semibold text-slate-600 text-center">${totalNota}</td>
-                           <td class="px-4 py-3 text-sm font-black text-slate-700 text-right">${finFormatRp(d.totalTagihan)}</td>
                            <td class="px-4 py-3 text-sm font-semibold text-emerald-600 text-center">${d.sebagianLunas}</td>
-                           <td class="px-4 py-3 text-sm font-black text-emerald-700 text-right">${finFormatRp(d.diBayar)}</td>
                            <td class="px-4 py-3 text-sm font-semibold text-rose-600 text-center">${d.belumBayar}</td>
                            <td class="px-4 py-3 text-sm font-black text-rose-700 text-right">${finFormatRp(d.totalPiutang)}</td>
                         </tr>
@@ -487,9 +481,7 @@
                     <tr>
                        <td class="px-4 py-4 text-sm font-black text-slate-900 uppercase">TOTAL</td>
                        <td class="px-4 py-4 text-sm font-black text-slate-900 text-center">${grandNota}</td>
-                       <td class="px-4 py-4 text-sm font-black text-slate-900 text-right">${finFormatRp(grandTagihan)}</td>
                        <td class="px-4 py-4 text-sm font-black text-emerald-700 text-center">${grandSebagian}</td>
-                       <td class="px-4 py-4 text-sm font-black text-emerald-700 text-right">${finFormatRp(grandDibayar)}</td>
                        <td class="px-4 py-4 text-sm font-black text-rose-700 text-center">${grandBelum}</td>
                        <td class="px-4 py-4 text-sm font-black text-rose-700 text-right">${finFormatRp(grandPiutang)}</td>
                     </tr>
