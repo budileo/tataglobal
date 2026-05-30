@@ -144,7 +144,7 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
          <!-- SECTION B & C: PRODUK & POTONGAN -->
-         <div class="lg:col-span-8 space-y-8">
+         <div class="lg:col-span-12 space-y-8">
             <!-- PRODUK -->
             <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
                <div class="p-6 bg-slate-900 text-white flex justify-between items-center">
@@ -204,44 +204,7 @@
             </div>
          </div>
 
-         <!-- SECTION D: KONSUMEN -->
-         <div class="lg:col-span-4 h-full">
-            <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/40 h-full flex flex-col">
-               <div class="flex items-center gap-3 mb-8">
-                  <div class="bg-indigo-600 p-3 rounded-2xl shadow-lg shadow-indigo-200">
-                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                  </div>
-                  <div>
-                     <h4 class="font-black text-slate-800 uppercase tracking-widest text-[11px] mb-1">Pertumbuhan Konsumen</h4>
-                     <h3 class="text-2xl font-black text-slate-900" id="fin-stat-total-konsumen">0</h3>
-                  </div>
-               </div>
-               
-               <div class="space-y-8 flex-1">
-                  <div class="p-6 rounded-2xl bg-emerald-50 border border-emerald-100">
-                     <div class="flex justify-between items-center mb-3">
-                        <span class="text-xs font-black text-emerald-800 tracking-tighter uppercase">Konsumen Aktif</span>
-                        <span id="fin-stat-konsumen-aktif" class="text-xl font-black text-emerald-600">0</span>
-                     </div>
-                     <div class="w-full bg-white/50 h-3 rounded-full overflow-hidden border border-emerald-100">
-                        <div id="fin-bar-konsumen-aktif" class="bg-emerald-500 h-full shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000" style="width: 0%"></div>
-                     </div>
-                  </div>
 
-                  <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200">
-                     <div class="flex justify-between items-center mb-3">
-                        <span class="text-xs font-black text-slate-500 tracking-tighter uppercase">Belum Belanja</span>
-                        <span id="fin-stat-konsumen-pasif" class="text-xl font-black text-slate-900">0</span>
-                     </div>
-                     <div class="w-full bg-white h-3 rounded-full overflow-hidden border border-slate-200">
-                        <div id="fin-bar-konsumen-pasif" class="bg-slate-400 h-full transition-all duration-1000" style="width: 0%"></div>
-                     </div>
-                  </div>
-               </div>
-               
-               <p class="text-[10px] text-center text-slate-400 font-bold mt-8 uppercase tracking-widest leading-loose">Data dikalkulasi berdasarkan interaksi transaksi di periode yang dipilih</p>
-            </div>
-         </div>
       </div>
 
       <!-- DATA REKAP BON PIUTANG -->
@@ -261,7 +224,9 @@
                   <tr class="bg-slate-50 border-b-2 border-slate-200">
                      <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest">Tanggal</th>
                      <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-center">Total Nota</th>
+                     <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Total Tagihan</th>
                      <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-center">Sebagian Lunas</th>
+                     <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Di Bayar</th>
                      <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-center">Belum Dibayar</th>
                      <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Total Piutang</th>
                   </tr>
@@ -394,7 +359,7 @@
                 
                 // Kategorikan bon piutang per tanggal
                 if (!rekapBonPiutangMap[tgl]) {
-                   rekapBonPiutangMap[tgl] = { sebagianLunas: 0, belumBayar: 0, totalPiutang: 0, totalNota: 0 };
+                   rekapBonPiutangMap[tgl] = { sebagianLunas: 0, belumBayar: 0, totalPiutang: 0, totalNota: 0, totalTagihan: 0, diBayar: 0 };
                 }
                 if (paidForThisBon > 0) {
                    rekapBonPiutangMap[tgl].sebagianLunas++;
@@ -402,6 +367,8 @@
                    rekapBonPiutangMap[tgl].belumBayar++;
                 }
                 rekapBonPiutangMap[tgl].totalPiutang += sisa;
+                rekapBonPiutangMap[tgl].totalTagihan += bTotal;
+                rekapBonPiutangMap[tgl].diBayar += paidForThisBon;
              } else if (bTotal > 0) {
                 totalLunasVal += paidForThisBon;
              }
@@ -447,15 +414,7 @@
              document.getElementById('fin-bar-pot-susut').style.width = finGetPct(potSusutRp, potTotal);
              document.getElementById('fin-bar-pot-pulang').style.width = finGetPct(potPulangRp, potTotal);
 
-             // CONSUMER RENDER
-             const totalKons = totalBase;
-             const aktif = activeConsumersInPeriod.length;
-             const pasif = Math.max(0, totalKons - aktif);
-             document.getElementById('fin-stat-total-konsumen').textContent = totalKons;
-             document.getElementById('fin-stat-konsumen-aktif').textContent = aktif;
-             document.getElementById('fin-stat-konsumen-pasif').textContent = pasif;
-             document.getElementById('fin-bar-konsumen-aktif').style.width = finGetPct(aktif, totalKons);
-             document.getElementById('fin-bar-konsumen-pasif').style.width = finGetPct(pasif, totalKons);
+
 
              // RENDER REKAP PIUTANG TABLE
              const tbody = document.getElementById('fin-rekap-piutang-body');
@@ -467,7 +426,7 @@
                  tfoot.innerHTML = '';
              } else {
                  let rowsHtml = '';
-                 let grandSebagian = 0, grandBelum = 0, grandPiutang = 0, grandNota = 0;
+                 let grandSebagian = 0, grandBelum = 0, grandPiutang = 0, grandNota = 0, grandTagihan = 0, grandDibayar = 0;
                  
                  dates.forEach(tgl => {
                      const d = rekapBonPiutangMap[tgl];
@@ -476,12 +435,16 @@
                      grandBelum += d.belumBayar;
                      grandPiutang += d.totalPiutang;
                      grandNota += totalNota;
+                     grandTagihan += d.totalTagihan;
+                     grandDibayar += d.diBayar;
                      
                      rowsHtml += `
                         <tr class="hover:bg-blue-50/50 transition-colors">
                            <td class="px-4 py-3 text-sm font-bold text-slate-700 whitespace-nowrap">${tgl}</td>
                            <td class="px-4 py-3 text-sm font-semibold text-slate-600 text-center">${totalNota}</td>
+                           <td class="px-4 py-3 text-sm font-black text-slate-700 text-right">${finFormatRp(d.totalTagihan)}</td>
                            <td class="px-4 py-3 text-sm font-semibold text-emerald-600 text-center">${d.sebagianLunas}</td>
+                           <td class="px-4 py-3 text-sm font-black text-emerald-700 text-right">${finFormatRp(d.diBayar)}</td>
                            <td class="px-4 py-3 text-sm font-semibold text-rose-600 text-center">${d.belumBayar}</td>
                            <td class="px-4 py-3 text-sm font-black text-rose-700 text-right">${finFormatRp(d.totalPiutang)}</td>
                         </tr>
@@ -493,7 +456,9 @@
                     <tr>
                        <td class="px-4 py-4 text-sm font-black text-slate-900 uppercase">TOTAL</td>
                        <td class="px-4 py-4 text-sm font-black text-slate-900 text-center">${grandNota}</td>
+                       <td class="px-4 py-4 text-sm font-black text-slate-900 text-right">${finFormatRp(grandTagihan)}</td>
                        <td class="px-4 py-4 text-sm font-black text-emerald-700 text-center">${grandSebagian}</td>
+                       <td class="px-4 py-4 text-sm font-black text-emerald-700 text-right">${finFormatRp(grandDibayar)}</td>
                        <td class="px-4 py-4 text-sm font-black text-rose-700 text-center">${grandBelum}</td>
                        <td class="px-4 py-4 text-sm font-black text-rose-700 text-right">${finFormatRp(grandPiutang)}</td>
                     </tr>
