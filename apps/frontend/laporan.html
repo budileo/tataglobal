@@ -337,6 +337,33 @@
                 </div>
              </div>
           </div>
+
+           <!-- 6. MODE: JALUR PENJUALAN -->
+           <div id="container-jalur" class="mode-container hidden">
+              <div class="overflow-x-auto">
+                 <table class="w-full text-left text-[11px] text-slate-600 border-collapse border border-slate-300">
+                    <thead>
+                       <tr class="bg-slate-200 border-b border-slate-400 text-slate-800 font-bold uppercase tracking-tighter">
+                          <th class="px-2 py-2 border-r border-slate-300 w-8 text-center">No</th>
+                          <th class="px-2 py-2 border-r border-slate-300">Nama Jalur</th>
+                          <th class="px-2 py-2 border-r border-slate-300 text-center w-20">Jml Konsumen</th>
+                          <th class="px-2 py-2 border-r border-slate-300 text-right w-24">Berat Netto</th>
+                          <th class="px-2 py-2 border-r border-slate-300 text-right w-28">Tagihan</th>
+                          <th class="px-2 py-2 border-r border-slate-300 text-right w-28">Pembayaran</th>
+                          <th class="px-2 py-2 border-r border-slate-300 text-right w-28 font-black text-rose-800 bg-rose-50">Piutang</th>
+                          <th class="px-2 py-2 border-r border-slate-300 text-right w-24">Tot. Potongan (kg)</th>
+                          <th class="px-2 py-2 text-right w-28">Tot. Potongan (Rp)</th>
+                       </tr>
+                    </thead>
+                    <tbody id="tbody-det-jalur"></tbody>
+                 </table>
+              </div>
+              <!-- Rekapitulasi -->
+              <div class="mt-6">
+                 <h3 class="font-bold text-slate-900 border-b-2 border-slate-900 pb-1 mb-4 uppercase text-[13px] tracking-widest">B. Rekapitulasi</h3>
+                 <div id="rekap-jalur-summary" class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm"></div>
+              </div>
+           </div>
       </div>
 
     </main>
@@ -454,6 +481,7 @@
                             <button class="btn-det bg-amber-600 hover:bg-amber-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="piutang" data-date="${row.date}">Piutang</button>
                             <button class="btn-det bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="ayam" data-date="${row.date}">Ayam</button>
                             <button class="btn-det bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="ukuran" data-date="${row.date}">Ukuran</button>
+                            <button class="btn-det bg-teal-600 hover:bg-teal-700 text-white px-2 py-1 rounded text-[10px] font-bold uppercase transition-transform active:scale-95" data-mode="jalur" data-date="${row.date}">Jalur</button>
                         </div>
                     </td>
                 `;
@@ -496,6 +524,10 @@
             document.getElementById('det-title').textContent = 'MATRIK UKURAN AYAM HARIAN';
             document.getElementById('container-ukuran').classList.remove('hidden');
             renderDetailUkuran(dateStr);
+         } else if (mode === 'jalur') {
+            document.getElementById('det-title').textContent = 'JALUR PENJUALAN';
+            document.getElementById('container-jalur').classList.remove('hidden');
+            renderDetailJalur(dateStr);
          }
          
          window.currentDetail = { dateStr, mode };
@@ -923,9 +955,155 @@
                tbodyAudit.appendChild(tr3);
             }
          });
+       }
+
+      function renderDetailJalur(dateStr) {
+         const bons = getAllBons();
+         const masterKonsumen = window.DataLayer ? window.DataLayer.getMaster('konsumen') : [];
+         const dailyBons = bons.filter(b => !b.isVoid && b.tanggal === dateStr).sort((a,b) => {
+            const numA = parseInt(a.id.replace(/\D/g, '')) || 0;
+            const numB = parseInt(b.id.replace(/\D/g, '')) || 0;
+            if (numA !== numB) return numA - numB;
+            return a.id.localeCompare(b.id);
+         });
+
+         const tbody = document.getElementById('tbody-det-jalur');
+         tbody.innerHTML = '';
+
+         if (!dailyBons.length) {
+            tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-slate-400">Tidak ada data bon pada tanggal ini.</td></tr>`;
+            document.getElementById('rekap-jalur-summary').innerHTML = '';
+            return;
+         }
+
+         // Group by jalur
+         const jalurMap = {};
+         dailyBons.forEach(b => {
+            const mk = masterKonsumen.find(m => m.nama.toLowerCase() === (b.konsumen || '').toLowerCase());
+            const jalurName = (mk && mk.jalur) ? mk.jalur.toUpperCase() : 'TANPA JALUR';
+
+            if (!jalurMap[jalurName]) jalurMap[jalurName] = {
+               konsumenSet: new Set(),
+               beratNetto: 0,
+               tagihan: 0,
+               pembayaran: 0,
+               piutang: 0,
+               potKg: 0,
+               potRp: 0
+            };
+
+            const entry = jalurMap[jalurName];
+            entry.konsumenSet.add((b.konsumen || '').toUpperCase());
+            entry.tagihan += b.total;
+
+            // Berat netto dari items
+            (b.items || []).forEach(it => { entry.beratNetto += (it.netto || 0); });
+
+            // Pembayaran & potongan dari histori
+            const hist = (b.historiBayar || []).filter(h => !h.isVoid);
+            const paid = hist.reduce((s, h) => s + (h.nominal || 0), 0);
+            const potRp = hist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
+            const potKg = hist.reduce((s, h) => {
+               const p = h.potongan || {};
+               return s + (p.matiKg || 0) + (p.susutKg || 0) + (p.pulangKg || 0);
+            }, 0);
+
+            entry.pembayaran += paid;
+            entry.potRp += potRp;
+            entry.potKg += potKg;
+            entry.piutang += Math.max(0, b.total - paid - potRp);
+         });
+
+         // Render rows sorted by jalur name
+         const sortedJalur = Object.keys(jalurMap).sort((a, b) => {
+            if (a === 'TANPA JALUR') return 1;
+            if (b === 'TANPA JALUR') return -1;
+            return a.localeCompare(b);
+         });
+
+         let grandTagihan = 0, grandPembayaran = 0, grandPiutang = 0, grandNetto = 0, grandPotKg = 0, grandPotRp = 0, grandKonsumen = 0;
+
+         sortedJalur.forEach((jalur, i) => {
+            const d = jalurMap[jalur];
+            const jmlKonsumen = d.konsumenSet.size;
+            grandKonsumen += jmlKonsumen;
+            grandTagihan += d.tagihan;
+            grandPembayaran += d.pembayaran;
+            grandPiutang += d.piutang;
+            grandNetto += d.beratNetto;
+            grandPotKg += d.potKg;
+            grandPotRp += d.potRp;
+
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-slate-200 hover:bg-slate-50 text-[11px]';
+            tr.innerHTML = `
+               <td class="px-2 py-2 border-r border-slate-200 text-center font-medium">${i+1}</td>
+               <td class="px-2 py-2 border-r border-slate-200 font-bold text-slate-800">${jalur}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-center font-semibold text-blue-600">${jmlKonsumen}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right font-semibold">${d.beratNetto.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right font-medium text-slate-800">${d.tagihan.toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right font-bold text-emerald-700">${d.pembayaran.toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right font-black text-rose-800 bg-rose-50/50">${d.piutang.toLocaleString('id-ID')}</td>
+               <td class="px-2 py-2 border-r border-slate-200 text-right text-slate-600">${d.potKg.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
+               <td class="px-2 py-2 text-right font-bold text-rose-700">${d.potRp.toLocaleString('id-ID')}</td>
+            `;
+            tbody.appendChild(tr);
+         });
+
+         // Grand Total row
+         const trTotal = document.createElement('tr');
+         trTotal.className = 'bg-slate-100 font-black border-y-2 border-slate-400 text-slate-900 text-[12px]';
+         trTotal.innerHTML = `
+            <td colspan="2" class="px-3 py-2 text-right uppercase tracking-tighter border-r border-slate-300">GRAND TOTAL</td>
+            <td class="px-2 py-2 text-center font-black text-blue-700 border-r border-slate-300">${grandKonsumen}</td>
+            <td class="px-2 py-2 text-right border-r border-slate-300">${grandNetto.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
+            <td class="px-2 py-2 text-right border-r border-slate-300">${grandTagihan.toLocaleString('id-ID')}</td>
+            <td class="px-2 py-2 text-right text-emerald-700 border-r border-slate-300">${grandPembayaran.toLocaleString('id-ID')}</td>
+            <td class="px-2 py-2 text-right text-rose-900 bg-rose-100 border-r border-slate-300">${grandPiutang.toLocaleString('id-ID')}</td>
+            <td class="px-2 py-2 text-right border-r border-slate-300">${grandPotKg.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</td>
+            <td class="px-2 py-2 text-right text-rose-900">${grandPotRp.toLocaleString('id-ID')}</td>
+         `;
+         tbody.appendChild(trTotal);
+
+         // B. Rekapitulasi summary cards
+         const summaryDiv = document.getElementById('rekap-jalur-summary');
+         summaryDiv.innerHTML = `
+            <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+               <p class="text-[10px] font-bold text-blue-800 uppercase mb-1">Total Jalur</p>
+               <h4 class="text-xl font-black text-blue-700">${sortedJalur.length}</h4>
+            </div>
+            <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+               <p class="text-[10px] font-bold text-emerald-800 uppercase mb-1">Total Konsumen</p>
+               <h4 class="text-xl font-black text-emerald-700">${grandKonsumen}</h4>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+               <p class="text-[10px] font-bold text-slate-600 uppercase mb-1">Total Berat Netto</p>
+               <h4 class="text-lg font-black text-slate-800">${grandNetto.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</h4>
+            </div>
+            <div class="bg-rose-50 p-3 rounded-lg border border-rose-100">
+               <p class="text-[10px] font-bold text-rose-800 uppercase mb-1">Total Piutang</p>
+               <h4 class="text-lg font-black text-rose-700">${formatRp(grandPiutang)}</h4>
+            </div>
+            <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+               <p class="text-[10px] font-bold text-emerald-800 uppercase mb-1">Total Tagihan</p>
+               <h4 class="text-lg font-black text-emerald-700">${formatRp(grandTagihan)}</h4>
+            </div>
+            <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+               <p class="text-[10px] font-bold text-emerald-800 uppercase mb-1">Total Pembayaran</p>
+               <h4 class="text-lg font-black text-emerald-700">${formatRp(grandPembayaran)}</h4>
+            </div>
+            <div class="bg-rose-50 p-3 rounded-lg border border-rose-100">
+               <p class="text-[10px] font-bold text-rose-800 uppercase mb-1">Total Potongan (Kg)</p>
+               <h4 class="text-lg font-black text-rose-700">${grandPotKg.toLocaleString('id-ID', {minimumFractionDigits:2})} Kg</h4>
+            </div>
+            <div class="bg-rose-50 p-3 rounded-lg border border-rose-100">
+               <p class="text-[10px] font-bold text-rose-800 uppercase mb-1">Total Potongan (Rp)</p>
+               <h4 class="text-lg font-black text-rose-700">${formatRp(grandPotRp)}</h4>
+            </div>
+         `;
       }
 
-      document.getElementById('btn-back-detail').addEventListener('click', () => {
+       document.getElementById('btn-back-detail').addEventListener('click', () => {
          document.getElementById('view-detail').classList.add('hidden');
          document.getElementById('view-rekap').classList.remove('hidden');
          document.body.classList.remove('print:landscape'); // Reset landscape
@@ -1066,7 +1244,63 @@
               wsData.push(['--- Laporan Matrik Ukuran Ayam ---']);
               wsData.push(['No', 'No Bon', 'Nama Konsumen', 'Jumlah Ayam (ekor)', 'Berat Netto (kg)', 'Rata Rata Ayam (kg)', 'Mapping Ukuran', 'Ukuran', 'Geser']);
               detailRows.forEach(row => wsData.push(row));
-         } else {
+         } else if (mode === 'jalur') {
+             // A. Tabel Jalur Penjualan
+             wsData.push(['--- A. JALUR PENJUALAN ---']);
+             wsData.push(['CV Global Putra Swasembada']);
+             wsData.push(['Tanggal: ' + periode]);
+             wsData.push(['']);
+             wsData.push(['No', 'Nama Jalur', 'Jumlah Konsumen', 'Berat Netto (Kg)', 'Tagihan', 'Pembayaran', 'Piutang', 'Total Potongan (Kg)', 'Total Potongan (Rp)']);
+
+             const masterKonsumenXl = window.DataLayer ? window.DataLayer.getMaster('konsumen') : [];
+             const dailyBonsJalur = getAllBons().filter(b => !b.isVoid && b.tanggal === dateStr).sort((a,b) => {
+                const numA = parseInt(a.id.replace(/\D/g, '')) || 0;
+                const numB = parseInt(b.id.replace(/\D/g, '')) || 0;
+                if (numA !== numB) return numA - numB;
+                return a.id.localeCompare(b.id);
+             });
+
+             const jalurMapXl = {};
+             dailyBonsJalur.forEach(b => {
+                const mk = masterKonsumenXl.find(m => m.nama.toLowerCase() === (b.konsumen || '').toLowerCase());
+                const jalurName = (mk && mk.jalur) ? mk.jalur.toUpperCase() : 'TANPA JALUR';
+                if (!jalurMapXl[jalurName]) jalurMapXl[jalurName] = { konsumenSet: new Set(), beratNetto: 0, tagihan: 0, pembayaran: 0, piutang: 0, potKg: 0, potRp: 0 };
+                const entry = jalurMapXl[jalurName];
+                entry.konsumenSet.add((b.konsumen || '').toUpperCase());
+                entry.tagihan += b.total;
+                (b.items || []).forEach(it => { entry.beratNetto += (it.netto || 0); });
+                const hist = (b.historiBayar || []).filter(h => !h.isVoid);
+                const paid = hist.reduce((s, h) => s + (h.nominal || 0), 0);
+                const potRpXl = hist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
+                const potKgXl = hist.reduce((s, h) => { const p = h.potongan || {}; return s + (p.matiKg || 0) + (p.susutKg || 0) + (p.pulangKg || 0); }, 0);
+                entry.pembayaran += paid;
+                entry.potRp += potRpXl;
+                entry.potKg += potKgXl;
+                entry.piutang += Math.max(0, b.total - paid - potRpXl);
+             });
+
+             const sortedJalurXl = Object.keys(jalurMapXl).sort((a, b) => { if (a === 'TANPA JALUR') return 1; if (b === 'TANPA JALUR') return -1; return a.localeCompare(b); });
+             let gTag = 0, gByr = 0, gPiu = 0, gNet = 0, gPKg = 0, gPRp = 0, gKon = 0;
+
+             sortedJalurXl.forEach((jalur, i) => {
+                const d = jalurMapXl[jalur];
+                const jk = d.konsumenSet.size;
+                gKon += jk; gTag += d.tagihan; gByr += d.pembayaran; gPiu += d.piutang; gNet += d.beratNetto; gPKg += d.potKg; gPRp += d.potRp;
+                wsData.push([i+1, jalur, jk, d.beratNetto, d.tagihan, d.pembayaran, d.piutang, d.potKg, d.potRp]);
+             });
+
+             // B. Rekapitulasi
+             wsData.push(['']);
+             wsData.push(['--- B. REKAPITULASI ---']);
+             wsData.push(['Total Jalur', sortedJalurXl.length]);
+             wsData.push(['Total Konsumen', gKon]);
+             wsData.push(['Total Berat Netto (Kg)', gNet]);
+             wsData.push(['Total Tagihan', gTag]);
+             wsData.push(['Total Pembayaran', gByr]);
+             wsData.push(['Total Piutang', gPiu]);
+             wsData.push(['Total Potongan (Kg)', gPKg]);
+             wsData.push(['Total Potongan (Rp)', gPRp]);
+          } else {
             wsData.push(['Laporan Penerimaan - silakan gunakan mode Cetak PDF untuk jenis ini.']);
          }
          const ws = XLSX.utils.aoa_to_sheet(wsData);
