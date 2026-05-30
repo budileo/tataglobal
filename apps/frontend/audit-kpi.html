@@ -340,6 +340,86 @@
          // Remove trailing newline if it's there
          tableBText = tableBText.trim();
 
+         // Generate Text Table C (Rekapitulasi Penjualan PerJalur)
+         const jalurMapForAudit = {};
+         filteredBons.forEach(b => {
+            const mk = globalMasterKonsumen.find(m => m.nama.toLowerCase() === (b.konsumen || '').toLowerCase());
+            const jalurName = (mk && mk.jalur) ? mk.jalur.toUpperCase() : 'TANPA JALUR';
+
+            if (!jalurMapForAudit[jalurName]) jalurMapForAudit[jalurName] = {
+               konsumenSet: new Set(),
+               beratNetto: 0,
+               tagihan: 0,
+               pembayaran: 0,
+               piutang: 0,
+               potKg: 0,
+               potRp: 0
+            };
+
+            const entry = jalurMapForAudit[jalurName];
+            entry.konsumenSet.add((b.konsumen || '').toUpperCase());
+            entry.tagihan += b.total;
+
+            (b.items || []).forEach(it => { entry.beratNetto += (it.netto || 0); });
+
+            const hist = (b.historiBayar || []).filter(h => !h.isVoid);
+            const paid = hist.reduce((s, h) => s + (h.nominal || 0), 0);
+            const potRp = hist.reduce((s, h) => s + (h.totalPotongan || 0), 0);
+            const potKg = hist.reduce((s, h) => {
+               const p = h.potongan || {};
+               return s + (p.matiKg || 0) + (p.susutKg || 0) + (p.pulangKg || 0);
+            }, 0);
+
+            entry.pembayaran += paid;
+            entry.potRp += potRp;
+            entry.potKg += potKg;
+            entry.piutang += Math.max(0, b.total - paid - potRp);
+         });
+
+         const sortedJalurForAudit = Object.keys(jalurMapForAudit).sort((a, b) => {
+            if (a === 'TANPA JALUR') return 1;
+            if (b === 'TANPA JALUR') return -1;
+            return jalurMapForAudit[b].tagihan - jalurMapForAudit[a].tagihan;
+         });
+
+         let tableCText = "  C. Rekapitulasi Penjualan PerJalur\n";
+         tableCText += "     +----------------------+----------+--------------+-----------------+-----------------+-----------------+---------------+---------------+\n";
+         tableCText += "     | NAMA JALUR           | JML KONS | BERAT NETTO  | TOTAL TAGIHAN   | TOTAL BAYAR     | SISA PIUTANG    | POTONGAN (KG) | POTONGAN (RP) |\n";
+         tableCText += "     +----------------------+----------+--------------+-----------------+-----------------+-----------------+---------------+---------------+\n";
+         
+         let grandK = 0, grandNet = 0, grandTag = 0, grandBayar = 0, grandPiu = 0, grandPotKg = 0, grandPotRp = 0;
+         
+         if (sortedJalurForAudit.length === 0) {
+            tableCText += "     |                                  (Belum ada data penjualan jalur)                                                                      |\n";
+            tableCText += "     +----------------------+----------+--------------+-----------------+-----------------+-----------------+---------------+---------------+\n";
+         } else {
+            sortedJalurForAudit.forEach(jalur => {
+               const d = jalurMapForAudit[jalur];
+               grandK += d.konsumenSet.size; grandNet += d.beratNetto; grandTag += d.tagihan; grandBayar += d.pembayaran; grandPiu += d.piutang; grandPotKg += d.potKg; grandPotRp += d.potRp;
+               
+               const nJalur = jalur.substring(0, 20).padEnd(20);
+               const nKons = String(d.konsumenSet.size).padStart(8);
+               const nNet = (d.beratNetto.toLocaleString('id-ID', {minimumFractionDigits:1, maximumFractionDigits:1}) + " Kg").padStart(12);
+               const nTag = formatRp(d.tagihan).padStart(15);
+               const nBay = formatRp(d.pembayaran).padStart(15);
+               const nPiu = formatRp(d.piutang).padStart(15);
+               const nPotKg = (d.potKg.toLocaleString('id-ID', {minimumFractionDigits:1, maximumFractionDigits:1}) + " Kg").padStart(13);
+               const nPotRp = formatRp(d.potRp).padStart(13);
+               
+               tableCText += `     | ${nJalur} | ${nKons} | ${nNet} | ${nTag} | ${nBay} | ${nPiu} | ${nPotKg} | ${nPotRp} |\n`;
+            });
+            tableCText += "     +----------------------+----------+--------------+-----------------+-----------------+-----------------+---------------+---------------+\n";
+            const gKons = String(grandK).padStart(8);
+            const gNet = (grandNet.toLocaleString('id-ID', {minimumFractionDigits:1, maximumFractionDigits:1}) + " Kg").padStart(12);
+            const gTag = formatRp(grandTag).padStart(15);
+            const gBay = formatRp(grandBayar).padStart(15);
+            const gPiu = formatRp(grandPiu).padStart(15);
+            const gPotKg = (grandPotKg.toLocaleString('id-ID', {minimumFractionDigits:1, maximumFractionDigits:1}) + " Kg").padStart(13);
+            const gPotRp = formatRp(grandPotRp).padStart(13);
+            tableCText += `     | GRAND TOTAL          | ${gKons} | ${gNet} | ${gTag} | ${gBay} | ${gPiu} | ${gPotKg} | ${gPotRp} |\n`;
+            tableCText += "     +----------------------+----------+--------------+-----------------+-----------------+-----------------+---------------+---------------+";
+         }
+
          // ============================================
          // 2. KEUANGAN CALCULATIONS
          // ============================================
@@ -702,6 +782,8 @@ Status Bon    : Khusus Penjualan Non VOID (Lunas & Piutang)
 ${tableAText}
 
 ${tableBText}
+
+${tableCText}
 
 
 2. KEUANGAN
