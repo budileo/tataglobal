@@ -241,6 +241,37 @@
          </div>
       </div>
 
+      <!-- DATA ARUS KAS HARIAN -->
+      <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/30">
+         <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+            <div class="flex items-center gap-3">
+               <div class="w-2 h-8 bg-emerald-500 rounded-full"></div>
+               <div>
+                  <h4 class="font-black text-slate-900 uppercase tracking-tight text-lg mb-1 leading-none">Rekap Arus Kas Harian</h4>
+                  <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Detail Tagihan dan Penerimaan Uang Masuk per Tanggal Riil</p>
+               </div>
+            </div>
+         </div>
+         <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[600px]">
+               <thead>
+                  <tr class="bg-slate-50 border-b-2 border-slate-200">
+                     <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest">Tanggal</th>
+                     <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Total Tagihan</th>
+                     <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Total Penerimaan</th>
+                     <th class="px-4 py-3 text-xs font-black text-slate-500 uppercase tracking-widest text-right">Sisa Piutang Akhir</th>
+                  </tr>
+               </thead>
+               <tbody id="fin-arus-kas-body" class="divide-y divide-slate-100">
+                  <!-- Dynamic Data -->
+               </tbody>
+               <tfoot id="fin-arus-kas-foot" class="bg-slate-50 border-t-2 border-slate-200">
+                  <!-- Dynamic Total -->
+               </tfoot>
+            </table>
+         </div>
+      </div>
+
     </main>
 
     <script type="module" src="data-layer.js"></script>
@@ -461,6 +492,81 @@
                        <td class="px-4 py-4 text-sm font-black text-emerald-700 text-right">${finFormatRp(grandDibayar)}</td>
                        <td class="px-4 py-4 text-sm font-black text-rose-700 text-center">${grandBelum}</td>
                        <td class="px-4 py-4 text-sm font-black text-rose-700 text-right">${finFormatRp(grandPiutang)}</td>
+                    </tr>
+                 `;
+             }
+
+             // RENDER ARUS KAS HARIAN
+             const akBody = document.getElementById('fin-arus-kas-body');
+             const akFoot = document.getElementById('fin-arus-kas-foot');
+             
+             const startDateObj = finParseYMD(fromDate);
+             const endDateObj = finParseYMD(toDate);
+             let currDate = new Date(startDateObj);
+             currDate.setHours(0,0,0,0);
+             const stopDate = new Date(endDateObj);
+             stopDate.setHours(23,59,59,999);
+             
+             let akRowsHtml = '';
+             let akGrandTagihan = 0, akGrandPenerimaan = 0;
+             let lastPiutang = 0;
+             let hasAnyCashFlow = false;
+
+             while (currDate <= stopDate) {
+                 const dStr = finToLocalYMD(currDate);
+                 let j = 0, t = 0, p = 0;
+                 
+                 bons.forEach(b => {
+                    if (b.isVoid) return;
+                    if (b.tanggal === dStr) j += (parseFloat(b.total) || 0);
+                    
+                    let paidBeforeOrOn = 0, potBeforeOrOn = 0;
+                    (b.historiBayar || []).forEach(h => {
+                       if (h.isVoid) return;
+                       const hNom = parseFloat(h.nominal) || 0;
+                       const hPot = parseFloat(h.totalPotongan) || 0;
+                       if (h.tanggal === dStr) t += hNom;
+                       if (h.tanggal <= dStr) {
+                          paidBeforeOrOn += hNom;
+                          potBeforeOrOn += hPot;
+                       }
+                    });
+                    
+                    if (b.tanggal <= dStr) {
+                       const s = (parseFloat(b.total) || 0) - potBeforeOrOn - paidBeforeOrOn;
+                       if (s > 0.01) p += s;
+                    }
+                 });
+                 
+                 if (j > 0 || t > 0) {
+                     hasAnyCashFlow = true;
+                     akGrandTagihan += j;
+                     akGrandPenerimaan += t;
+                     lastPiutang = p;
+                     
+                     akRowsHtml += `
+                        <tr class="hover:bg-emerald-50/50 transition-colors">
+                           <td class="px-4 py-3 text-sm font-bold text-slate-700 whitespace-nowrap">${dStr}</td>
+                           <td class="px-4 py-3 text-sm font-black text-slate-700 text-right">${finFormatRp(j)}</td>
+                           <td class="px-4 py-3 text-sm font-black text-emerald-600 text-right">${finFormatRp(t)}</td>
+                           <td class="px-4 py-3 text-sm font-black text-rose-600 text-right">${finFormatRp(p)}</td>
+                        </tr>
+                     `;
+                 }
+                 currDate.setDate(currDate.getDate() + 1);
+             }
+             
+             if (!hasAnyCashFlow) {
+                 akBody.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-slate-400 font-bold">Tidak ada arus kas pada periode ini.</td></tr>';
+                 akFoot.innerHTML = '';
+             } else {
+                 akBody.innerHTML = akRowsHtml;
+                 akFoot.innerHTML = `
+                    <tr>
+                       <td class="px-4 py-4 text-sm font-black text-slate-900 uppercase">TOTAL PERIODE</td>
+                       <td class="px-4 py-4 text-sm font-black text-slate-900 text-right">${finFormatRp(akGrandTagihan)}</td>
+                       <td class="px-4 py-4 text-sm font-black text-emerald-700 text-right">${finFormatRp(akGrandPenerimaan)}</td>
+                       <td class="px-4 py-4 text-sm font-black text-rose-700 text-right">Piutang Akhir: ${finFormatRp(lastPiutang)}</td>
                     </tr>
                  `;
              }
