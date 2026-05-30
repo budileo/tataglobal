@@ -1014,11 +1014,11 @@
             entry.piutang += Math.max(0, b.total - paid - potRp);
          });
 
-         // Render rows sorted by jalur name
+         // Render rows sorted by jalur tagihan (largest first)
          const sortedJalur = Object.keys(jalurMap).sort((a, b) => {
             if (a === 'TANPA JALUR') return 1;
             if (b === 'TANPA JALUR') return -1;
-            return a.localeCompare(b);
+            return jalurMap[b].tagihan - jalurMap[a].tagihan;
          });
 
          let grandTagihan = 0, grandPembayaran = 0, grandPiutang = 0, grandNetto = 0, grandPotKg = 0, grandPotRp = 0, grandKonsumen = 0;
@@ -1279,7 +1279,7 @@
                 entry.piutang += Math.max(0, b.total - paid - potRpXl);
              });
 
-             const sortedJalurXl = Object.keys(jalurMapXl).sort((a, b) => { if (a === 'TANPA JALUR') return 1; if (b === 'TANPA JALUR') return -1; return a.localeCompare(b); });
+             const sortedJalurXl = Object.keys(jalurMapXl).sort((a, b) => { if (a === 'TANPA JALUR') return 1; if (b === 'TANPA JALUR') return -1; return jalurMapXl[b].tagihan - jalurMapXl[a].tagihan; });
              let gTag = 0, gByr = 0, gPiu = 0, gNet = 0, gPKg = 0, gPRp = 0, gKon = 0;
 
              sortedJalurXl.forEach((jalur, i) => {
