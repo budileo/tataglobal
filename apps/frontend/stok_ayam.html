@@ -190,11 +190,13 @@
                  <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
                     <tr>
                         <th class="px-4 py-3 border-r border-slate-100 w-32 text-center">Tanggal</th>
-                        <th class="px-4 py-3 border-r border-slate-100">Type Stok</th>
                         <th class="px-4 py-3 border-r border-slate-100 text-center">Ukuran</th>
-                        <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor</th>
-                        <th class="px-4 py-3 border-r border-slate-100 text-right">Kg</th>
-                        <th class="px-4 py-3 text-right">Rata-Rata (Kg)</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor Awal</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-right">Kg Awal</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-center">Penyusutan</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor Akhir</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-right">Kg Akhir</th>
+                        <th class="px-4 py-3 text-right">Rata²</th>
                     </tr>
                  </thead>
                  <tbody id="table-rekap" class="divide-y divide-slate-100"></tbody>
@@ -851,71 +853,83 @@
                 
                 dates.forEach((tgl) => {
                     const aggsForDate = groupedByDate[tgl];
-                    const dateRowspan = aggsForDate.length * 3;
+                    // dateRowspan = total size rows + 1 (for TOTAL row)
+                    const dateRowspan = aggsForDate.length + 1;
+                    
+                    let dateTotalEkorAwal = 0;
+                    let dateTotalKgAwal = 0;
+                    let dateTotalMatiEkor = 0;
+                    let dateTotalSusutMatiKg = 0;
+                    let dateTotalEkorAkhir = 0;
+                    let dateTotalKgAkhir = 0;
                     
                     aggsForDate.forEach((agg, aggIdx) => {
-                        const rataAwal = agg.ekorAwal > 0 ? (agg.kgAwal / agg.ekorAwal) : 0;
-                        const rataAkhir = agg.ekorAkhir > 0 ? (agg.kgAkhir / agg.ekorAkhir) : 0;
+                        dateTotalEkorAwal += agg.ekorAwal;
+                        dateTotalKgAwal += agg.kgAwal;
+                        dateTotalMatiEkor += agg.matiEkor;
+                        dateTotalSusutMatiKg += agg.susutMatiKg;
+                        dateTotalEkorAkhir += agg.ekorAkhir;
+                        dateTotalKgAkhir += agg.kgAkhir;
+                        
+                        const rata = agg.ekorAkhir > 0 ? (agg.kgAkhir / agg.ekorAkhir) : 0;
+                        
+                        // Konversi Tanggal YYYY-MM-DD ke DD-MM-YYYY
+                        const parts = agg.tanggal.split('-');
+                        const tglDisplay = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : agg.tanggal;
                         
                         // Rowspan Tanggal hanya di baris pertama tanggal tersebut
                         const dateCell = aggIdx === 0 
                             ? `<td rowspan="${dateRowspan}" class="px-4 py-4 border-r border-b border-slate-200 text-center font-bold text-slate-800 align-middle bg-slate-50/50">
-                                  <div class="text-sm font-bold text-slate-700">${agg.tanggal}</div>
+                                  <div class="text-sm font-bold text-slate-700">${tglDisplay}</div>
                                </td>` 
                             : '';
                             
-                        // Rowspan Ukuran selalu 3 baris (Awal -> Penyusutan -> Akhir) untuk ukuran bersangkutan
-                        const sizeCell = `<td rowspan="3" class="px-4 py-4 border-r border-b border-slate-200 text-center font-bold text-slate-700 align-middle bg-white">
-                                              <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded-full font-bold shadow-sm">${agg.ukuran}</span>
-                                          </td>`;
-                                          
-                        const isLastAggForDate = aggIdx === aggsForDate.length - 1;
-                        const borderClass = isLastAggForDate ? 'border-b-2 border-slate-300' : 'border-b border-slate-200';
+                        let penyusutanText = '0';
+                        if (agg.matiEkor > 0 || agg.susutMatiKg > 0) {
+                            const matiStr = agg.matiEkor > 0 ? `${agg.matiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                            const susutStr = agg.susutMatiKg > 0 ? `${Number(agg.susutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                            penyusutanText = `<span class="text-rose-600 font-semibold">${matiStr} / ${susutStr}</span>`;
+                        }
                         
                         rekapHtml += `
-                        <!-- Row 1: Stok Awal -->
-                        <tr class="bg-white hover:bg-slate-50/50 transition-colors">
+                        <tr class="bg-white hover:bg-slate-50/60 transition-colors border-b border-slate-100">
                            ${dateCell}
-                           <td class="px-4 py-3 border-r border-slate-100 font-medium text-slate-700">
-                              <span class="text-emerald-700 font-semibold text-xs flex items-center gap-1.5">
-                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                 Stok Masuk (Awal)
-                              </span>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center font-bold">
+                              <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded-full font-bold shadow-sm">${agg.ukuran}</span>
                            </td>
-                           ${sizeCell}
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${agg.ekorAwal.toLocaleString('id-ID')} Ekor</td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${agg.kgAwal.toFixed(2)} Kg</td>
-                           <td class="px-4 py-3 text-right font-medium text-slate-700">${rataAwal.toFixed(2)} Kg</td>
-                        </tr>
-                        
-                        <!-- Row 2: Penyusutan -->
-                        <tr class="bg-rose-50/10 hover:bg-rose-50/30 transition-colors">
-                           <td class="px-4 py-2.5 border-r border-slate-100 font-medium text-rose-600">
-                              <span class="text-rose-600 font-bold text-xs flex items-center gap-1.5">
-                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
-                                 Penyusutan (Mati & Susut)
-                              </span>
-                           </td>
-                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-rose-600 font-semibold">
-                              ${agg.matiEkor > 0 ? `-${agg.matiEkor.toLocaleString('id-ID')} Ekor` : '<span class="text-slate-400">0 Ekor</span>'}
-                           </td>
-                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-rose-600 font-semibold">
-                              ${agg.susutMatiKg > 0 ? `-${agg.susutMatiKg.toFixed(2)} Kg` : '<span class="text-slate-400">0.00 Kg</span>'}
-                           </td>
-                           <td class="px-4 py-2.5 text-right text-slate-400">-</td>
-                        </tr>
-                        
-                        <!-- Row 3: Stok Akhir -->
-                        <tr class="bg-slate-50 hover:bg-slate-100/80 transition-colors ${borderClass}">
-                           <td class="px-4 py-3 border-r border-slate-100 font-bold text-slate-800">
-                              <span class="bg-slate-800 text-slate-100 px-2 py-0.5 rounded text-[10px] font-bold shadow-sm">Stok Akhir (Netto)</span>
-                           </td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${agg.ekorAkhir.toLocaleString('id-ID')} Ekor</td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${agg.kgAkhir.toFixed(2)} Kg</td>
-                           <td class="px-4 py-3 text-right font-bold text-slate-800">${rataAkhir.toFixed(2)} Kg</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${agg.ekorAwal.toLocaleString('id-ID')}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${agg.kgAwal.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${penyusutanText}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${agg.ekorAkhir.toLocaleString('id-ID')}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${agg.kgAkhir.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
+                           <td class="px-4 py-3 text-right font-bold text-slate-800">${rata.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
                         </tr>
                         `;
                     });
+                    
+                    // Render TOTAL Row for this date
+                    const totalRata = dateTotalEkorAkhir > 0 ? (dateTotalKgAkhir / dateTotalEkorAkhir) : 0;
+                    
+                    let totalPenyusutanText = '0';
+                    if (dateTotalMatiEkor > 0 || dateTotalSusutMatiKg > 0) {
+                        const totalMatiStr = dateTotalMatiEkor > 0 ? `${dateTotalMatiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                        const totalSusutStr = dateTotalSusutMatiKg > 0 ? `${Number(dateTotalSusutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                        totalPenyusutanText = `<span class="text-rose-600 font-bold">${totalMatiStr} / ${totalSusutStr}</span>`;
+                    }
+                    
+                    rekapHtml += `
+                    <tr class="bg-slate-50 hover:bg-slate-100 font-bold border-b-2 border-slate-300">
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-800 font-extrabold uppercase tracking-wider text-[11px]">
+                          TOTAL
+                       </td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right text-slate-900 font-extrabold">${dateTotalEkorAwal.toLocaleString('id-ID')}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right text-slate-900 font-extrabold">${dateTotalKgAwal.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-900 font-extrabold text-xs">${totalPenyusutanText}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right text-slate-900 font-extrabold">${dateTotalEkorAkhir.toLocaleString('id-ID')}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right text-slate-900 font-extrabold">${dateTotalKgAkhir.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
+                       <td class="px-4 py-3 text-right text-slate-900 font-extrabold">${totalRata.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
+                    </tr>
+                    `;
                 });
             }
             document.getElementById('table-rekap').innerHTML = rekapHtml;
