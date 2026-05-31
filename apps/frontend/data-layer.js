@@ -97,7 +97,7 @@ window.DataLayer = {
         id: d.id, nama: d.nama, updatedAt: new Date(d.created_at).getTime()
       }));
       this.data.master_kandang = (kandang || []).map(d => ({
-        id: d.id, nama: d.nama, alamat: d.alamat || '', updatedAt: new Date(d.created_at).getTime()
+        id: d.id, nama: d.nama, alamat: d.alamat || '', kontak_person: d.kontak_person || '', updatedAt: new Date(d.created_at).getTime()
       }));
       this.data.stok_ayam = stok_ayam || [];
 
@@ -215,6 +215,7 @@ window.DataLayer = {
            user_id: user.id
         };
         if (type === 'konsumen' || type === 'kandang') dbPayload.alamat = payload.alamat || '';
+        if (type === 'kandang') dbPayload.kontak_person = payload.kontak_person || '';
         if (type === 'konsumen') dbPayload.jalur = payload.jalur || '';
         
         const { data: existing } = await supabase.from(tableName).select('id').eq('id', payload.id);
