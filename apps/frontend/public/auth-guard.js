@@ -586,6 +586,7 @@ const AuthGuard = (function() {
     'pencarian.html': 'search.view',
     'setting.html': 'setting.manage',
     'audit-kpi.html': 'audit_kpi.view',
+    'stok_ayam.html': 'dashboard.view',
     'dasbort_menu.html': 'dashboard.view',
     'dasbort_finance.html': 'dashboard.view',
     'dasbort_marketing.html': 'dashboard.view',

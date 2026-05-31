@@ -60,6 +60,7 @@
          <button id="tab-marketing" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Data Marketing</button>
          <button id="tab-operasional" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Staf Operasional</button>
          <button id="tab-jalur" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Jalur Distribusi</button>
+         <button id="tab-kandang" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Master Kandang</button>
       </div>
 
       <!-- Tab Content: Konsumen -->
@@ -228,11 +229,11 @@
 
     <script type="module" src="data-layer.js"></script>
     <script>
-       const UI_TABS = ['konsumen', 'marketing', 'operasional', 'jalur'];
+       const UI_TABS = ['konsumen', 'marketing', 'operasional', 'jalur', 'kandang'];
        
        // State
        let activeTab = 'konsumen';
-       let db = { konsumen: [], marketing: [], operasional: [], jalur: [] };
+       let db = { konsumen: [], marketing: [], operasional: [], jalur: [], kandang: [] };
 
        // Initialize
        async function initApp() {
@@ -256,6 +257,7 @@
              if(type === 'marketing') e.target.classList.replace('text-emerald-700', 'text-blue-700'), e.target.classList.replace('border-emerald-600', 'border-blue-600'), e.target.classList.replace('bg-emerald-50', 'bg-blue-50');
              if(type === 'operasional') e.target.classList.replace('text-emerald-700', 'text-amber-700'), e.target.classList.replace('border-emerald-600', 'border-amber-600'), e.target.classList.replace('bg-emerald-50', 'bg-amber-50');
              if(type === 'jalur') e.target.classList.replace('text-emerald-700', 'text-teal-700'), e.target.classList.replace('border-emerald-600', 'border-teal-600'), e.target.classList.replace('bg-emerald-50', 'bg-teal-50');
+             if(type === 'kandang') e.target.classList.replace('text-emerald-700', 'text-indigo-700'), e.target.classList.replace('border-emerald-600', 'border-indigo-600'), e.target.classList.replace('bg-emerald-50', 'bg-indigo-50');
 
              document.getElementById('content-' + type).classList.remove('hidden');
              activeTab = type;
@@ -285,11 +287,13 @@
           empty.classList.add('hidden');
           
           tbody.innerHTML = list.map((d, i) => {
-             const color = type === 'konsumen' ? 'emerald' : (type === 'marketing' ? 'blue' : (type === 'jalur' ? 'teal' : 'amber'));
+             const color = type === 'konsumen' ? 'emerald' : (type === 'marketing' ? 'blue' : (type === 'jalur' ? 'teal' : (type === 'kandang' ? 'indigo' : 'amber')));
              let extraCols = '';
              if (type === 'konsumen') {
                  extraCols = `<td class="px-4 py-3 border-r border-slate-100 max-w-[200px] truncate" title="${d.alamat||'-'}">${d.alamat||'-'}</td>
                               <td class="px-4 py-3 border-r border-slate-100">${d.jalur ? '<span class="inline-block bg-teal-50 text-teal-700 text-[11px] font-semibold px-2 py-0.5 rounded-full">' + d.jalur + '</span>' : '<span class="text-slate-300">-</span>'}</td>`;
+             } else if (type === 'kandang') {
+                 extraCols = `<td class="px-4 py-3 border-r border-slate-100 max-w-[200px] truncate" title="${d.alamat||'-'}">${d.alamat||'-'}</td>`;
              }
              return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                 <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-400">${i+1}</td>
@@ -309,14 +313,14 @@
        
        function openModal(type, editId = null) {
           const isEdit = editId !== null;
-          const labelMap = { konsumen: 'Konsumen', marketing: 'Marketing', operasional: 'Staf Operasional', jalur: 'Jalur Distribusi' };
+          const labelMap = { konsumen: 'Konsumen', marketing: 'Marketing', operasional: 'Staf Operasional', jalur: 'Jalur Distribusi', kandang: 'Master Kandang' };
           document.getElementById('modal-title').textContent = isEdit ? 'Edit ' + labelMap[type] : 'Tambah ' + labelMap[type];
           document.getElementById('form-tipe').value = type;
           document.getElementById('form-id').value = editId || crypto.randomUUID();
           
-          document.getElementById('field-alamat').classList.toggle('hidden', type !== 'konsumen');
+          document.getElementById('field-alamat').classList.toggle('hidden', type !== 'konsumen' && type !== 'kandang');
           document.getElementById('field-jalur').classList.toggle('hidden', type !== 'konsumen');
-          document.getElementById('label-nama').textContent = type === 'jalur' ? 'Nama Jalur *' : 'Nama Lengkap *';
+          document.getElementById('label-nama').textContent = type === 'jalur' ? 'Nama Jalur *' : (type === 'kandang' ? 'Nama Kandang *' : 'Nama Lengkap *');
           
           if (type === 'konsumen') {
              const jalurSelect = document.getElementById('input-jalur');
@@ -328,8 +332,10 @@
           if(isEdit) {
              const data = db[type].find(x => x.id === editId);
              document.getElementById('input-nama').value = data.nama;
-             if(type==='konsumen') {
+             if(type==='konsumen' || type === 'kandang') {
                  document.getElementById('input-alamat').value = data.alamat || '';
+             }
+             if(type==='konsumen') {
                  document.getElementById('input-jalur').value = data.jalur || '';
              }
           } else {
@@ -361,8 +367,10 @@
           if (typeof AuthGuard !== 'undefined' && !(await AuthGuard.consumeToken(isNew ? 'create' : 'update', actionMsg))) return;
 
           const payload = { id: id, nama: nama, updatedAt: Date.now() };
-          if(type === 'konsumen') {
+          if(type === 'konsumen' || type === 'kandang') {
              payload.alamat = document.getElementById('input-alamat').value.trim();
+          }
+          if(type === 'konsumen') {
              payload.jalur = document.getElementById('input-jalur').value;
           }
 

@@ -25,7 +25,8 @@ export default defineConfig({
         'dasbort-menu': resolve(__dirname, 'dasbort_menu.html'),
         'dasbort-finance': resolve(__dirname, 'dasbort_finance.html'),
         'dasbort-marketing': resolve(__dirname, 'dasbort_marketing.html'),
-        'dasbort-hrd': resolve(__dirname, 'dasbort_hrd.html')
+        'dasbort-hrd': resolve(__dirname, 'dasbort_hrd.html'),
+        'stok-ayam': resolve(__dirname, 'stok_ayam.html')
       }
     }
   }

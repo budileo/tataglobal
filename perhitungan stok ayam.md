@@ -1,21 +1,37 @@
+Fungsinya untuk menyimpan Vendor dari Pembelian Ayam
+diletakan di Master Data
+data ini di panggil saat mengisi Data Stok DO
 
-Stok Ayam dengan DO Masuk
+Tabel Master Kandang
+-----------
+Kode Kandang
+Nama Kandang
+Alamat
+Kontak Person
 
-Yang di Catat :
-A. Penambah Stok 
-1. Tanggal DO
-2. Jumlah Ekor :
-3. Jumlah Kg :
-4. Jumlah keranjang : (1 Kerangan = 6,2 Kg)
- 
-5. Rata Rata Ayam : 
-Rumus Netto :
-Netto = Bruto - Kotak
 
-Rumus Rata Ayam :
+Data Stok DO Ayam (ayam Masuk Via DO)
+fungsi sebagai merekam data stok ayam
+
+1. Tanggal 
+2. (pilih Nama Kandang) ambil dari Master kandang 
+3. Nama supir (ambil dari data karyawan)
+4. Lokasi kandang (otomatis)
+5. Nama Kernet
+6. Jam berangkat 
+7. Jam sampai kandang
+8. Nomor antrian
+9. Jam sampai gudang
+10. Staf Timbang
+11. Keterangan ayam (sakit,lemah dls)
+
+
+12. Jumlah Ekor :  (sebagai perhitungan stok)
+13. Jumlah Kg : (sebagai perhitungan stok)
+14. Rata Rata Ayam : 
 Rata Rata Ayam (kg) =rumus (Berat Netto/Jumlah Ayam)
 
-6. Ukuran Ayam (Otomatis : ) 
+15. Ukuran Ayam Rekomndasi (Otomatis : ) 
 
 Rumus Ukuran :
 Jika Rata Rata Ayam 0,5 - 0,7 kg   = maka Rekomendasi Ukuran KTN
@@ -24,16 +40,12 @@ Jika Rata Rata Ayam 1.3 - 1,6 kg   = maka Rekomendasi Ukuran TB atau B/PK
 Jika Rata Rata Ayam 1.7 - 1.99 kg  = maka Rekomendasi Ukuran B
 Jika Rata Rata Ayam 2.0 - 2,29 kg  = maka Rekomendasi Ukuran JK atau JB/PK
 
-7. Nama Kandang :
-8. Alamat Kandang :
-9. Staf Timbang :
-10. Jam Bongkar : 
+Ukuran DO
+16. Ukuran realisasi DO Ayam
+17. Jumlah Susut (kg) : (sebagai perhitungan stok)
+18. Jumlah Ayam Mati (ekor) : (sebagai perhitungan stok)
+19. Jumlah Ayam Mati (kg) :  (sebagai perhitungan stok)
 
------------
-B. Mengurangi Stok
-11. Jumlah Susut (kg) : 
-12. Jumlah Ayam Mati (ekor) : 
-13. Jumlah Ayam Mati (kg) :
 
 Stok Ayam Kemarin
 ------------------
@@ -64,7 +76,5 @@ Maka Total Stok Ayam
    - Total Kg
    - Total Ekor
    - rata rata
-3. Stok = 1+2
-
-
+3. Stok Ayam = Stok Ayam dengan DO Masuk + Stok Ayam Kemarin
 

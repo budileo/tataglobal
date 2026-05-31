@@ -8,7 +8,9 @@ window.DataLayer = {
     master_konsumen: [],
     master_marketing: [],
     master_operasional: [],
-    master_jalur: []
+    master_jalur: [],
+    master_kandang: [],
+    stok_ayam: []
   },
 
   async init() {
@@ -20,14 +22,18 @@ window.DataLayer = {
         { data: konsumen },
         { data: marketing },
         { data: operasional },
-        { data: jalur }
+        { data: jalur },
+        { data: kandang },
+        { data: stok_ayam }
       ] = await Promise.all([
         supabase.from('bons').select('*').order('created_at', { ascending: false }),
         supabase.from('pembayaran').select('*').order('created_at', { ascending: true }),
         supabase.from('master_konsumen').select('*').order('created_at', { ascending: false }),
         supabase.from('master_marketing').select('*').order('created_at', { ascending: false }),
         supabase.from('master_operasional').select('*').order('created_at', { ascending: false }),
-        supabase.from('jalur_distribusi').select('*').order('created_at', { ascending: false })
+        supabase.from('jalur_distribusi').select('*').order('created_at', { ascending: false }),
+        supabase.from('master_kandang').select('*').order('created_at', { ascending: false }),
+        supabase.from('data_stok_ayam').select('*').order('tanggal', { ascending: false })
       ]);
 
       // Process Bons
@@ -81,6 +87,10 @@ window.DataLayer = {
       this.data.master_jalur = (jalur || []).map(d => ({
         id: d.id, nama: d.nama, updatedAt: new Date(d.created_at).getTime()
       }));
+      this.data.master_kandang = (kandang || []).map(d => ({
+        id: d.id, nama: d.nama, alamat: d.alamat || '', updatedAt: new Date(d.created_at).getTime()
+      }));
+      this.data.stok_ayam = stok_ayam || [];
 
       console.log('DataLayer: Initialization complete');
     } catch (e) {
@@ -93,7 +103,7 @@ window.DataLayer = {
   },
 
   getMaster(type) {
-    const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional', 'jalur': 'master_jalur' };
+    const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional', 'jalur': 'master_jalur', 'kandang': 'master_kandang' };
     return this.data[tableMap[type]] || [];
   },
 
@@ -181,7 +191,7 @@ window.DataLayer = {
   },
 
   async saveMaster(type, payload, isDelete = false) {
-    const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional', 'jalur': 'jalur_distribusi' };
+    const tableMap = { 'konsumen': 'master_konsumen', 'marketing': 'master_marketing', 'operasional': 'master_operasional', 'jalur': 'jalur_distribusi', 'kandang': 'master_kandang' };
     const tableName = tableMap[type];
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { alert("Sesi cloud tidak ditemukan! Harap login ulang."); return; }
@@ -195,7 +205,7 @@ window.DataLayer = {
            nama: payload.nama, 
            user_id: user.id
         };
-        if (type === 'konsumen') dbPayload.alamat = payload.alamat || '';
+        if (type === 'konsumen' || type === 'kandang') dbPayload.alamat = payload.alamat || '';
         if (type === 'konsumen') dbPayload.jalur = payload.jalur || '';
         
         const { data: existing } = await supabase.from(tableName).select('id').eq('id', payload.id);
@@ -210,5 +220,31 @@ window.DataLayer = {
       }
       await this.init(); // Refresh data
     } catch (e) { alert("Gagal Simpan Master Cloud: " + e.message); console.error(e); }
+  },
+
+  async getStokAyam() {
+    return this.data.stok_ayam;
+  },
+
+  async saveStokAyam(payload, isDelete = false) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { alert("Sesi cloud tidak ditemukan! Harap login ulang."); return; }
+    try {
+      if (isDelete) {
+        const res = await supabase.from('data_stok_ayam').delete().eq('id', payload.id);
+        if (res && res.error) throw new Error(res.error.message);
+      } else {
+        const dbPayload = { ...payload, user_id: user.id };
+        const { data: existing } = await supabase.from('data_stok_ayam').select('id').eq('id', payload.id);
+        if (existing && existing.length > 0) {
+          const res = await supabase.from('data_stok_ayam').update(dbPayload).eq('id', payload.id);
+          if (res && res.error) throw new Error(res.error.message);
+        } else {
+          const res = await supabase.from('data_stok_ayam').insert([dbPayload]);
+          if (res && res.error) throw new Error(res.error.message);
+        }
+      }
+      await this.init(); // Refresh data
+    } catch (e) { alert("Gagal Simpan Stok Ayam Cloud: " + e.message); console.error(e); }
   }
 };
