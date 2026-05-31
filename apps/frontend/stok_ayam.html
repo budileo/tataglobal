@@ -95,13 +95,13 @@
               <table class="w-full text-left text-sm text-slate-600 whitespace-nowrap">
                  <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
                     <tr>
-                       <th class="px-4 py-3 border-r border-slate-100 w-12 text-center">No</th>
-                       <th class="px-4 py-3 border-r border-slate-100">Tanggal</th>
-                       <th class="px-4 py-3 border-r border-slate-100">Supplier Kandang</th>
-                       <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor</th>
-                       <th class="px-4 py-3 border-r border-slate-100 text-right">Netto Kg</th>
-                       <th class="px-4 py-3 border-r border-slate-100 text-center">Ukuran</th>
-                       <th class="px-4 py-3 text-center">Aksi</th>
+                        <th class="px-4 py-3 border-r border-slate-100 w-16 text-center">Detail / No</th>
+                        <th class="px-4 py-3 border-r border-slate-100">Tanggal</th>
+                        <th class="px-4 py-3 border-r border-slate-100">Supplier Kandang</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-right">Netto Kg</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-center">Ukuran (Rekom / Realisasi)</th>
+                        <th class="px-4 py-3 text-center">Aksi</th>
                     </tr>
                  </thead>
                  <tbody id="table-do" class="divide-y divide-slate-100"></tbody>
@@ -146,81 +146,143 @@
 
     <!-- Modal Form DO Masuk -->
     <div id="modal-do" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity">
-       <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden transform scale-95 transition-transform duration-300" id="modal-content-do">
+       <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden transform scale-95 transition-transform duration-300" id="modal-content-do">
           <div class="bg-emerald-50 px-6 py-4 border-b border-emerald-100 flex justify-between items-center">
-             <h3 class="font-bold text-emerald-800 text-lg">Input DO Masuk (Penambah Stok)</h3>
+             <h3 class="font-bold text-emerald-800 text-lg">Input DO Masuk (Merekam Data Stok Ayam)</h3>
              <button onclick="closeModalDO()" class="text-emerald-500 hover:text-emerald-700"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
           </div>
-          <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+          <div class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
              <input type="hidden" id="do-id">
-             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal DO *</label>
-                    <input id="do-tanggal" type="date" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50" required>
+             
+             <!-- Bagian 1: Ekspedisi & Waktu -->
+             <div>
+                 <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-3 border-b border-slate-100 pb-1">1. Ekspedisi & Waktu</h4>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal DO *</label>
+                        <input id="do-tanggal" type="date" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50" required>
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Nomor Antrian</label>
+                        <input id="do-nomor-antrian" type="text" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50" placeholder="Misal: 05">
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Supir (Karyawan)</label>
+                        <select id="do-supir" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50">
+                           <option value="">-- Pilih Supir --</option>
+                        </select>
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Kernet</label>
+                        <input id="do-kernet" type="text" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50" placeholder="Nama Kernet">
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Jam Berangkat</label>
+                        <input id="do-jam-berangkat" type="time" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50">
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Jam Sampai Kandang</label>
+                        <input id="do-jam-sampai-kandang" type="time" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50">
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Jam Sampai Gudang</label>
+                        <input id="do-jam-sampai-gudang" type="time" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50">
+                     </div>
                  </div>
-                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Kandang (Supplier) *</label>
-                    <select id="do-kandang" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50" required>
-                       <option value="">-- Pilih Kandang --</option>
-                    </select>
+             </div>
+             
+             <!-- Bagian 2: Supplier Kandang -->
+             <div class="pt-2">
+                 <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-3 border-b border-slate-100 pb-1">2. Supplier Kandang</h4>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Kandang (Supplier) *</label>
+                        <select id="do-kandang" onchange="updateLokasiKandang()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50" required>
+                           <option value="">-- Pilih Kandang --</option>
+                        </select>
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Lokasi Kandang (Otomatis)</label>
+                        <input id="do-lokasi-kandang" type="text" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm bg-slate-100 text-slate-500 cursor-not-allowed outline-none" readonly placeholder="Alamat Kandang">
+                     </div>
                  </div>
-                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Jumlah Ekor *</label>
-                    <input id="do-ekor" type="number" oninput="calcDO()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right" required>
+             </div>
+
+             <!-- Bagian 3: Timbangan & Realisasi -->
+             <div class="pt-2">
+                 <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-3 border-b border-slate-100 pb-1">3. Timbangan & Realisasi</h4>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Jumlah Ekor *</label>
+                        <input id="do-ekor" type="number" oninput="calcDO()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right" required placeholder="Ekor">
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Bruto (Kg) *</label>
+                        <input id="do-bruto" type="number" step="0.01" oninput="calcDO()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right" required placeholder="Kg">
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Jumlah Keranjang</label>
+                        <input id="do-keranjang" type="number" oninput="calcDO()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right" placeholder="1 = 6.2kg">
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Ukuran Realisasi DO Ayam</label>
+                        <select id="do-ukuran-realisasi" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50">
+                           <option value="">-- Pilih Realisasi Ukuran --</option>
+                           <option value="KTN">KTN (0.5 - 0.79 kg)</option>
+                           <option value="K">K atau K/PK (0.8 - 1.29 kg)</option>
+                           <option value="TB">TB atau B/PK (1.3 - 1.69 kg)</option>
+                           <option value="B">B (1.7 - 1.99 kg)</option>
+                           <option value="JK">JK atau JB/PK (2.0 - 2.29 kg)</option>
+                        </select>
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Staf Timbang</label>
+                        <select id="do-staf" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50">
+                           <option value="">-- Pilih Staf --</option>
+                        </select>
+                     </div>
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Keterangan Ayam</label>
+                        <input id="do-keterangan-ayam" type="text" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50" placeholder="Misal: sakit, lemah, dll">
+                     </div>
                  </div>
-                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Bruto (Kg) *</label>
-                    <input id="do-bruto" type="number" step="0.01" oninput="calcDO()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right" required>
-                 </div>
-                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Jumlah Keranjang</label>
-                    <input id="do-keranjang" type="number" oninput="calcDO()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right" placeholder="1 = 6.2kg">
-                 </div>
-                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Jam Bongkar</label>
-                    <input id="do-jam" type="time" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50">
-                 </div>
-                 
-                 <!-- Pengurang -->
-                 <div class="col-span-1 md:col-span-2 border-t border-slate-100 pt-3 mt-1">
-                     <h4 class="text-xs font-bold text-rose-500 mb-3 uppercase tracking-wider">Pengurang Stok (Opsional)</h4>
-                 </div>
-                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Susut (Kg)</label>
-                    <input id="do-susut-kg" type="number" step="0.01" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right">
-                 </div>
-                 <div class="grid grid-cols-2 gap-2">
+             </div>
+
+             <!-- Bagian 4: Pengurang Stok (Opsional) -->
+             <div class="pt-2">
+                 <h4 class="text-xs font-bold text-rose-500 uppercase tracking-wider mb-3 border-b border-rose-100 pb-1">4. Pengurang Stok (Opsional)</h4>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Susut (Kg)</label>
+                        <input id="do-susut-kg" type="number" step="0.01" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right" placeholder="0.00">
+                     </div>
                      <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Mati (Ekor)</label>
-                        <input id="do-mati-ekor" type="number" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right">
+                        <input id="do-mati-ekor" type="number" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right" placeholder="0">
                      </div>
                      <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Mati (Kg)</label>
-                        <input id="do-mati-kg" type="number" step="0.01" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right">
+                        <input id="do-mati-kg" type="number" step="0.01" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50 text-right" placeholder="0.00">
                      </div>
                  </div>
-                 
-                 <!-- Hasil Kalkulasi -->
-                 <div class="col-span-1 md:col-span-2 bg-emerald-50 p-4 rounded-lg mt-2 grid grid-cols-3 gap-4">
+             </div>
+             
+             <!-- Bagian 5: Kalkulasi Otomatis -->
+             <div class="pt-2">
+                 <h4 class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-3 border-b border-slate-100 pb-1">5. Hasil Kalkulasi Otomatis</h4>
+                 <div class="bg-emerald-50 p-4 rounded-lg grid grid-cols-3 gap-4 border border-emerald-100">
                      <div>
-                         <label class="block text-[10px] font-bold text-emerald-700 uppercase">Netto</label>
-                         <div id="calc-netto" class="text-lg font-bold text-slate-800">0 Kg</div>
+                          <label class="block text-[10px] font-bold text-emerald-700 uppercase">Netto Kg</label>
+                          <div id="calc-netto" class="text-lg font-bold text-slate-800">0.00 Kg</div>
                      </div>
                      <div>
-                         <label class="block text-[10px] font-bold text-emerald-700 uppercase">Rata-rata</label>
-                         <div id="calc-rata" class="text-lg font-bold text-slate-800">0 Kg</div>
+                          <label class="block text-[10px] font-bold text-emerald-700 uppercase">Rata-rata (Netto/Ekor)</label>
+                          <div id="calc-rata" class="text-lg font-bold text-slate-800">0.00 Kg</div>
                      </div>
                      <div>
-                         <label class="block text-[10px] font-bold text-emerald-700 uppercase">Ukuran</label>
-                         <div id="calc-ukuran" class="text-lg font-bold text-slate-800">-</div>
+                          <label class="block text-[10px] font-bold text-emerald-700 uppercase">Rekomendasi Ukuran</label>
+                          <div id="calc-ukuran" class="text-lg font-bold text-slate-800">-</div>
                      </div>
-                 </div>
-
-                 <div class="col-span-1 md:col-span-2 mt-2">
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Staf Timbang</label>
-                    <select id="do-staf" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-emerald-500 bg-slate-50">
-                       <option value="">-- Pilih Staf --</option>
-                    </select>
                  </div>
              </div>
           </div>
@@ -304,227 +366,299 @@
           renderData();
        }
 
-       function fetchData() {
-           if (!window.DataLayer) return;
-           dbStok = window.DataLayer.getStokAyam ? window.DataLayer.getStokAyam() : [];
-           dbKandang = window.DataLayer.getMaster('kandang') || [];
-           dbStaf = window.DataLayer.getMaster('operasional') || [];
-           
-           // Populate selects
-           const kandangOpts = '<option value="">-- Pilih Kandang --</option>' + dbKandang.map(k => `<option value="${k.id}">${k.nama}</option>`).join('');
-           document.getElementById('do-kandang').innerHTML = kandangOpts;
-           
-           const stafOpts = '<option value="">-- Pilih Staf --</option>' + dbStaf.map(s => `<option value="${s.nama}">${s.nama}</option>`).join('');
-           document.getElementById('do-staf').innerHTML = stafOpts;
-           document.getElementById('kemarin-staf').innerHTML = stafOpts;
-       }
+        function fetchData() {
+            if (!window.DataLayer) return;
+            dbStok = window.DataLayer.getStokAyam ? window.DataLayer.getStokAyam() : [];
+            dbKandang = window.DataLayer.getMaster('kandang') || [];
+            dbStaf = window.DataLayer.getMaster('operasional') || [];
+            
+            // Populate selects
+            const kandangOpts = '<option value="">-- Pilih Kandang --</option>' + dbKandang.map(k => `<option value="${k.id}">${k.nama}</option>`).join('');
+            document.getElementById('do-kandang').innerHTML = kandangOpts;
+            
+            const supirOpts = '<option value="">-- Pilih Supir --</option>' + dbStaf.map(s => `<option value="${s.nama}">${s.nama}</option>`).join('');
+            document.getElementById('do-supir').innerHTML = supirOpts;
 
-       function hitungUkuran(rata) {
-           if(!rata || rata <= 0) return '-';
-           if (rata >= 0.5 && rata <= 0.79) return 'KTN';
-           if (rata >= 0.8 && rata <= 1.29) return 'K'; // atau K/PK
-           if (rata >= 1.3 && rata <= 1.69) return 'TB'; // atau B/PK
-           if (rata >= 1.7 && rata <= 1.99) return 'B';
-           if (rata >= 2.0) return 'JK'; // atau JB/PK
-           return '-';
-       }
+            const stafOpts = '<option value="">-- Pilih Staf --</option>' + dbStaf.map(s => `<option value="${s.nama}">${s.nama}</option>`).join('');
+            document.getElementById('do-staf').innerHTML = stafOpts;
+            document.getElementById('kemarin-staf').innerHTML = stafOpts;
+        }
 
-       // Kalkulasi DO Masuk
-       window.calcDO = function() {
-           const ekor = Number(document.getElementById('do-ekor').value) || 0;
-           const bruto = Number(document.getElementById('do-bruto').value) || 0;
-           const keranjang = Number(document.getElementById('do-keranjang').value) || 0;
-           
-           calculatedNettoDO = bruto - (keranjang * 6.2);
-           if(calculatedNettoDO < 0) calculatedNettoDO = 0;
-           
-           calculatedRataDO = ekor > 0 ? (calculatedNettoDO / ekor) : 0;
-           calculatedUkuranDO = hitungUkuran(calculatedRataDO);
-           
-           document.getElementById('calc-netto').textContent = calculatedNettoDO.toFixed(2) + ' Kg';
-           document.getElementById('calc-rata').textContent = calculatedRataDO.toFixed(2) + ' Kg';
-           document.getElementById('calc-ukuran').textContent = calculatedUkuranDO;
-       }
+        window.updateLokasiKandang = function() {
+            const kandangId = document.getElementById('do-kandang').value;
+            const kandang = dbKandang.find(k => k.id === kandangId);
+            document.getElementById('do-lokasi-kandang').value = kandang ? (kandang.alamat || '-') : '';
+        }
 
-       // Kalkulasi Stok Kemarin
-       window.calcKemarin = function() {
-           const ekor = Number(document.getElementById('kemarin-ekor').value) || 0;
-           const kg = Number(document.getElementById('kemarin-kg').value) || 0;
-           
-           calculatedRataKemarin = ekor > 0 ? (kg / ekor) : 0;
-           calculatedUkuranKemarin = hitungUkuran(calculatedRataKemarin);
-           
-           document.getElementById('calc-rata-kemarin').textContent = calculatedRataKemarin.toFixed(2) + ' Kg';
-           document.getElementById('calc-ukuran-kemarin').textContent = calculatedUkuranKemarin;
-       }
+        function hitungUkuran(rata) {
+            if(!rata || rata <= 0) return '-';
+            if (rata >= 0.5 && rata <= 0.79) return 'KTN';
+            if (rata >= 0.8 && rata <= 1.29) return 'K'; // atau K/PK
+            if (rata >= 1.3 && rata <= 1.69) return 'TB'; // atau B/PK
+            if (rata >= 1.7 && rata <= 1.99) return 'B';
+            if (rata >= 2.0 && rata <= 2.29) return 'JK'; // JB/PK
+            return '-';
+        }
 
-       // Tab Handling
-       document.getElementById('tab-do').addEventListener('click', (e) => {
-           document.getElementById('tab-kemarin').className = "tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all";
-           document.getElementById('content-kemarin').classList.add('hidden');
-           e.target.className = "tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-emerald-50 text-emerald-700 font-bold border-b-2 border-emerald-600 transition-all";
-           document.getElementById('content-do').classList.remove('hidden');
-       });
-       document.getElementById('tab-kemarin').addEventListener('click', (e) => {
-           document.getElementById('tab-do').className = "tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all";
-           document.getElementById('content-do').classList.add('hidden');
-           e.target.className = "tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-blue-50 text-blue-700 font-bold border-b-2 border-blue-600 transition-all";
-           document.getElementById('content-kemarin').classList.remove('hidden');
-       });
+        // Kalkulasi DO Masuk
+        window.calcDO = function() {
+            const ekor = Number(document.getElementById('do-ekor').value) || 0;
+            const bruto = Number(document.getElementById('do-bruto').value) || 0;
+            const keranjang = Number(document.getElementById('do-keranjang').value) || 0;
+            
+            calculatedNettoDO = bruto - (keranjang * 6.2);
+            if(calculatedNettoDO < 0) calculatedNettoDO = 0;
+            
+            calculatedRataDO = ekor > 0 ? (calculatedNettoDO / ekor) : 0;
+            calculatedUkuranDO = hitungUkuran(calculatedRataDO);
+            
+            document.getElementById('calc-netto').textContent = calculatedNettoDO.toFixed(2) + ' Kg';
+            document.getElementById('calc-rata').textContent = calculatedRataDO.toFixed(2) + ' Kg';
+            document.getElementById('calc-ukuran').textContent = calculatedUkuranDO;
+        }
 
-       async function renderData() {
-           if(dbStok instanceof Promise) dbStok = await dbStok;
-           
-           let doHtml = '';
-           let kemarinHtml = '';
-           
-           let totalEkor = 0;
-           let totalKg = 0;
-           
-           const dataDO = dbStok.filter(s => s.jenis_stok === 'DO_MASUK');
-           const dataKemarin = dbStok.filter(s => s.jenis_stok === 'STOK_KEMARIN');
-           
-           // Hitung Total dari DO Masuk (Netto Ekor & Kg)
-           dataDO.forEach(d => {
-               const nettoEkor = Number(d.jumlah_ekor) - Number(d.jumlah_mati_ekor || 0);
-               const nettoKg = Number(d.jumlah_kg) - Number(d.jumlah_susut_kg || 0) - Number(d.jumlah_mati_kg || 0);
-               totalEkor += nettoEkor;
-               totalKg += nettoKg;
-           });
-           
-           // Tambah Total dari Stok Kemarin
-           dataKemarin.forEach(d => {
-               totalEkor += Number(d.jumlah_ekor);
-               totalKg += Number(d.jumlah_kg);
-           });
-           
-           document.getElementById('kpi-total-ekor').textContent = totalEkor.toLocaleString('id-ID');
-           document.getElementById('kpi-total-kg').textContent = totalKg.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-           document.getElementById('kpi-rata').textContent = totalEkor > 0 ? (totalKg / totalEkor).toFixed(2) + ' kg' : '0 kg';
+        // Kalkulasi Stok Kemarin
+        window.calcKemarin = function() {
+            const ekor = Number(document.getElementById('kemarin-ekor').value) || 0;
+            const kg = Number(document.getElementById('kemarin-kg').value) || 0;
+            
+            calculatedRataKemarin = ekor > 0 ? (kg / ekor) : 0;
+            calculatedUkuranKemarin = hitungUkuran(calculatedRataKemarin);
+            
+            document.getElementById('calc-rata-kemarin').textContent = calculatedRataKemarin.toFixed(2) + ' Kg';
+            document.getElementById('calc-ukuran-kemarin').textContent = calculatedUkuranKemarin;
+        }
 
-           // Render DO Masuk
-           if (dataDO.length === 0) {
-               document.getElementById('empty-do').classList.remove('hidden');
-           } else {
-               document.getElementById('empty-do').classList.add('hidden');
-               doHtml = dataDO.map((d, i) => {
-                   const kndg = dbKandang.find(k => k.id === d.id_kandang);
-                   const kndgName = kndg ? kndg.nama : '-';
-                   return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                      <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-400">${i+1}</td>
-                      <td class="px-4 py-3 border-r border-slate-100">${d.tanggal}</td>
-                      <td class="px-4 py-3 border-r border-slate-100 font-medium">${kndgName}</td>
-                      <td class="px-4 py-3 border-r border-slate-100 text-right">${d.jumlah_ekor}</td>
-                      <td class="px-4 py-3 border-r border-slate-100 text-right">${Number(d.jumlah_kg).toFixed(2)}</td>
-                      <td class="px-4 py-3 border-r border-slate-100 text-center"><span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-bold">${d.ukuran_ayam||'-'}</span></td>
-                      <td class="px-4 py-3 text-center">
-                         <button onclick="deleteData('${d.id}')" class="text-rose-500 hover:underline font-semibold text-xs">Hapus</button>
-                      </td>
-                   </tr>`;
-               }).join('');
-           }
-           document.getElementById('table-do').innerHTML = doHtml;
-           
-           // Render Stok Kemarin
-           if (dataKemarin.length === 0) {
-               document.getElementById('empty-kemarin').classList.remove('hidden');
-           } else {
-               document.getElementById('empty-kemarin').classList.add('hidden');
-               kemarinHtml = dataKemarin.map((d, i) => {
-                   return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                      <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-400">${i+1}</td>
-                      <td class="px-4 py-3 border-r border-slate-100">${d.tanggal}</td>
-                      <td class="px-4 py-3 border-r border-slate-100 text-center">${d.masukan_range||'-'}</td>
-                      <td class="px-4 py-3 border-r border-slate-100 text-right">${d.jumlah_ekor}</td>
-                      <td class="px-4 py-3 border-r border-slate-100 text-right">${Number(d.jumlah_kg).toFixed(2)}</td>
-                      <td class="px-4 py-3 border-r border-slate-100 text-center"><span class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded font-bold">${d.ukuran_ayam||'-'}</span></td>
-                      <td class="px-4 py-3 text-center">
-                         <button onclick="deleteData('${d.id}')" class="text-rose-500 hover:underline font-semibold text-xs">Hapus</button>
-                      </td>
-                   </tr>`;
-               }).join('');
-           }
-           document.getElementById('table-kemarin').innerHTML = kemarinHtml;
-       }
+        // Tab Handling
+        document.getElementById('tab-do').addEventListener('click', (e) => {
+            document.getElementById('tab-kemarin').className = "tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all";
+            document.getElementById('content-kemarin').classList.add('hidden');
+            e.target.className = "tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-emerald-50 text-emerald-700 font-bold border-b-2 border-emerald-600 transition-all";
+            document.getElementById('content-do').classList.remove('hidden');
+        });
+        document.getElementById('tab-kemarin').addEventListener('click', (e) => {
+            document.getElementById('tab-do').className = "tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all";
+            document.getElementById('content-do').classList.add('hidden');
+            e.target.className = "tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-blue-50 text-blue-700 font-bold border-b-2 border-blue-600 transition-all";
+            document.getElementById('content-kemarin').classList.remove('hidden');
+        });
 
-       // Modal DO
-       window.openModalDO = function() {
-           document.getElementById('do-id').value = crypto.randomUUID();
-           document.getElementById('do-tanggal').value = new Date().toISOString().split('T')[0];
-           document.getElementById('do-kandang').value = '';
-           document.getElementById('do-ekor').value = '';
-           document.getElementById('do-bruto').value = '';
-           document.getElementById('do-keranjang').value = '';
-           document.getElementById('do-jam').value = '';
-           document.getElementById('do-susut-kg').value = '';
-           document.getElementById('do-mati-ekor').value = '';
-           document.getElementById('do-mati-kg').value = '';
-           document.getElementById('do-staf').value = '';
-           calcDO();
-           const modal = document.getElementById('modal-do');
-           const content = document.getElementById('modal-content-do');
-           modal.classList.remove('hidden');
-           setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
-       }
-       window.closeModalDO = function() {
-           const modal = document.getElementById('modal-do');
-           const content = document.getElementById('modal-content-do');
-           modal.classList.add('opacity-0');
-           content.classList.add('scale-95');
-           setTimeout(() => { modal.classList.add('hidden'); }, 300);
-       }
-       window.saveDO = async function() {
-           if(!document.getElementById('do-tanggal').value || !document.getElementById('do-kandang').value || !document.getElementById('do-ekor').value || !document.getElementById('do-bruto').value) {
-               alert('Harap isi semua field wajib (*)'); return;
-           }
-           if(typeof AuthGuard !== 'undefined' && !(await AuthGuard.consumeToken('create', 'Input DO Masuk'))) return;
-           
-           const payload = {
-               id: document.getElementById('do-id').value,
-               jenis_stok: 'DO_MASUK',
-               tanggal: document.getElementById('do-tanggal').value,
-               id_kandang: document.getElementById('do-kandang').value,
-               jumlah_ekor: Number(document.getElementById('do-ekor').value),
-               jumlah_kg: calculatedNettoDO, // Simpan netto sebagai jumlah_kg
-               jumlah_keranjang: Number(document.getElementById('do-keranjang').value) || 0,
-               jam_bongkar: document.getElementById('do-jam').value || null,
-               jumlah_susut_kg: Number(document.getElementById('do-susut-kg').value) || 0,
-               jumlah_mati_ekor: Number(document.getElementById('do-mati-ekor').value) || 0,
-               jumlah_mati_kg: Number(document.getElementById('do-mati-kg').value) || 0,
-               rata_rata_ayam: calculatedRataDO,
-               ukuran_ayam: calculatedUkuranDO,
-               nama_staf: document.getElementById('do-staf').value || ''
-           };
-           
-           if(window.DataLayer && window.DataLayer.saveStokAyam) {
-               await window.DataLayer.saveStokAyam(payload, false);
-               fetchData();
-               renderData();
-           }
-           closeModalDO();
-       }
+        window.toggleDetail = function(id) {
+            const detailRow = document.getElementById('detail-' + id);
+            const icon = document.getElementById('icon-' + id);
+            if(detailRow) {
+                const isHidden = detailRow.classList.contains('hidden');
+                detailRow.classList.toggle('hidden');
+                if(icon) {
+                    icon.style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
+                }
+            }
+        }
 
-       // Modal Kemarin
-       window.openModalKemarin = function() {
-           document.getElementById('kemarin-id').value = crypto.randomUUID();
-           document.getElementById('kemarin-tanggal').value = new Date().toISOString().split('T')[0];
-           document.getElementById('kemarin-range').value = '';
-           document.getElementById('kemarin-ekor').value = '';
-           document.getElementById('kemarin-kg').value = '';
-           document.getElementById('kemarin-staf').value = '';
-           calcKemarin();
-           const modal = document.getElementById('modal-kemarin');
-           const content = document.getElementById('modal-content-kemarin');
-           modal.classList.remove('hidden');
-           setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
-       }
-       window.closeModalKemarin = function() {
-           const modal = document.getElementById('modal-kemarin');
-           const content = document.getElementById('modal-content-kemarin');
-           modal.classList.add('opacity-0');
-           content.classList.add('scale-95');
-           setTimeout(() => { modal.classList.add('hidden'); }, 300);
-       }
+        async function renderData() {
+            if(dbStok instanceof Promise) dbStok = await dbStok;
+            
+            let doHtml = '';
+            let kemarinHtml = '';
+            
+            let totalEkor = 0;
+            let totalKg = 0;
+            
+            const dataDO = dbStok.filter(s => s.jenis_stok === 'DO_MASUK');
+            const dataKemarin = dbStok.filter(s => s.jenis_stok === 'STOK_KEMARIN');
+            
+            // Hitung Total dari DO Masuk (Netto Ekor & Kg)
+            dataDO.forEach(d => {
+                const nettoEkor = Number(d.jumlah_ekor) - Number(d.jumlah_mati_ekor || 0);
+                const nettoKg = Number(d.jumlah_kg) - Number(d.jumlah_susut_kg || 0) - Number(d.jumlah_mati_kg || 0);
+                totalEkor += nettoEkor;
+                totalKg += nettoKg;
+            });
+            
+            // Tambah Total dari Stok Kemarin
+            dataKemarin.forEach(d => {
+                totalEkor += Number(d.jumlah_ekor);
+                totalKg += Number(d.jumlah_kg);
+            });
+            
+            document.getElementById('kpi-total-ekor').textContent = totalEkor.toLocaleString('id-ID');
+            document.getElementById('kpi-total-kg').textContent = totalKg.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('kpi-rata').textContent = totalEkor > 0 ? (totalKg / totalEkor).toFixed(2) + ' kg' : '0 kg';
+
+            // Render DO Masuk
+            if (dataDO.length === 0) {
+                document.getElementById('empty-do').classList.remove('hidden');
+            } else {
+                document.getElementById('empty-do').classList.add('hidden');
+                doHtml = dataDO.map((d, i) => {
+                    const kndg = dbKandang.find(k => k.id === d.id_kandang);
+                    const kndgName = kndg ? kndg.nama : '-';
+                    return `
+                    <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer" onclick="toggleDetail('${d.id}')">
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-400">
+                          <svg id="icon-${d.id}" class="w-4 h-4 inline-block transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                          <span class="ml-1">${i+1}</span>
+                       </td>
+                       <td class="px-4 py-3 border-r border-slate-100">${d.tanggal}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 font-bold text-slate-800">${kndgName}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${d.jumlah_ekor.toLocaleString('id-ID')}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${Number(d.jumlah_kg).toFixed(2)}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center">
+                          <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-bold" title="Rekomendasi">${d.ukuran_ayam||'-'}</span>
+                          ${d.ukuran_realisasi ? `<span class="bg-indigo-100 text-indigo-800 text-[10px] px-2 py-0.5 rounded font-bold ml-1" title="Realisasi">${d.ukuran_realisasi}</span>` : ''}
+                       </td>
+                       <td class="px-4 py-3 text-center" onclick="event.stopPropagation()">
+                          <button onclick="deleteData('${d.id}')" class="text-rose-500 hover:underline font-semibold text-xs">Hapus</button>
+                       </td>
+                    </tr>
+                    <tr id="detail-${d.id}" class="hidden bg-slate-50/50 border-b border-slate-100">
+                       <td colspan="7" class="px-8 py-4 text-xs text-slate-600">
+                          <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3">
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Nama Supir:</span> <span class="text-slate-800 font-medium">${d.nama_supir || '-'}</span></div>
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Nama Kernet:</span> <span class="text-slate-800 font-medium">${d.nama_kernet || '-'}</span></div>
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Lokasi Kandang:</span> <span class="text-slate-800 font-medium">${d.lokasi_kandang || '-'}</span></div>
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Nomor Antrian:</span> <span class="text-slate-800 font-medium">${d.nomor_antrian || '-'}</span></div>
+                             
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Jam Berangkat:</span> <span class="text-slate-800 font-medium">${d.jam_berangkat || '-'}</span></div>
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Jam Sampai Kandang:</span> <span class="text-slate-800 font-medium">${d.jam_sampai_kandang || '-'}</span></div>
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Jam Sampai Gudang:</span> <span class="text-slate-800 font-medium">${d.jam_sampai_gudang || '-'}</span></div>
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Staf Timbang:</span> <span class="text-slate-800 font-medium">${d.staf_timbang || '-'}</span></div>
+                             
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Timbangan Bruto:</span> <span class="text-slate-800 font-medium">${d.bruto_kg ? d.bruto_kg + ' Kg' : '-'}</span></div>
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Jumlah Keranjang:</span> <span class="text-slate-800 font-medium">${d.jumlah_keranjang || '0'} keranjang</span></div>
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Ukuran Realisasi:</span> <span class="text-indigo-700 font-bold">${d.ukuran_realisasi || '-'}</span></div>
+                             <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px]">Keterangan:</span> <span class="text-slate-800 font-medium">${d.keterangan_ayam || '-'}</span></div>
+                             
+                             <div class="col-span-2 md:col-span-4 border-t border-slate-100 pt-2 mt-1 grid grid-cols-3 gap-4">
+                                 <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px] text-rose-500">Ayam Mati:</span> <span class="text-rose-600 font-semibold">${d.jumlah_mati_ekor || 0} ekor (${d.jumlah_mati_kg || 0} kg)</span></div>
+                                 <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px] text-rose-500">Susut Kilo:</span> <span class="text-rose-600 font-semibold">${d.jumlah_susut_kg || 0} kg</span></div>
+                                 <div><span class="font-semibold text-slate-400 block uppercase tracking-wider text-[10px] text-emerald-600">Rata-rata Ayam:</span> <span class="text-emerald-700 font-bold">${d.rata_rata_ayam ? d.rata_rata_ayam.toFixed(2) + ' Kg' : '-'}</span></div>
+                             </div>
+                          </div>
+                       </td>
+                    </tr>`;
+                }).join('');
+            }
+            document.getElementById('table-do').innerHTML = doHtml;
+            
+            // Render Stok Kemarin
+            if (dataKemarin.length === 0) {
+                document.getElementById('empty-kemarin').classList.remove('hidden');
+            } else {
+                document.getElementById('empty-kemarin').classList.add('hidden');
+                kemarinHtml = dataKemarin.map((d, i) => {
+                    return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-400">${i+1}</td>
+                       <td class="px-4 py-3 border-r border-slate-100">${d.tanggal}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center">${d.masukan_range||'-'}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right">${d.jumlah_ekor}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right">${Number(d.jumlah_kg).toFixed(2)}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center"><span class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded font-bold">${d.ukuran_ayam||'-'}</span></td>
+                       <td class="px-4 py-3 text-center">
+                          <button onclick="deleteData('${d.id}')" class="text-rose-500 hover:underline font-semibold text-xs">Hapus</button>
+                       </td>
+                    </tr>`;
+                }).join('');
+            }
+            document.getElementById('table-kemarin').innerHTML = kemarinHtml;
+        }
+ 
+        // Modal DO
+        window.openModalDO = function() {
+            document.getElementById('do-id').value = crypto.randomUUID();
+            document.getElementById('do-tanggal').value = new Date().toISOString().split('T')[0];
+            document.getElementById('do-nomor-antrian').value = '';
+            document.getElementById('do-supir').value = '';
+            document.getElementById('do-kernet').value = '';
+            document.getElementById('do-jam-berangkat').value = '';
+            document.getElementById('do-jam-sampai-kandang').value = '';
+            document.getElementById('do-jam-sampai-gudang').value = '';
+            document.getElementById('do-kandang').value = '';
+            document.getElementById('do-lokasi-kandang').value = '';
+            document.getElementById('do-ekor').value = '';
+            document.getElementById('do-bruto').value = '';
+            document.getElementById('do-keranjang').value = '';
+            document.getElementById('do-ukuran-realisasi').value = '';
+            document.getElementById('do-keterangan-ayam').value = '';
+            document.getElementById('do-susut-kg').value = '';
+            document.getElementById('do-mati-ekor').value = '';
+            document.getElementById('do-mati-kg').value = '';
+            document.getElementById('do-staf').value = '';
+            calcDO();
+            const modal = document.getElementById('modal-do');
+            const content = document.getElementById('modal-content-do');
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
+        }
+        window.closeModalDO = function() {
+            const modal = document.getElementById('modal-do');
+            const content = document.getElementById('modal-content-do');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+        window.saveDO = async function() {
+            if(!document.getElementById('do-tanggal').value || !document.getElementById('do-kandang').value || !document.getElementById('do-ekor').value || !document.getElementById('do-bruto').value) {
+                alert('Harap isi semua field wajib (*)'); return;
+            }
+            if(typeof AuthGuard !== 'undefined' && !(await AuthGuard.consumeToken('create', 'Input DO Masuk'))) return;
+            
+            const payload = {
+                id: document.getElementById('do-id').value,
+                jenis_stok: 'DO_MASUK',
+                tanggal: document.getElementById('do-tanggal').value,
+                id_kandang: document.getElementById('do-kandang').value,
+                nomor_antrian: document.getElementById('do-nomor-antrian').value.trim(),
+                nama_supir: document.getElementById('do-supir').value,
+                nama_kernet: document.getElementById('do-kernet').value.trim(),
+                jam_berangkat: document.getElementById('do-jam-berangkat').value || null,
+                jam_sampai_kandang: document.getElementById('do-jam-sampai-kandang').value || null,
+                jam_sampai_gudang: document.getElementById('do-jam-sampai-gudang').value || null,
+                lokasi_kandang: document.getElementById('do-lokasi-kandang').value,
+                jumlah_ekor: Number(document.getElementById('do-ekor').value),
+                bruto_kg: Number(document.getElementById('do-bruto').value) || 0,
+                jumlah_kg: calculatedNettoDO,
+                jumlah_keranjang: Number(document.getElementById('do-keranjang').value) || 0,
+                ukuran_realisasi: document.getElementById('do-ukuran-realisasi').value,
+                staf_timbang: document.getElementById('do-staf').value,
+                keterangan_ayam: document.getElementById('do-keterangan-ayam').value.trim(),
+                jumlah_susut_kg: Number(document.getElementById('do-susut-kg').value) || 0,
+                jumlah_mati_ekor: Number(document.getElementById('do-mati-ekor').value) || 0,
+                jumlah_mati_kg: Number(document.getElementById('do-mati-kg').value) || 0,
+                rata_rata_ayam: calculatedRataDO,
+                ukuran_ayam: calculatedUkuranDO,
+                nama_staf: document.getElementById('do-staf').value || ''
+            };
+            
+            if(window.DataLayer && window.DataLayer.saveStokAyam) {
+                await window.DataLayer.saveStokAyam(payload, false);
+                fetchData();
+                renderData();
+            }
+            closeModalDO();
+        }
+ 
+        // Modal Kemarin
+        window.openModalKemarin = function() {
+            document.getElementById('kemarin-id').value = crypto.randomUUID();
+            document.getElementById('kemarin-tanggal').value = new Date().toISOString().split('T')[0];
+            document.getElementById('kemarin-range').value = '';
+            document.getElementById('kemarin-ekor').value = '';
+            document.getElementById('kemarin-kg').value = '';
+            document.getElementById('kemarin-staf').value = '';
+            calcKemarin();
+            const modal = document.getElementById('modal-kemarin');
+            const content = document.getElementById('modal-content-kemarin');
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
+        }
+        window.closeModalKemarin = function() {
+            const modal = document.getElementById('modal-kemarin');
+            const content = document.getElementById('modal-content-kemarin');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
        window.saveKemarin = async function() {
            if(!document.getElementById('kemarin-tanggal').value || !document.getElementById('kemarin-ekor').value || !document.getElementById('kemarin-kg').value) {
                alert('Harap isi semua field wajib (*)'); return;
