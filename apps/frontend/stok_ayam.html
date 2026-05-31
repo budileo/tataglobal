@@ -74,10 +74,45 @@
          </div>
       </div>
 
+      <!-- Filter Periode Card -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+         <div class="flex items-center gap-3">
+            <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+            <div>
+               <h4 class="font-bold text-slate-800 text-sm">Filter Periode</h4>
+               <p class="text-xs text-slate-500">Tampilkan data berdasarkan rentang tanggal</p>
+            </div>
+         </div>
+         <div class="flex flex-wrap items-center gap-3">
+            <!-- Period Toggle -->
+            <div class="bg-slate-100 p-1 rounded-lg flex items-center gap-1">
+               <button id="btn-filter-bulan" onclick="setFilterMode('bulan')" class="px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all">
+                  Bulan Ini
+               </button>
+               <button id="btn-filter-range" onclick="setFilterMode('range')" class="px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all">
+                  Range Waktu
+               </button>
+            </div>
+            
+            <!-- Date Inputs -->
+            <div id="filter-range-container" class="hidden flex items-center gap-2">
+               <input id="filter-start-date" type="date" class="border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs outline-emerald-500 bg-slate-50 text-slate-700">
+               <span class="text-xs text-slate-400 font-semibold">s/d</span>
+               <input id="filter-end-date" type="date" class="border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs outline-emerald-500 bg-slate-50 text-slate-700">
+               <button onclick="applyFilterRange()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition-colors shadow-md shadow-emerald-600/10">
+                  Cari
+               </button>
+            </div>
+         </div>
+      </div>
+
       <!-- Tab Navigation -->
       <div class="flex overflow-x-auto gap-2 border-b border-slate-200 pb-2 snap-x mt-6">
          <button id="tab-do" class="tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-emerald-50 text-emerald-700 font-bold border-b-2 border-emerald-600 transition-all">Stok DO Masuk</button>
          <button id="tab-kemarin" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Stok Kemarin</button>
+         <button id="tab-rekap" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Rekap Stok</button>
       </div>
 
       <!-- Tab Content: DO Masuk -->
@@ -138,6 +173,33 @@
                  <tbody id="table-kemarin" class="divide-y divide-slate-100"></tbody>
               </table>
               <div id="empty-kemarin" class="hidden p-8 text-center text-slate-400"><p class="font-medium text-sm">Belum ada data Stok Kemarin.</p></div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Rekap Stok -->
+      <div id="content-rekap" class="tab-content hidden relative">
+        <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+           <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
+              <div class="flex items-center gap-3">
+                 <h3 class="font-bold text-slate-800">Alur Rekapitulasi Stok Ayam (Awal - Penyusutan - Akhir)</h3>
+              </div>
+           </div>
+           <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-600 whitespace-nowrap">
+                 <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                    <tr>
+                        <th class="px-4 py-3 border-r border-slate-100 w-32 text-center">Tanggal</th>
+                        <th class="px-4 py-3 border-r border-slate-100">Type Stok</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-center">Ukuran</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-right">Kg</th>
+                        <th class="px-4 py-3 text-right">Rata-Rata (Kg)</th>
+                    </tr>
+                 </thead>
+                 <tbody id="table-rekap" class="divide-y divide-slate-100"></tbody>
+              </table>
+              <div id="empty-rekap" class="hidden p-8 text-center text-slate-400"><p class="font-medium text-sm">Belum ada data Rekap Stok untuk periode ini.</p></div>
            </div>
         </div>
       </div>
@@ -366,8 +428,86 @@
        let calculatedRataKemarin = 0;
        let calculatedUkuranKemarin = '';
 
+       // Filter Periode State
+       let filterMode = 'bulan'; // 'bulan' atau 'range'
+       let filterStartDate = '';
+       let filterEndDate = '';
+
+       // Inisialisasi Filter Tanggal
+       function initFilter() {
+           const now = new Date();
+           const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+           const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+           
+           const formatDateLocal = (date) => {
+               const year = date.getFullYear();
+               const month = String(date.getMonth() + 1).padStart(2, '0');
+               const day = String(date.getDate()).padStart(2, '0');
+               return `${year}-${month}-${day}`;
+           };
+           
+           filterStartDate = formatDateLocal(firstDay);
+           filterEndDate = formatDateLocal(lastDay);
+           
+           document.getElementById('filter-start-date').value = filterStartDate;
+           document.getElementById('filter-end-date').value = filterEndDate;
+           
+           updateFilterUI();
+       }
+
+       function updateFilterUI() {
+           const btnBulan = document.getElementById('btn-filter-bulan');
+           const btnRange = document.getElementById('btn-filter-range');
+           const rangeContainer = document.getElementById('filter-range-container');
+           
+           if (filterMode === 'bulan') {
+               btnBulan.className = "px-3.5 py-1.5 rounded-md text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm";
+               btnRange.className = "px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-slate-800 hover:bg-slate-200/50";
+               rangeContainer.classList.add('hidden');
+           } else {
+               btnRange.className = "px-3.5 py-1.5 rounded-md text-xs font-bold transition-all bg-emerald-600 text-white shadow-sm";
+               btnBulan.className = "px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-slate-800 hover:bg-slate-200/50";
+               rangeContainer.classList.remove('hidden');
+           }
+       }
+
+       window.setFilterMode = function(mode) {
+           filterMode = mode;
+           if (mode === 'bulan') {
+               const now = new Date();
+               const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+               const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+               const formatDateLocal = (date) => {
+                   const year = date.getFullYear();
+                   const month = String(date.getMonth() + 1).padStart(2, '0');
+                   const day = String(date.getDate()).padStart(2, '0');
+                   return `${year}-${month}-${day}`;
+               };
+               filterStartDate = formatDateLocal(firstDay);
+               filterEndDate = formatDateLocal(lastDay);
+               document.getElementById('filter-start-date').value = filterStartDate;
+               document.getElementById('filter-end-date').value = filterEndDate;
+               
+               renderData();
+           }
+           updateFilterUI();
+       }
+
+       window.applyFilterRange = function() {
+           const start = document.getElementById('filter-start-date').value;
+           const end = document.getElementById('filter-end-date').value;
+           if (!start || !end) {
+               alert('Harap isi tanggal mulai dan akhir!');
+               return;
+           }
+           filterStartDate = start;
+           filterEndDate = end;
+           renderData();
+       }
+
        // Initialize
        async function initApp() {
+          initFilter();
           if (window.DataLayer) await window.DataLayer.init();
           fetchData();
           renderData();
@@ -478,17 +618,37 @@
         }
 
         // Tab Handling
-        document.getElementById('tab-do').addEventListener('click', (e) => {
-            document.getElementById('tab-kemarin').className = "tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all";
-            document.getElementById('content-kemarin').classList.add('hidden');
-            e.target.className = "tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-emerald-50 text-emerald-700 font-bold border-b-2 border-emerald-600 transition-all";
-            document.getElementById('content-do').classList.remove('hidden');
+        function switchTab(activeTabId, showContentId, activeClass) {
+            const tabs = ['tab-do', 'tab-kemarin', 'tab-rekap'];
+            const contents = ['content-do', 'content-kemarin', 'content-rekap'];
+            
+            tabs.forEach(t => {
+                const btn = document.getElementById(t);
+                if (btn) {
+                    btn.className = "tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all";
+                }
+            });
+            contents.forEach(c => {
+                const cnt = document.getElementById(c);
+                if (cnt) cnt.classList.add('hidden');
+            });
+            
+            const activeBtn = document.getElementById(activeTabId);
+            if (activeBtn) {
+                activeBtn.className = `tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg ${activeClass} font-bold border-b-2 transition-all`;
+            }
+            const showCnt = document.getElementById(showContentId);
+            if (showCnt) showCnt.classList.remove('hidden');
+        }
+
+        document.getElementById('tab-do').addEventListener('click', () => {
+            switchTab('tab-do', 'content-do', 'bg-emerald-50 text-emerald-700 border-emerald-600');
         });
-        document.getElementById('tab-kemarin').addEventListener('click', (e) => {
-            document.getElementById('tab-do').className = "tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all";
-            document.getElementById('content-do').classList.add('hidden');
-            e.target.className = "tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-blue-50 text-blue-700 font-bold border-b-2 border-blue-600 transition-all";
-            document.getElementById('content-kemarin').classList.remove('hidden');
+        document.getElementById('tab-kemarin').addEventListener('click', () => {
+            switchTab('tab-kemarin', 'content-kemarin', 'bg-blue-50 text-blue-700 border-blue-600');
+        });
+        document.getElementById('tab-rekap').addEventListener('click', () => {
+            switchTab('tab-rekap', 'content-rekap', 'bg-purple-50 text-purple-700 border-purple-600');
         });
 
         window.toggleDetail = function(id) {
@@ -508,12 +668,27 @@
             
             let doHtml = '';
             let kemarinHtml = '';
+            let rekapHtml = '';
             
             let totalEkor = 0;
             let totalKg = 0;
             
-            const dataDO = dbStok.filter(s => s.jenis_stok === 'DO_MASUK');
-            const dataKemarin = dbStok.filter(s => s.jenis_stok === 'STOK_KEMARIN');
+            // Filter data by active period first
+            const filteredStok = dbStok.filter(d => {
+                if (!d.tanggal) return false;
+                return d.tanggal >= filterStartDate && d.tanggal <= filterEndDate;
+            });
+            
+            // Sort by date descending, then ID/UUID descending for stable tie break
+            const sortedStok = [...filteredStok].sort((a, b) => {
+                if (a.tanggal !== b.tanggal) {
+                    return b.tanggal.localeCompare(a.tanggal);
+                }
+                return b.id.localeCompare(a.id);
+            });
+            
+            const dataDO = sortedStok.filter(s => s.jenis_stok === 'DO_MASUK');
+            const dataKemarin = sortedStok.filter(s => s.jenis_stok === 'STOK_KEMARIN');
             
             // Hitung Total dari DO Masuk (Netto Ekor & Kg)
             dataDO.forEach(d => {
@@ -609,6 +784,132 @@
                 }).join('');
             }
             document.getElementById('table-kemarin').innerHTML = kemarinHtml;
+
+            // Render Rekap Stok
+            if (sortedStok.length === 0) {
+                document.getElementById('empty-rekap').classList.remove('hidden');
+            } else {
+                document.getElementById('empty-rekap').classList.add('hidden');
+                rekapHtml = sortedStok.map((d, index) => {
+                    if (d.jenis_stok === 'DO_MASUK') {
+                        const kndg = dbKandang.find(k => k.id === d.id_kandang);
+                        const kndgName = kndg ? kndg.nama : '-';
+                        
+                        const ekorAwal = Number(d.jumlah_ekor) || 0;
+                        const kgAwal = Number(d.jumlah_kg) || 0;
+                        const rataAwal = ekorAwal > 0 ? (kgAwal / ekorAwal) : 0;
+                        const ukuranAwal = d.ukuran_ayam || '-';
+                        
+                        const matiEkor = Number(d.jumlah_mati_ekor || 0);
+                        const susutMatiKg = Number(d.jumlah_susut_kg || 0) + Number(d.jumlah_mati_kg || 0);
+                        
+                        const ekorAkhir = ekorAwal - matiEkor;
+                        const kgAkhir = kgAwal - Number(d.jumlah_susut_kg || 0) - Number(d.jumlah_mati_kg || 0);
+                        const rataAkhir = ekorAkhir > 0 ? (kgAkhir / ekorAkhir) : 0;
+                        const ukuranAkhir = hitungUkuran(rataAkhir);
+                        
+                        return `
+                        <!-- Row 1: Stok Awal -->
+                        <tr class="bg-white hover:bg-slate-50/80 transition-colors">
+                           <td rowspan="3" class="px-4 py-4 border-r border-b border-slate-200 text-center font-bold text-slate-800 align-middle">
+                              <div class="text-[10px] font-semibold text-slate-400 mb-0.5">#${sortedStok.length - index}</div>
+                              <div class="text-xs font-bold text-slate-700">${d.tanggal}</div>
+                           </td>
+                           <td class="px-4 py-3 border-r border-slate-100 font-medium">
+                              <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold">DO Masuk (Awal)</span>
+                              <div class="text-[10px] text-slate-400 mt-0.5 font-normal">${kndgName}</div>
+                           </td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center">
+                              <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-bold">${ukuranAwal}</span>
+                           </td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${ekorAwal.toLocaleString('id-ID')} Ekor</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${kgAwal.toFixed(2)} Kg</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${rataAwal.toFixed(2)} Kg</td>
+                        </tr>
+                        <!-- Row 2: Penyusutan -->
+                        <tr class="bg-rose-50/20 hover:bg-rose-50/40 transition-colors">
+                           <td class="px-4 py-2.5 border-r border-slate-100">
+                              <span class="text-rose-600 font-bold text-xs flex items-center gap-1">
+                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                 Penyusutan (Mati & Susut)
+                              </span>
+                           </td>
+                           <td class="px-4 py-2.5 border-r border-slate-100 text-center text-slate-400">-</td>
+                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-rose-600 font-medium">
+                              ${matiEkor > 0 ? `-${matiEkor.toLocaleString('id-ID')} Ekor` : '<span class="text-slate-400">0 Ekor</span>'}
+                           </td>
+                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-rose-600 font-medium">
+                              ${susutMatiKg > 0 ? `-${susutMatiKg.toFixed(2)} Kg` : '<span class="text-slate-400">0.00 Kg</span>'}
+                           </td>
+                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-slate-400">-</td>
+                        </tr>
+                        <!-- Row 3: Stok Akhir -->
+                        <tr class="bg-slate-50 hover:bg-slate-100/80 transition-colors border-b-2 border-slate-200">
+                           <td class="px-4 py-3 border-r border-slate-100 font-medium">
+                              <span class="bg-slate-800 text-slate-100 px-2 py-0.5 rounded text-[10px] font-bold">Stok Akhir (Netto)</span>
+                           </td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center font-bold text-slate-700">
+                              <span class="bg-slate-700 text-slate-100 text-[10px] px-2 py-0.5 rounded font-bold">${ukuranAkhir}</span>
+                           </td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${ekorAkhir.toLocaleString('id-ID')} Ekor</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${kgAkhir.toFixed(2)} Kg</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${rataAkhir.toFixed(2)} Kg</td>
+                        </tr>
+                        `;
+                    } else {
+                        const ekorAwal = Number(d.jumlah_ekor) || 0;
+                        const kgAwal = Number(d.jumlah_kg) || 0;
+                        const rataAwal = Number(d.rata_rata_ayam || 0);
+                        const ukuranAwal = d.ukuran_ayam || '-';
+                        
+                        return `
+                        <!-- Row 1: Stok Awal -->
+                        <tr class="bg-white hover:bg-slate-50/80 transition-colors">
+                           <td rowspan="3" class="px-4 py-4 border-r border-b border-slate-200 text-center font-bold text-slate-800 align-middle">
+                              <div class="text-[10px] font-semibold text-slate-400 mb-0.5">#${sortedStok.length - index}</div>
+                              <div class="text-xs font-bold text-slate-700">${d.tanggal}</div>
+                           </td>
+                           <td class="px-4 py-3 border-r border-slate-100 font-medium">
+                              <span class="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold">Stok Kemarin (Awal)</span>
+                              <div class="text-[10px] text-slate-400 mt-0.5 font-normal">Range: ${d.masukan_range || '-'}</div>
+                           </td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center">
+                              <span class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded font-bold">${ukuranAwal}</span>
+                           </td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${ekorAwal.toLocaleString('id-ID')} Ekor</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${kgAwal.toFixed(2)} Kg</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${rataAwal.toFixed(2)} Kg</td>
+                        </tr>
+                        <!-- Row 2: Penyusutan -->
+                        <tr class="bg-rose-50/20 hover:bg-rose-50/40 transition-colors">
+                           <td class="px-4 py-2.5 border-r border-slate-100">
+                              <span class="text-rose-600 font-bold text-xs flex items-center gap-1">
+                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                                 Penyusutan
+                              </span>
+                           </td>
+                           <td class="px-4 py-2.5 border-r border-slate-100 text-center text-slate-400">-</td>
+                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-slate-400">0 Ekor</td>
+                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-slate-400">0.00 Kg</td>
+                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-slate-400">-</td>
+                        </tr>
+                        <!-- Row 3: Stok Akhir -->
+                        <tr class="bg-slate-50 hover:bg-slate-100/80 transition-colors border-b-2 border-slate-200">
+                           <td class="px-4 py-3 border-r border-slate-100 font-medium">
+                              <span class="bg-slate-800 text-slate-100 px-2 py-0.5 rounded text-[10px] font-bold">Stok Akhir (Netto)</span>
+                           </td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center font-bold text-slate-700">
+                              <span class="bg-slate-700 text-slate-100 text-[10px] px-2 py-0.5 rounded font-bold">${ukuranAwal}</span>
+                           </td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${ekorAwal.toLocaleString('id-ID')} Ekor</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${kgAwal.toFixed(2)} Kg</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${rataAwal.toFixed(2)} Kg</td>
+                        </tr>
+                        `;
+                    }
+                }).join('');
+            }
+            document.getElementById('table-rekap').innerHTML = rekapHtml;
         }
  
         // Modal DO
