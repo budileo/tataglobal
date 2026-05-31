@@ -306,10 +306,17 @@
                 <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal *</label>
                 <input id="kemarin-tanggal" type="date" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-blue-500 bg-slate-50" required>
              </div>
-             <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Masukan Range (Misal 1.2 s/d 1.4) *</label>
-                <input id="kemarin-range" type="text" oninput="calcKemarin()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-blue-500 bg-slate-50" required placeholder="Contoh: 1.2 s/d 1.4">
+             <div class="grid grid-cols-2 gap-4">
+                 <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Mulai Berat (Range) *</label>
+                    <select id="kemarin-range-start" onchange="calcKemarin()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-blue-500 bg-slate-50" required></select>
+                 </div>
+                 <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Sampai Berat (Range) *</label>
+                    <select id="kemarin-range-end" onchange="calcKemarin()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-blue-500 bg-slate-50" required></select>
+                 </div>
              </div>
+             <input type="hidden" id="kemarin-range">
              <div class="grid grid-cols-2 gap-4">
                  <div>
                     <label class="block text-xs font-semibold text-slate-500 mb-1">Jumlah Ekor *</label>
@@ -382,6 +389,19 @@
             const stafOpts = '<option value="">-- Pilih Staf --</option>' + dbStaf.map(s => `<option value="${s.nama}">${s.nama}</option>`).join('');
             document.getElementById('do-staf').innerHTML = stafOpts;
             document.getElementById('kemarin-staf').innerHTML = stafOpts;
+
+            // Populate Range Dropdowns (0.5 to 3.0 Kg)
+            let rangeStartSelect = document.getElementById('kemarin-range-start');
+            let rangeEndSelect = document.getElementById('kemarin-range-end');
+            if (rangeStartSelect && rangeEndSelect) {
+                let options = '<option value="">-- Pilih --</option>';
+                for (let w = 0.5; w <= 3.01; w += 0.1) {
+                    let wStr = w.toFixed(1);
+                    options += `<option value="${wStr}">${wStr} Kg</option>`;
+                }
+                rangeStartSelect.innerHTML = options;
+                rangeEndSelect.innerHTML = options;
+            }
         }
 
         window.updateLokasiKandang = function() {
@@ -417,52 +437,35 @@
             document.getElementById('calc-ukuran').textContent = calculatedUkuranDO;
         }
 
-        function parseRangeAverage(rangeStr) {
-            if (!rangeStr) return 0;
-            
-            // Mengubah koma menjadi titik untuk memproses pecahan Indonesia (contoh: 1,2 menjadi 1.2)
-            let cleanStr = rangeStr.replace(/(\d),(\d)/g, '$1.$2').trim();
-            
-            // Cek format range seperti "X sampai Y", "X s/d Y", "X to Y", "X - Y"
-            let rangeMatch = cleanStr.match(/([0-9.]+)\s*(?:sampai|s\/d|to|-)\s*([0-9.]+)/i);
-            if (rangeMatch) {
-                let start = parseFloat(rangeMatch[1]);
-                let end = parseFloat(rangeMatch[2]);
-                if (!isNaN(start) && !isNaN(end)) {
-                    if (start > end) {
-                        let temp = start;
-                        start = end;
-                        end = temp;
-                    }
-                    
-                    let sum = 0;
-                    let count = 0;
-                    // Iterasi dengan step 0.1
-                    for (let val = start; val <= end + 0.001; val += 0.1) {
-                        sum += val;
-                        count++;
-                    }
-                    return count > 0 ? (sum / count) : 0;
-                }
-            }
-            
-            // Format koma / spasi (contoh: 1.2, 1.3, 1.4)
-            let parts = cleanStr.split(/[^0-9.]+/);
-            let numbers = parts.map(p => parseFloat(p)).filter(n => !isNaN(n));
-            if (numbers.length > 0) {
-                let sum = numbers.reduce((a, b) => a + b, 0);
-                return sum / numbers.length;
-            }
-            
-            return 0;
-        }
-
         // Kalkulasi Stok Kemarin
         window.calcKemarin = function() {
             const ekor = Number(document.getElementById('kemarin-ekor').value) || 0;
-            const rangeStr = document.getElementById('kemarin-range').value;
+            const startVal = document.getElementById('kemarin-range-start').value;
+            const endVal = document.getElementById('kemarin-range-end').value;
             
-            calculatedRataKemarin = parseRangeAverage(rangeStr);
+            if (startVal && endVal) {
+                let start = parseFloat(startVal);
+                let end = parseFloat(endVal);
+                
+                // Swap if start is larger than end
+                if (start > end) {
+                    let temp = start;
+                    start = end;
+                    end = temp;
+                }
+                
+                let sum = 0;
+                let count = 0;
+                for (let val = start; val <= end + 0.001; val += 0.1) {
+                    sum += val;
+                    count++;
+                }
+                calculatedRataKemarin = count > 0 ? (sum / count) : 0;
+                document.getElementById('kemarin-range').value = `${start.toFixed(1)} s/d ${end.toFixed(1)}`;
+            } else {
+                calculatedRataKemarin = 0;
+                document.getElementById('kemarin-range').value = '';
+            }
             
             // F. Jumlah Kilo = Rumus (jumlah Ekor x Rata rata AYam)
             const kg = ekor * calculatedRataKemarin;
@@ -687,6 +690,8 @@
         window.openModalKemarin = function() {
             document.getElementById('kemarin-id').value = crypto.randomUUID();
             document.getElementById('kemarin-tanggal').value = new Date().toISOString().split('T')[0];
+            document.getElementById('kemarin-range-start').value = '';
+            document.getElementById('kemarin-range-end').value = '';
             document.getElementById('kemarin-range').value = '';
             document.getElementById('kemarin-ekor').value = '';
             document.getElementById('kemarin-kg').value = '';
