@@ -182,7 +182,7 @@
         <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
            <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
               <div class="flex items-center gap-3">
-                 <h3 class="font-bold text-slate-800">Alur Rekapitulasi Stok Ayam (Awal - Penyusutan - Akhir)</h3>
+                 <h3 class="font-bold text-slate-800">Alur Rekapitulasi Stok Ayam (Awal - Susut DO - Penjualan - Akhir)</h3>
               </div>
            </div>
            <div class="overflow-x-auto">
@@ -193,7 +193,8 @@
                         <th class="px-4 py-3 border-r border-slate-100 text-center">Ukuran</th>
                         <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor Awal</th>
                         <th class="px-4 py-3 border-r border-slate-100 text-right">Kg Awal</th>
-                        <th class="px-4 py-3 border-r border-slate-100 text-center">Penyusutan</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-center">Susut DO</th>
+                        <th class="px-4 py-3 border-r border-slate-100 text-center">Penjualan</th>
                         <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor Akhir</th>
                         <th class="px-4 py-3 border-r border-slate-100 text-right">Kg Akhir</th>
                         <th class="px-4 py-3 text-right">Rata²</th>
@@ -788,11 +789,23 @@
             document.getElementById('table-kemarin').innerHTML = kemarinHtml;
 
             // Render Rekap Stok (Dikelompokkan Berdasarkan Tanggal & Ukuran)
+            const normalisasiUkuran = (ukuran) => {
+                if (!ukuran) return '-';
+                const u = ukuran.toUpperCase().trim();
+                if (u === 'KTN') return 'KTN';
+                if (u === 'K' || u === 'K/PK') return 'K';
+                if (u === 'TB' || u === 'B/PK') return 'TB';
+                if (u === 'B') return 'B';
+                if (u === 'JK' || u === 'JB' || u === 'JB/PK') return 'JK';
+                return u;
+            };
+
             const aggregates = {};
             
             filteredStok.forEach(d => {
                 const tgl = d.tanggal;
-                const ukuran = d.jenis_stok === 'DO_MASUK' ? (d.ukuran_realisasi || d.ukuran_ayam || '-') : (d.ukuran_ayam || '-');
+                const rawUkuran = d.jenis_stok === 'DO_MASUK' ? (d.ukuran_realisasi || d.ukuran_ayam || '-') : (d.ukuran_ayam || '-');
+                const ukuran = normalisasiUkuran(rawUkuran);
                 const key = `${tgl}_${ukuran}`;
                 
                 if (!aggregates[key]) {
@@ -803,6 +816,8 @@
                         kgAwal: 0,
                         matiEkor: 0,
                         susutMatiKg: 0,
+                        penjualanEkor: 0,
+                        penjualanKg: 0,
                         ekorAkhir: 0,
                         kgAkhir: 0
                     };
@@ -820,11 +835,46 @@
                     agg.kgAwal += Number(d.jumlah_kg) || 0;
                 }
             });
+
+            // Agregasi Data Penjualan dari Bon Penjualan (Non-Void)
+            const dbBons = window.DataLayer && window.DataLayer.getBons ? window.DataLayer.getBons() : [];
+            const filteredBons = dbBons.filter(b => {
+                return !b.isVoid && b.tanggal >= filterStartDate && b.tanggal <= filterEndDate;
+            });
             
-            // Hitung nilai akhir bersih
+            filteredBons.forEach(b => {
+                const tgl = b.tanggal;
+                if (!b.items) return;
+                
+                b.items.forEach(it => {
+                    const ukuran = normalisasiUkuran(it.ukuran);
+                    const key = `${tgl}_${ukuran}`;
+                    
+                    if (!aggregates[key]) {
+                        aggregates[key] = {
+                            tanggal: tgl,
+                            ukuran: ukuran,
+                            ekorAwal: 0,
+                            kgAwal: 0,
+                            matiEkor: 0,
+                            susutMatiKg: 0,
+                            penjualanEkor: 0,
+                            penjualanKg: 0,
+                            ekorAkhir: 0,
+                            kgAkhir: 0
+                        };
+                    }
+                    
+                    const agg = aggregates[key];
+                    agg.penjualanEkor += Number(it.jmlAyam || 0);
+                    agg.penjualanKg += Number(it.netto || 0);
+                });
+            });
+            
+            // Hitung nilai akhir bersih (Stok Akhir = Awal - Susut - Penjualan)
             Object.values(aggregates).forEach(agg => {
-                agg.ekorAkhir = agg.ekorAwal - agg.matiEkor;
-                agg.kgAkhir = agg.kgAwal - agg.susutMatiKg;
+                agg.ekorAkhir = agg.ekorAwal - agg.matiEkor - agg.penjualanEkor;
+                agg.kgAkhir = agg.kgAwal - agg.susutMatiKg - agg.penjualanKg;
             });
             
             // Urutkan berdasarkan tanggal descending, kemudian ukuran alfabetis
@@ -860,6 +910,8 @@
                     let dateTotalKgAwal = 0;
                     let dateTotalMatiEkor = 0;
                     let dateTotalSusutMatiKg = 0;
+                    let dateTotalPenjualanEkor = 0;
+                    let dateTotalPenjualanKg = 0;
                     let dateTotalEkorAkhir = 0;
                     let dateTotalKgAkhir = 0;
                     
@@ -868,6 +920,8 @@
                         dateTotalKgAwal += agg.kgAwal;
                         dateTotalMatiEkor += agg.matiEkor;
                         dateTotalSusutMatiKg += agg.susutMatiKg;
+                        dateTotalPenjualanEkor += agg.penjualanEkor;
+                        dateTotalPenjualanKg += agg.penjualanKg;
                         dateTotalEkorAkhir += agg.ekorAkhir;
                         dateTotalKgAkhir += agg.kgAkhir;
                         
@@ -884,11 +938,18 @@
                                </td>` 
                             : '';
                             
-                        let penyusutanText = '0';
+                        let susutDOText = '0';
                         if (agg.matiEkor > 0 || agg.susutMatiKg > 0) {
                             const matiStr = agg.matiEkor > 0 ? `${agg.matiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
                             const susutStr = agg.susutMatiKg > 0 ? `${Number(agg.susutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
-                            penyusutanText = `<span class="text-rose-600 font-semibold">${matiStr} / ${susutStr}</span>`;
+                            susutDOText = `<span class="text-rose-600 font-semibold">${matiStr} / ${susutStr}</span>`;
+                        }
+
+                        let penjualanText = '0';
+                        if (agg.penjualanEkor > 0 || agg.penjualanKg > 0) {
+                            const jualEkorStr = agg.penjualanEkor > 0 ? `${agg.penjualanEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                            const jualKgStr = agg.penjualanKg > 0 ? `${Number(agg.penjualanKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                            penjualanText = `<span class="text-blue-600 font-semibold">${jualEkorStr} / ${jualKgStr}</span>`;
                         }
                         
                         rekapHtml += `
@@ -899,7 +960,8 @@
                            </td>
                            <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${agg.ekorAwal.toLocaleString('id-ID')}</td>
                            <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${agg.kgAwal.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${penyusutanText}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${susutDOText}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${penjualanText}</td>
                            <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${agg.ekorAkhir.toLocaleString('id-ID')}</td>
                            <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${agg.kgAkhir.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
                            <td class="px-4 py-3 text-right font-bold text-slate-800">${rata.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
@@ -910,11 +972,18 @@
                     // Render TOTAL Row for this date
                     const totalRata = dateTotalEkorAkhir > 0 ? (dateTotalKgAkhir / dateTotalEkorAkhir) : 0;
                     
-                    let totalPenyusutanText = '0';
+                    let totalSusutText = '0';
                     if (dateTotalMatiEkor > 0 || dateTotalSusutMatiKg > 0) {
                         const totalMatiStr = dateTotalMatiEkor > 0 ? `${dateTotalMatiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
                         const totalSusutStr = dateTotalSusutMatiKg > 0 ? `${Number(dateTotalSusutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
-                        totalPenyusutanText = `<span class="text-rose-600 font-bold">${totalMatiStr} / ${totalSusutStr}</span>`;
+                        totalSusutText = `<span class="text-rose-600 font-bold">${totalMatiStr} / ${totalSusutStr}</span>`;
+                    }
+
+                    let totalPenjualanText = '0';
+                    if (dateTotalPenjualanEkor > 0 || dateTotalPenjualanKg > 0) {
+                        const totalJualEkorStr = dateTotalPenjualanEkor > 0 ? `${dateTotalPenjualanEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                        const totalJualKgStr = dateTotalPenjualanKg > 0 ? `${Number(dateTotalPenjualanKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                        totalPenjualanText = `<span class="text-blue-600 font-bold">${totalJualEkorStr} / ${totalJualKgStr}</span>`;
                     }
                     
                     rekapHtml += `
@@ -924,7 +993,8 @@
                        </td>
                        <td class="px-4 py-3 border-r border-slate-100 text-right text-slate-900 font-extrabold">${dateTotalEkorAwal.toLocaleString('id-ID')}</td>
                        <td class="px-4 py-3 border-r border-slate-100 text-right text-slate-900 font-extrabold">${dateTotalKgAwal.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
-                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-900 font-extrabold text-xs">${totalPenyusutanText}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-900 font-extrabold text-xs">${totalSusutText}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-900 font-extrabold text-xs">${totalPenjualanText}</td>
                        <td class="px-4 py-3 border-r border-slate-100 text-right text-slate-900 font-extrabold">${dateTotalEkorAkhir.toLocaleString('id-ID')}</td>
                        <td class="px-4 py-3 border-r border-slate-100 text-right text-slate-900 font-extrabold">${dateTotalKgAkhir.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
                        <td class="px-4 py-3 text-right text-slate-900 font-extrabold">${totalRata.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
