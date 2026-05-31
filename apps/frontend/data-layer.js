@@ -16,25 +16,34 @@ window.DataLayer = {
   async init() {
     try {
       console.log('DataLayer: Initializing data from Supabase...');
+      // Fetch existing tables (these must always work)
       const [
         { data: bons },
         { data: pembayaran },
         { data: konsumen },
         { data: marketing },
         { data: operasional },
-        { data: jalur },
-        { data: kandang },
-        { data: stok_ayam }
+        { data: jalur }
       ] = await Promise.all([
         supabase.from('bons').select('*').order('created_at', { ascending: false }),
         supabase.from('pembayaran').select('*').order('created_at', { ascending: true }),
         supabase.from('master_konsumen').select('*').order('created_at', { ascending: false }),
         supabase.from('master_marketing').select('*').order('created_at', { ascending: false }),
         supabase.from('master_operasional').select('*').order('created_at', { ascending: false }),
-        supabase.from('jalur_distribusi').select('*').order('created_at', { ascending: false }),
-        supabase.from('master_kandang').select('*').order('created_at', { ascending: false }),
-        supabase.from('data_stok_ayam').select('*').order('tanggal', { ascending: false })
+        supabase.from('jalur_distribusi').select('*').order('created_at', { ascending: false })
       ]);
+
+      // Fetch new tables gracefully (may not exist yet if SQL migration hasn't run)
+      let kandang = null;
+      let stok_ayam = null;
+      try {
+        const res1 = await supabase.from('master_kandang').select('*').order('created_at', { ascending: false });
+        if (!res1.error) kandang = res1.data;
+      } catch(e) { console.warn('DataLayer: master_kandang table not found, skipping.'); }
+      try {
+        const res2 = await supabase.from('data_stok_ayam').select('*').order('tanggal', { ascending: false });
+        if (!res2.error) stok_ayam = res2.data;
+      } catch(e) { console.warn('DataLayer: data_stok_ayam table not found, skipping.'); }
 
       // Process Bons
       this.data.bons = (bons || []).map(dbBon => ({
