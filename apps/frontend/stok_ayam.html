@@ -679,7 +679,7 @@
                 return d.tanggal >= filterStartDate && d.tanggal <= filterEndDate;
             });
             
-            // Sort by date descending, then ID/UUID descending for stable tie break
+            // Sort raw stok by date descending, then ID/UUID descending for stable tie break
             const sortedStok = [...filteredStok].sort((a, b) => {
                 if (a.tanggal !== b.tanggal) {
                     return b.tanggal.localeCompare(a.tanggal);
@@ -785,129 +785,138 @@
             }
             document.getElementById('table-kemarin').innerHTML = kemarinHtml;
 
-            // Render Rekap Stok
-            if (sortedStok.length === 0) {
+            // Render Rekap Stok (Dikelompokkan Berdasarkan Tanggal & Ukuran)
+            const aggregates = {};
+            
+            filteredStok.forEach(d => {
+                const tgl = d.tanggal;
+                const ukuran = d.jenis_stok === 'DO_MASUK' ? (d.ukuran_realisasi || d.ukuran_ayam || '-') : (d.ukuran_ayam || '-');
+                const key = `${tgl}_${ukuran}`;
+                
+                if (!aggregates[key]) {
+                    aggregates[key] = {
+                        tanggal: tgl,
+                        ukuran: ukuran,
+                        ekorAwal: 0,
+                        kgAwal: 0,
+                        matiEkor: 0,
+                        susutMatiKg: 0,
+                        ekorAkhir: 0,
+                        kgAkhir: 0
+                    };
+                }
+                
+                const agg = aggregates[key];
+                
+                if (d.jenis_stok === 'DO_MASUK') {
+                    agg.ekorAwal += Number(d.jumlah_ekor) || 0;
+                    agg.kgAwal += Number(d.jumlah_kg) || 0;
+                    agg.matiEkor += Number(d.jumlah_mati_ekor || 0);
+                    agg.susutMatiKg += Number(d.jumlah_susut_kg || 0) + Number(d.jumlah_mati_kg || 0);
+                } else {
+                    agg.ekorAwal += Number(d.jumlah_ekor) || 0;
+                    agg.kgAwal += Number(d.jumlah_kg) || 0;
+                }
+            });
+            
+            // Hitung nilai akhir bersih
+            Object.values(aggregates).forEach(agg => {
+                agg.ekorAkhir = agg.ekorAwal - agg.matiEkor;
+                agg.kgAkhir = agg.kgAwal - agg.susutMatiKg;
+            });
+            
+            // Urutkan berdasarkan tanggal descending, kemudian ukuran alfabetis
+            const sortedAggregates = Object.values(aggregates).sort((a, b) => {
+                if (a.tanggal !== b.tanggal) {
+                    return b.tanggal.localeCompare(a.tanggal);
+                }
+                return a.ukuran.localeCompare(b.ukuran);
+            });
+            
+            // Kelompokkan berdasarkan tanggal untuk menentukan rowspan Tanggal
+            const groupedByDate = {};
+            sortedAggregates.forEach(agg => {
+                if (!groupedByDate[agg.tanggal]) {
+                    groupedByDate[agg.tanggal] = [];
+                }
+                groupedByDate[agg.tanggal].push(agg);
+            });
+            
+            const dates = Object.keys(groupedByDate).sort((a, b) => b.localeCompare(a));
+            
+            if (dates.length === 0) {
                 document.getElementById('empty-rekap').classList.remove('hidden');
             } else {
                 document.getElementById('empty-rekap').classList.add('hidden');
-                rekapHtml = sortedStok.map((d, index) => {
-                    if (d.jenis_stok === 'DO_MASUK') {
-                        const kndg = dbKandang.find(k => k.id === d.id_kandang);
-                        const kndgName = kndg ? kndg.nama : '-';
+                
+                dates.forEach((tgl) => {
+                    const aggsForDate = groupedByDate[tgl];
+                    const dateRowspan = aggsForDate.length * 3;
+                    
+                    aggsForDate.forEach((agg, aggIdx) => {
+                        const rataAwal = agg.ekorAwal > 0 ? (agg.kgAwal / agg.ekorAwal) : 0;
+                        const rataAkhir = agg.ekorAkhir > 0 ? (agg.kgAkhir / agg.ekorAkhir) : 0;
                         
-                        const ekorAwal = Number(d.jumlah_ekor) || 0;
-                        const kgAwal = Number(d.jumlah_kg) || 0;
-                        const rataAwal = ekorAwal > 0 ? (kgAwal / ekorAwal) : 0;
-                        const ukuranAwal = d.ukuran_ayam || '-';
+                        // Rowspan Tanggal hanya di baris pertama tanggal tersebut
+                        const dateCell = aggIdx === 0 
+                            ? `<td rowspan="${dateRowspan}" class="px-4 py-4 border-r border-b border-slate-200 text-center font-bold text-slate-800 align-middle bg-slate-50/50">
+                                  <div class="text-sm font-bold text-slate-700">${agg.tanggal}</div>
+                               </td>` 
+                            : '';
+                            
+                        // Rowspan Ukuran selalu 3 baris (Awal -> Penyusutan -> Akhir) untuk ukuran bersangkutan
+                        const sizeCell = `<td rowspan="3" class="px-4 py-4 border-r border-b border-slate-200 text-center font-bold text-slate-700 align-middle bg-white">
+                                              <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded-full font-bold shadow-sm">${agg.ukuran}</span>
+                                          </td>`;
+                                          
+                        const isLastAggForDate = aggIdx === aggsForDate.length - 1;
+                        const borderClass = isLastAggForDate ? 'border-b-2 border-slate-300' : 'border-b border-slate-200';
                         
-                        const matiEkor = Number(d.jumlah_mati_ekor || 0);
-                        const susutMatiKg = Number(d.jumlah_susut_kg || 0) + Number(d.jumlah_mati_kg || 0);
-                        
-                        const ekorAkhir = ekorAwal - matiEkor;
-                        const kgAkhir = kgAwal - Number(d.jumlah_susut_kg || 0) - Number(d.jumlah_mati_kg || 0);
-                        const rataAkhir = ekorAkhir > 0 ? (kgAkhir / ekorAkhir) : 0;
-                        const ukuranAkhir = hitungUkuran(rataAkhir);
-                        
-                        return `
+                        rekapHtml += `
                         <!-- Row 1: Stok Awal -->
-                        <tr class="bg-white hover:bg-slate-50/80 transition-colors">
-                           <td rowspan="3" class="px-4 py-4 border-r border-b border-slate-200 text-center font-bold text-slate-800 align-middle">
-                              <div class="text-[10px] font-semibold text-slate-400 mb-0.5">#${sortedStok.length - index}</div>
-                              <div class="text-xs font-bold text-slate-700">${d.tanggal}</div>
+                        <tr class="bg-white hover:bg-slate-50/50 transition-colors">
+                           ${dateCell}
+                           <td class="px-4 py-3 border-r border-slate-100 font-medium text-slate-700">
+                              <span class="text-emerald-700 font-semibold text-xs flex items-center gap-1.5">
+                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                 Stok Masuk (Awal)
+                              </span>
                            </td>
-                           <td class="px-4 py-3 border-r border-slate-100 font-medium">
-                              <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold">DO Masuk (Awal)</span>
-                              <div class="text-[10px] text-slate-400 mt-0.5 font-normal">${kndgName}</div>
-                           </td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-center">
-                              <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-bold">${ukuranAwal}</span>
-                           </td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${ekorAwal.toLocaleString('id-ID')} Ekor</td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${kgAwal.toFixed(2)} Kg</td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${rataAwal.toFixed(2)} Kg</td>
+                           ${sizeCell}
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${agg.ekorAwal.toLocaleString('id-ID')} Ekor</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${agg.kgAwal.toFixed(2)} Kg</td>
+                           <td class="px-4 py-3 text-right font-medium text-slate-700">${rataAwal.toFixed(2)} Kg</td>
                         </tr>
+                        
                         <!-- Row 2: Penyusutan -->
-                        <tr class="bg-rose-50/20 hover:bg-rose-50/40 transition-colors">
-                           <td class="px-4 py-2.5 border-r border-slate-100">
-                              <span class="text-rose-600 font-bold text-xs flex items-center gap-1">
-                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                        <tr class="bg-rose-50/10 hover:bg-rose-50/30 transition-colors">
+                           <td class="px-4 py-2.5 border-r border-slate-100 font-medium text-rose-600">
+                              <span class="text-rose-600 font-bold text-xs flex items-center gap-1.5">
+                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>
                                  Penyusutan (Mati & Susut)
                               </span>
                            </td>
-                           <td class="px-4 py-2.5 border-r border-slate-100 text-center text-slate-400">-</td>
-                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-rose-600 font-medium">
-                              ${matiEkor > 0 ? `-${matiEkor.toLocaleString('id-ID')} Ekor` : '<span class="text-slate-400">0 Ekor</span>'}
+                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-rose-600 font-semibold">
+                              ${agg.matiEkor > 0 ? `-${agg.matiEkor.toLocaleString('id-ID')} Ekor` : '<span class="text-slate-400">0 Ekor</span>'}
                            </td>
-                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-rose-600 font-medium">
-                              ${susutMatiKg > 0 ? `-${susutMatiKg.toFixed(2)} Kg` : '<span class="text-slate-400">0.00 Kg</span>'}
+                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-rose-600 font-semibold">
+                              ${agg.susutMatiKg > 0 ? `-${agg.susutMatiKg.toFixed(2)} Kg` : '<span class="text-slate-400">0.00 Kg</span>'}
                            </td>
-                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-slate-400">-</td>
+                           <td class="px-4 py-2.5 text-right text-slate-400">-</td>
                         </tr>
-                        <!-- Row 3: Stok Akhir -->
-                        <tr class="bg-slate-50 hover:bg-slate-100/80 transition-colors border-b-2 border-slate-200">
-                           <td class="px-4 py-3 border-r border-slate-100 font-medium">
-                              <span class="bg-slate-800 text-slate-100 px-2 py-0.5 rounded text-[10px] font-bold">Stok Akhir (Netto)</span>
-                           </td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-center font-bold text-slate-700">
-                              <span class="bg-slate-700 text-slate-100 text-[10px] px-2 py-0.5 rounded font-bold">${ukuranAkhir}</span>
-                           </td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${ekorAkhir.toLocaleString('id-ID')} Ekor</td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${kgAkhir.toFixed(2)} Kg</td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${rataAkhir.toFixed(2)} Kg</td>
-                        </tr>
-                        `;
-                    } else {
-                        const ekorAwal = Number(d.jumlah_ekor) || 0;
-                        const kgAwal = Number(d.jumlah_kg) || 0;
-                        const rataAwal = Number(d.rata_rata_ayam || 0);
-                        const ukuranAwal = d.ukuran_ayam || '-';
                         
-                        return `
-                        <!-- Row 1: Stok Awal -->
-                        <tr class="bg-white hover:bg-slate-50/80 transition-colors">
-                           <td rowspan="3" class="px-4 py-4 border-r border-b border-slate-200 text-center font-bold text-slate-800 align-middle">
-                              <div class="text-[10px] font-semibold text-slate-400 mb-0.5">#${sortedStok.length - index}</div>
-                              <div class="text-xs font-bold text-slate-700">${d.tanggal}</div>
-                           </td>
-                           <td class="px-4 py-3 border-r border-slate-100 font-medium">
-                              <span class="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold">Stok Kemarin (Awal)</span>
-                              <div class="text-[10px] text-slate-400 mt-0.5 font-normal">Range: ${d.masukan_range || '-'}</div>
-                           </td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-center">
-                              <span class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded font-bold">${ukuranAwal}</span>
-                           </td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${ekorAwal.toLocaleString('id-ID')} Ekor</td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${kgAwal.toFixed(2)} Kg</td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${rataAwal.toFixed(2)} Kg</td>
-                        </tr>
-                        <!-- Row 2: Penyusutan -->
-                        <tr class="bg-rose-50/20 hover:bg-rose-50/40 transition-colors">
-                           <td class="px-4 py-2.5 border-r border-slate-100">
-                              <span class="text-rose-600 font-bold text-xs flex items-center gap-1">
-                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-                                 Penyusutan
-                              </span>
-                           </td>
-                           <td class="px-4 py-2.5 border-r border-slate-100 text-center text-slate-400">-</td>
-                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-slate-400">0 Ekor</td>
-                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-slate-400">0.00 Kg</td>
-                           <td class="px-4 py-2.5 border-r border-slate-100 text-right text-slate-400">-</td>
-                        </tr>
                         <!-- Row 3: Stok Akhir -->
-                        <tr class="bg-slate-50 hover:bg-slate-100/80 transition-colors border-b-2 border-slate-200">
-                           <td class="px-4 py-3 border-r border-slate-100 font-medium">
-                              <span class="bg-slate-800 text-slate-100 px-2 py-0.5 rounded text-[10px] font-bold">Stok Akhir (Netto)</span>
+                        <tr class="bg-slate-50 hover:bg-slate-100/80 transition-colors ${borderClass}">
+                           <td class="px-4 py-3 border-r border-slate-100 font-bold text-slate-800">
+                              <span class="bg-slate-800 text-slate-100 px-2 py-0.5 rounded text-[10px] font-bold shadow-sm">Stok Akhir (Netto)</span>
                            </td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-center font-bold text-slate-700">
-                              <span class="bg-slate-700 text-slate-100 text-[10px] px-2 py-0.5 rounded font-bold">${ukuranAwal}</span>
-                           </td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${ekorAwal.toLocaleString('id-ID')} Ekor</td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${kgAwal.toFixed(2)} Kg</td>
-                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${rataAwal.toFixed(2)} Kg</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${agg.ekorAkhir.toLocaleString('id-ID')} Ekor</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${agg.kgAkhir.toFixed(2)} Kg</td>
+                           <td class="px-4 py-3 text-right font-bold text-slate-800">${rataAkhir.toFixed(2)} Kg</td>
                         </tr>
                         `;
-                    }
-                }).join('');
+                    });
+                });
             }
             document.getElementById('table-rekap').innerHTML = rekapHtml;
         }
