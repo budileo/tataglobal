@@ -682,7 +682,7 @@
         await window.DataLayer.saveHrdData(type, {id: id}, true);
         
         if (typeof ActivityLogger !== 'undefined' && d) {
-          ActivityLogger.log({
+          await ActivityLogger.log({
             action: 'DELETE',
             entityType: 'HRD_' + type.toUpperCase(),
             entityId: d.karyawan_id,
@@ -721,7 +721,7 @@
         await window.DataLayer.saveHrdData(type, payload);
         
         if (typeof ActivityLogger !== 'undefined') {
-          ActivityLogger.log({
+          await ActivityLogger.log({
             action: isNew ? 'CREATE' : 'UPDATE',
             entityType: 'HRD_' + type.toUpperCase(),
             entityId: k.id,
