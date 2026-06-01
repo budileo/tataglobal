@@ -671,12 +671,26 @@
         if(!confirm('Anda yakin ingin menghapus data ini?')) return;
         
         const d = hrdData[type].find(x => x.id === id);
-        if (typeof AuthGuard !== 'undefined' && d) {
-          const actionMsg = 'Hapus data ' + type + ' karyawan: ' + d.nama;
-          if (!(await AuthGuard.consumeToken('delete', actionMsg))) return;
+        let actionMsg = '';
+        if (d) {
+          actionMsg = 'Hapus data ' + type + ' karyawan: ' + d.nama;
+          if (typeof AuthGuard !== 'undefined') {
+            if (!(await AuthGuard.consumeToken('delete', actionMsg))) return;
+          }
         }
 
         await window.DataLayer.saveHrdData(type, {id: id}, true);
+        
+        if (typeof ActivityLogger !== 'undefined' && d) {
+          ActivityLogger.log({
+            action: 'DELETE',
+            entityType: 'HRD_' + type.toUpperCase(),
+            entityId: d.karyawan_id,
+            oldData: d,
+            message: actionMsg
+          });
+        }
+
         refreshDataState();
         renderRingkasan();
         alert('Data berhasil dihapus.');
@@ -688,9 +702,9 @@
         
         const idField = document.getElementById('edit-id-' + type).value;
         const isNew = !idField;
+        const actionMsg = (isNew ? 'Tambah ' : 'Edit ') + 'data ' + type + ' karyawan: ' + k.nama;
 
         if (typeof AuthGuard !== 'undefined') {
-          const actionMsg = (isNew ? 'Tambah ' : 'Edit ') + 'data ' + type + ' karyawan: ' + k.nama;
           if (!(await AuthGuard.consumeToken(isNew ? 'create' : 'update', actionMsg))) return;
         }
 
@@ -701,7 +715,22 @@
         };
         if(idField) payload.id = idField; // if edit
 
+        // Ambil data lama jika edit
+        const oldData = !isNew ? hrdData[type].find(x => x.id === idField) : null;
+
         await window.DataLayer.saveHrdData(type, payload);
+        
+        if (typeof ActivityLogger !== 'undefined') {
+          ActivityLogger.log({
+            action: isNew ? 'CREATE' : 'UPDATE',
+            entityType: 'HRD_' + type.toUpperCase(),
+            entityId: k.id,
+            oldData: oldData,
+            newData: payload,
+            message: actionMsg
+          });
+        }
+
         alert("Data berhasil disimpan.");
         cancelEdit(type);
         refreshDataState();
@@ -881,6 +910,7 @@
     </script>
     <script src="auth-guard.js"></script>
     <script type="module" src="cloud-auth-guard.js"></script>
+    <script src="activity-logger.js"></script>
     <script src="app.js"></script>
     <script src="sidebar.js"></script>
   </body>
