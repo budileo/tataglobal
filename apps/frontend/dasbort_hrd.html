@@ -291,9 +291,8 @@
 
     </main>
 
-    <script type="module">
-      import { supabase } from './supabaseClient.js';
-      
+    <script type="module" src="data-layer.js"></script>
+    <script>
       // Setup UI initial state
       window.switchTab = function(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -329,6 +328,9 @@
           setTimeout(initHRD, 500);
           return;
         }
+
+        // Inisialisasi data dari cloud Supabase
+        await window.DataLayer.init();
 
         const karyawanList = window.DataLayer.getHrdKaryawan();
         const optionsHtml = `<option value="">-- Pilih Karyawan --</option>` + 
