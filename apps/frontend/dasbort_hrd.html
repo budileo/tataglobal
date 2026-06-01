@@ -72,7 +72,8 @@
         <button onclick="switchTab('produktivitas')" id="tab-btn-produktivitas" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Produktivitas</button>
         <button onclick="switchTab('pelanggaran')" id="tab-btn-pelanggaran" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Pelanggaran</button>
         <button onclick="switchTab('pengembangan')" id="tab-btn-pengembangan" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Pengembangan</button>
-        <button onclick="switchTab('jurnal')" id="tab-btn-jurnal" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Jurnal & Rekapitulasi</button>
+        <button onclick="switchTab('jurnal')" id="tab-btn-jurnal" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Jurnal Individu</button>
+        <button onclick="switchTab('rekap')" id="tab-btn-rekap" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Rekap Global</button>
       </div>
 
       <!-- Content: Ringkasan -->
@@ -414,6 +415,49 @@
         </div>
       </div>
 
+      <!-- Content: Rekap Global -->
+      <div id="tab-rekap" class="tab-content">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Rekapitulasi Karyawan Per Periode</h3>
+          
+          <div class="flex flex-col md:flex-row gap-4 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal Mulai</label>
+              <input type="date" id="filter_rekap_start" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-slate-500">
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal Akhir</label>
+              <input type="date" id="filter_rekap_end" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-slate-500">
+            </div>
+            <div class="flex items-end">
+              <button onclick="renderRekapGlobal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors h-[38px] shadow-md">Tampilkan Rekap</button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto rounded-lg border border-slate-200">
+            <table class="w-full text-left border-collapse min-w-[1000px] text-sm">
+              <thead>
+                <tr class="bg-indigo-50 text-indigo-800 text-[11px] uppercase tracking-wider">
+                  <th class="px-4 py-3 font-semibold border-b border-indigo-100 text-center w-12">No</th>
+                  <th class="px-4 py-3 font-semibold border-b border-indigo-100">Nama Karyawan</th>
+                  <th class="px-3 py-3 font-bold border-b border-indigo-100 text-center text-emerald-700">Hadir</th>
+                  <th class="px-3 py-3 font-semibold border-b border-indigo-100 text-center text-slate-600">Cuti</th>
+                  <th class="px-3 py-3 font-semibold border-b border-indigo-100 text-center text-amber-600">Sakit</th>
+                  <th class="px-3 py-3 font-semibold border-b border-indigo-100 text-center text-amber-600">Izin</th>
+                  <th class="px-3 py-3 font-bold border-b border-indigo-100 text-center text-rose-600">Alfa</th>
+                  <th class="px-3 py-3 font-bold border-b border-indigo-100 text-center text-blue-700">Total Produksi</th>
+                  <th class="px-3 py-3 font-bold border-b border-indigo-100 text-center text-rose-700">Pelanggaran</th>
+                  <th class="px-3 py-3 font-bold border-b border-indigo-100 text-center text-purple-700">Pengembangan</th>
+                </tr>
+              </thead>
+              <tbody id="rekap-tbody" class="bg-white divide-y divide-slate-100">
+                <tr><td colspan="10" class="py-12 text-center text-slate-400">Silakan tentukan periode dan klik Tampilkan Rekap.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </main>
 
     <script type="module" src="data-layer.js"></script>
@@ -469,11 +513,17 @@
         document.getElementById('filter_karyawan').innerHTML = optionsHtml;
 
         // Set default dates
-        const today = new Date().toISOString().split('T')[0];
+        const todayObj = new Date();
+        const today = todayObj.toISOString().split('T')[0];
+        const firstDay = new Date(todayObj.getFullYear(), todayObj.getMonth(), 1).toISOString().split('T')[0];
+
         ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(t => {
           document.getElementById('tanggal_' + t).value = today;
         });
         document.getElementById('filter_bulan').value = today.substring(0, 7);
+        
+        document.getElementById('filter_rekap_start').value = firstDay;
+        document.getElementById('filter_rekap_end').value = today;
 
         // Fetch local data state
         refreshDataState();
@@ -740,6 +790,70 @@
 
         document.getElementById('jurnal-empty').classList.add('hidden');
         document.getElementById('jurnal-container').classList.remove('hidden');
+      }
+
+      // --- REKAPITULASI GLOBAL ---
+      window.renderRekapGlobal = function() {
+        const startD = document.getElementById('filter_rekap_start').value;
+        const endD = document.getElementById('filter_rekap_end').value;
+
+        if(!startD || !endD) {
+          alert('Silakan tentukan tanggal mulai dan tanggal akhir.');
+          return;
+        }
+        if(startD > endD) {
+          alert('Tanggal mulai tidak boleh lebih dari tanggal akhir.');
+          return;
+        }
+
+        const karyawanList = window.DataLayer.getHrdKaryawan();
+        const tbody = document.getElementById('rekap-tbody');
+
+        let html = '';
+        karyawanList.forEach((k, i) => {
+          const kId = k.id;
+          
+          const kh = hrdData.kehadiran.filter(x => x.karyawan_id === kId && x.tanggal >= startD && x.tanggal <= endD);
+          const pr = hrdData.produktivitas.filter(x => x.karyawan_id === kId && x.tanggal >= startD && x.tanggal <= endD);
+          const pl = hrdData.pelanggaran.filter(x => x.karyawan_id === kId && x.tanggal >= startD && x.tanggal <= endD);
+          const pg = hrdData.pengembangan.filter(x => x.karyawan_id === kId && x.tanggal >= startD && x.tanggal <= endD);
+
+          let hadir = 0, cuti = 0, sakit = 0, izin = 0, alfa = 0;
+          kh.forEach(x => {
+            if(x.status === 'Hadir') hadir++;
+            else if(x.status === 'Cuti') cuti++;
+            else if(x.status === 'Sakit') sakit++;
+            else if(x.status === 'Izin') izin++;
+            else if(x.status === 'Alfa') alfa++;
+          });
+
+          let sumProduksi = 0;
+          pr.forEach(x => sumProduksi += (x.tangkap_ayam_kotak || 0));
+
+          let sumPelanggaran = pl.length;
+          let sumPengembangan = pg.length;
+
+          html += `
+            <tr class="hover:bg-indigo-50/50 transition-colors">
+              <td class="px-4 py-3 border-b border-slate-100 text-center text-slate-400 font-medium">${i+1}</td>
+              <td class="px-4 py-3 border-b border-slate-100 font-bold text-slate-700">${k.nama}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center font-black text-emerald-600 bg-emerald-50/30">${hadir}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center text-slate-500">${cuti}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center text-amber-600">${sakit}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center text-amber-600">${izin}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center font-bold text-rose-600 bg-rose-50/30">${alfa}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center font-bold text-blue-600 bg-blue-50/30">${sumProduksi}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center font-bold text-rose-600">${sumPelanggaran}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center font-bold text-purple-600">${sumPengembangan}</td>
+            </tr>
+          `;
+        });
+
+        if(karyawanList.length === 0) {
+           html = `<tr><td colspan="10" class="py-12 text-center text-slate-400">Tidak ada data karyawan.</td></tr>`;
+        }
+
+        tbody.innerHTML = html;
       }
 
       document.addEventListener('DOMContentLoaded', initHRD);
