@@ -1,0 +1,98 @@
+# Rencana Implementasi - Penambahan Tab "Ayam Mati" & Sinkronisasi Rekap Stok
+
+Rencana ini bertujuan untuk menambahkan Tab baru bernama **"Ayam Mati"** di halaman `stok_ayam.html` (di sebelah kanan Tab **Stok Kemarin**), yang berfungsi mencatat data kematian dan kehilangan ayam secara operasional. Data tersebut akan disinkronisasikan ke dalam Tab **Rekap Stok** sebagai kolom baru bernama **"Ayam Mati"**, serta mengurangi saldo **Stok Akhir** (Ekor & Kg Akhir) secara otomatis.
+
+---
+
+## 1. Desain Penyimpanan Data (Supabase)
+
+Untuk merekam data kematian dan kehilangan ayam, terdapat dua opsi pendekatan. Kami sangat merekomendasikan **Opsi A** karena menjamin keamanan 100% tanpa risiko kegagalan izin akses/kebijakan RLS database di Supabase.
+
+### Opsi A: Menggunakan Tabel Existing `data_stok_ayam` (Sangat Direkomendasikan)
+Tabel `data_stok_ayam` memiliki skema yang sangat kaya dan fleksibel. Kita dapat memetakan data Ayam Mati/Hilang ke kolom existing tanpa perlu melakukan migrasi database (DDL), sehingga sangat aman bagi data yang sudah berjalan.
+
+**Pemetaan Kolom (Mapping):**
+* `jenis_stok` $\rightarrow$ `'AYAM_MATI'` atau `'AYAM_HILANG'` (untuk membedakan jenis laporan)
+* `tanggal` $\rightarrow$ Tanggal Kejadian (Date)
+* `lokasi_kandang` $\rightarrow$ Lokasi Kejadian (kandang, Perjalanan, Pasar, dll.)
+* `nomor_antrian` $\rightarrow$ Waktu Kejadian (pagi, Siang, Malam)
+* `jumlah_ekor` $\rightarrow$ Jumlah Ekor
+* `jumlah_kg` $\rightarrow$ Jumlah Kg
+* `rata_rata_ayam` $\rightarrow$ Berat Rata-rata (Jumlah Kg / Jumlah Ekor, dihitung otomatis)
+* `ukuran_ayam` $\rightarrow$ Ukuran Ayam (KTN, K, TB, B, JK, dihitung otomatis menggunakan fungsi `hitungUkuran`)
+* `nama_staf` $\rightarrow$ Nama Pelapor
+
+**Keuntungan Opsi A:**
+1. **Keamanan 100%**: Tidak memerlukan pembuatan tabel baru atau alter skema database, meminimalisir risiko kegagalan enkripsi, izin DDL, atau RLS.
+2. **Kesesuaian Kode**: Dapat langsung memanfaatkan fungsi `saveStokAyam` dan `deleteData` di `data-layer.js` yang sudah teruji dan berjalan stabil.
+
+### Opsi B: Membuat Tabel Baru `data_kematian_hilang`
+Membuat tabel fisik baru di Supabase dengan skema khusus.
+* *Kekurangan*: Memerlukan eksekusi DDL (CREATE TABLE) dan konfigurasi RLS (Row Level Security) baru di Supabase. Jika akun Supabase memiliki batasan akses DDL via API, pendekatan ini dapat berisiko gagal.
+
+> [!TIP]
+> **Rekomendasi**: Kami mengusulkan penggunaan **Opsi A** karena secara arsitektur sangat rapi, memanfaatkan kolom bertipe data sama yang sudah ada, dan menjamin zero-risk terhadap integritas data existing.
+
+---
+
+## 2. Alur Integrasi dan Perhitungan Matematis
+
+### A. Rekap Stok - Penambahan Kolom Baru "Ayam Mati"
+Di tab **Rekap Stok**, kolom **"Ayam Mati"** akan ditambahkan di antara kolom **"Susut Jual"** dan **"Penjualan"**.
+Kolom ini menampilkan akumulasi data kematian dan kehilangan dari tab Ayam Mati:
+$$\text{Tampilan Baris Ayam Mati} = \text{matiEkorGudang} \text{ Ekor} \text{ / } \text{matiKgGudang} \text{ Kg}$$
+
+### B. Pembaruan Rumus Stok Akhir (Ekor & Kg Akhir)
+Data kematian dan kehilangan ayam merupakan kerugian fisik (losses) di dalam gudang, sehingga saldo akhir harus dikurangi dengan nilai tersebut.
+
+* **Kg Akhir (`kgAkhir`)**:
+  $$\text{Kg Akhir} = \text{Kg Awal} - \text{Susut DO} - \text{Susut Jual} - \mathbf{\text{Ayam Mati (Kg)}} - \text{Penjualan Kg} + \text{Ayam Pulang (Kg)}$$
+  *(Keterangan: Diperoleh dengan mengurangi total berat Ayam Mati & Ayam Hilang yang tercatat).*
+
+* **Ekor Akhir (`ekorAkhir`)**:
+  $$\text{Ekor Akhir} = \text{Ekor Awal} - \text{Mati Ekor DO} - \mathbf{\text{Ayam Mati (Ekor)}} - \text{Penjualan Ekor} + \text{Estimasi Ekor Pulang}$$
+
+---
+
+## 3. Rencana Perubahan Kode Frontend
+
+### Halaman [stok_ayam.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/stok_ayam.html)
+
+#### 1. Tab Navigation (Sekitar Baris 112)
+Menambahkan tombol tab **Ayam Mati** di sebelah kanan **Stok Kemarin**:
+```html
+<button id="tab-mati" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Ayam Mati</button>
+```
+
+#### 2. Konten Tab Baru `content-mati` (Sekitar Baris 180)
+Menambahkan kontainer tabel data Ayam Mati yang berisi:
+* Tombol `+ Input Ayam Mati/Hilang` untuk membuka modal.
+* Tabel dengan kolom: *No, Tanggal, Jenis Laporan, Lokasi, Waktu, Jumlah Ekor, Jumlah Kg, Rata-rata, Ukuran, Pelapor, dan Aksi (Hapus)*.
+
+#### 3. Modal Form Input `modal-mati` (Baris Baru)
+Membuat modal pop-up dengan input form:
+* **Tanggal** (Date, default hari ini)
+* **Jenis Laporan** (Dropdown: Ayam Mati, Ayam Hilang)
+* **Lokasi** (Dropdown / Input: kandang, Perjalanan, Pasar, dll.)
+* **Waktu** (Dropdown: pagi, Siang, Malam)
+* **Jumlah Ekor** (Number)
+* **Jumlah Kg** (Number)
+* **Rata-rata & Ukuran** (Dihitung otomatis via JavaScript)
+* **Nama Pelapor** (Text)
+
+#### 4. Header & Render Tabel Rekap Stok (Sekitar Baris 190 & 990)
+* Menambahkan header `<th>Ayam Mati</th>` pada tabel Rekap Stok.
+* Memperbarui logika `renderData()` untuk mengelompokkan data jenis `'AYAM_MATI'` dan `'AYAM_HILANG'` ke dalam akumulasi `agg.matiGudangEkor` dan `agg.matiGudangKg`.
+* Menerapkan pembaruan rumus `ekorAkhir` dan `kgAkhir`.
+* Menampilkan nilai baru tersebut di kolom **Ayam Mati** baik di baris transaksi maupun baris **TOTAL** harian.
+
+---
+
+## 4. Tinjauan Pengguna Diperlukan
+
+> [!IMPORTANT]
+> 1. Apakah Anda menyetujui penggunaan **Opsi A** (Menggunakan tabel existing dengan kolom mapping) demi menjamin keamanan data dan kemudahan deployment?
+> 2. Apakah kolom **"Ayam Mati"** di Rekap Stok sebaiknya menampilkan akumulasi gabungan dari "Ayam Mati" dan "Ayam Hilang" (keduanya adalah loss/pengurang stok) dalam format `X Ekor / Y Kg`?
+> 3. Apakah pilihan dropdown Lokasi (`kandang`, `Perjalanan`, `Pasar`) dan Waktu (`pagi`, `Siang`, `Malam`) sudah sesuai dengan kebutuhan operasional Anda?
+
+Mohon berikan ulasan atau persetujuan Anda agar saya dapat segera memproses eksekusi perubahan ini secara rapi dan aman!

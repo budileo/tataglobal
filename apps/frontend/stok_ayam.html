@@ -112,6 +112,7 @@
       <div class="flex overflow-x-auto gap-2 border-b border-slate-200 pb-2 snap-x mt-6">
          <button id="tab-do" class="tab-btn active shrink-0 px-5 py-2.5 rounded-t-lg bg-emerald-50 text-emerald-700 font-bold border-b-2 border-emerald-600 transition-all">Stok DO Masuk</button>
          <button id="tab-kemarin" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Stok Kemarin</button>
+         <button id="tab-mati" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Ayam Mati</button>
          <button id="tab-rekap" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Rekap Stok</button>
       </div>
 
@@ -177,6 +178,41 @@
         </div>
       </div>
 
+      <!-- Tab Content: Ayam Mati -->
+      <div id="content-mati" class="tab-content hidden relative">
+        <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+           <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
+              <div class="flex items-center gap-3">
+                 <h3 class="font-bold text-slate-800">Data Kematian & Kehilangan Ayam</h3>
+              </div>
+              <div class="flex items-center gap-2 w-full md:w-auto">
+                 <button onclick="openModalMati()" class="bg-rose-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-rose-700 shrink-0 shadow-lg shadow-rose-600/20">+ Input Ayam Mati/Hilang</button>
+              </div>
+           </div>
+           <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-600 whitespace-nowrap">
+                 <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                    <tr>
+                       <th class="px-4 py-3 border-r border-slate-100 w-12 text-center">No</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Tanggal</th>
+                       <th class="px-4 py-3 border-r border-slate-100 text-center">Jenis Laporan</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Lokasi</th>
+                       <th class="px-4 py-3 border-r border-slate-100 text-center">Waktu</th>
+                       <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor</th>
+                       <th class="px-4 py-3 border-r border-slate-100 text-right">Total Kg</th>
+                       <th class="px-4 py-3 border-r border-slate-100 text-right">Rata²</th>
+                       <th class="px-4 py-3 border-r border-slate-100 text-center">Ukuran</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Pelapor</th>
+                       <th class="px-4 py-3 text-center">Aksi</th>
+                    </tr>
+                 </thead>
+                 <tbody id="table-mati" class="divide-y divide-slate-100"></tbody>
+              </table>
+              <div id="empty-mati" class="hidden p-8 text-center text-slate-400"><p class="font-medium text-sm">Belum ada data Kematian & Kehilangan Ayam.</p></div>
+           </div>
+        </div>
+      </div>
+
       <!-- Tab Content: Rekap Stok -->
       <div id="content-rekap" class="tab-content hidden relative">
         <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
@@ -189,16 +225,17 @@
               <table class="w-full text-left text-sm text-slate-600 whitespace-nowrap">
                  <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
                     <tr>
-                        <th class="px-4 py-3 border-r border-slate-100 w-32 text-center">Tanggal</th>
-                        <th class="px-4 py-3 border-r border-slate-100 text-center">Ukuran</th>
-                        <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor Awal</th>
-                        <th class="px-4 py-3 border-r border-slate-100 text-right">Kg Awal</th>
-                        <th class="px-4 py-3 border-r border-slate-100 text-center">Susut DO</th>
-                        <th class="px-4 py-3 border-r border-slate-100 text-center">Susut Jual</th>
-                        <th class="px-4 py-3 border-r border-slate-100 text-center">Penjualan</th>
-                        <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor Akhir</th>
-                        <th class="px-4 py-3 border-r border-slate-100 text-right">Kg Akhir</th>
-                        <th class="px-4 py-3 text-right">Rata²</th>
+                         <th class="px-4 py-3 border-r border-slate-100 w-32 text-center">Tanggal</th>
+                         <th class="px-4 py-3 border-r border-slate-100 text-center">Ukuran</th>
+                         <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor Awal</th>
+                         <th class="px-4 py-3 border-r border-slate-100 text-right">Kg Awal</th>
+                         <th class="px-4 py-3 border-r border-slate-100 text-center">Susut DO</th>
+                         <th class="px-4 py-3 border-r border-slate-100 text-center">Susut Jual</th>
+                         <th class="px-4 py-3 border-r border-slate-100 text-center">Ayam Mati</th>
+                         <th class="px-4 py-3 border-r border-slate-100 text-center">Penjualan</th>
+                         <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor Akhir</th>
+                         <th class="px-4 py-3 border-r border-slate-100 text-right">Kg Akhir</th>
+                         <th class="px-4 py-3 text-right">Rata²</th>
                     </tr>
                  </thead>
                  <tbody id="table-rekap" class="divide-y divide-slate-100"></tbody>
@@ -420,6 +457,87 @@
        </div>
     </div>
 
+    <!-- Modal Form Ayam Mati/Hilang -->
+    <div id="modal-mati" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity">
+       <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300" id="modal-content-mati">
+          <div class="bg-rose-50 px-6 py-4 border-b border-rose-100 flex justify-between items-center">
+             <h3 class="font-bold text-rose-800 text-lg">Input Ayam Mati / Hilang</h3>
+             <button onclick="closeModalMati()" class="text-rose-500 hover:text-rose-700"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+          </div>
+          <div class="p-6 space-y-4">
+             <input type="hidden" id="mati-id">
+             
+             <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal *</label>
+                <input id="mati-tanggal" type="date" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-rose-500 bg-slate-50" required>
+             </div>
+
+             <div class="grid grid-cols-2 gap-4">
+                 <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Jenis Laporan *</label>
+                    <select id="mati-jenis-laporan" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-rose-500 bg-slate-50" required>
+                       <option value="Ayam Mati">Ayam Mati</option>
+                       <option value="Ayam Hilang">Ayam Hilang</option>
+                    </select>
+                 </div>
+                 <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Waktu *</label>
+                    <select id="mati-waktu" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-rose-500 bg-slate-50" required>
+                       <option value="pagi">Pagi</option>
+                       <option value="Siang">Siang</option>
+                       <option value="Malam">Malam</option>
+                    </select>
+                 </div>
+             </div>
+
+             <div class="grid grid-cols-2 gap-4">
+                 <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Lokasi *</label>
+                    <select id="mati-lokasi" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-rose-500 bg-slate-50" required>
+                       <option value="kandang">Kandang</option>
+                       <option value="Perjalanan">Perjalanan</option>
+                       <option value="Pasar">Pasar</option>
+                       <option value="dll">Lain-lain (dll)</option>
+                    </select>
+                 </div>
+                 <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Pelapor *</label>
+                    <select id="mati-pelapor" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-rose-500 bg-slate-50" required>
+                       <!-- Terisi dari dbStaf -->
+                    </select>
+                 </div>
+             </div>
+
+             <div class="grid grid-cols-2 gap-4">
+                 <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Jumlah Ekor *</label>
+                    <input id="mati-ekor" type="number" oninput="calcMati()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-rose-500 bg-slate-50 text-right" required placeholder="0">
+                 </div>
+                 <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Jumlah Kg *</label>
+                    <input id="mati-kg" type="number" step="0.01" oninput="calcMati()" class="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm outline-rose-500 bg-slate-50 text-right" required placeholder="0.00">
+                 </div>
+             </div>
+             
+             <!-- Hasil Kalkulasi -->
+             <div class="bg-rose-50 p-4 rounded-lg mt-2 grid grid-cols-2 gap-4 border border-rose-100">
+                 <div>
+                     <label class="block text-[10px] font-bold text-rose-700 uppercase">Rata-rata</label>
+                     <div id="calc-rata-mati" class="text-lg font-bold text-slate-800">0 Kg</div>
+                 </div>
+                 <div>
+                     <label class="block text-[10px] font-bold text-rose-700 uppercase">Rekomendasi Ukuran</label>
+                     <div id="calc-ukuran-mati" class="text-lg font-bold text-slate-800">-</div>
+                 </div>
+             </div>
+          </div>
+          <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+             <button onclick="closeModalMati()" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">Batal</button>
+             <button onclick="saveMati()" class="px-4 py-2 text-sm font-semibold bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition-colors shadow-lg shadow-rose-600/30">Simpan Data</button>
+          </div>
+       </div>
+    </div>
+
     <script type="module" src="data-layer.js"></script>
     <script>
        // State
@@ -431,6 +549,8 @@
        let calculatedUkuranDO = '';
        let calculatedRataKemarin = 0;
        let calculatedUkuranKemarin = '';
+       let calculatedRataMati = 0;
+       let calculatedUkuranMati = '';
 
        // Filter Periode State
        let filterMode = 'bulan'; // 'bulan' atau 'range'
@@ -529,10 +649,13 @@
             
             const supirOpts = '<option value="">-- Pilih Supir --</option>' + dbStaf.map(s => `<option value="${s.nama}">${s.nama}</option>`).join('');
             document.getElementById('do-supir').innerHTML = supirOpts;
-
+            
             const stafOpts = '<option value="">-- Pilih Staf --</option>' + dbStaf.map(s => `<option value="${s.nama}">${s.nama}</option>`).join('');
             document.getElementById('do-staf').innerHTML = stafOpts;
             document.getElementById('kemarin-staf').innerHTML = stafOpts;
+            
+            const pelaporOpts = '<option value="">-- Pilih Pelapor --</option>' + dbStaf.map(s => `<option value="${s.nama}">${s.nama}</option>`).join('');
+            document.getElementById('mati-pelapor').innerHTML = pelaporOpts;
 
             // Populate Range Dropdowns (0.5 to 3.0 Kg)
             let rangeStartSelect = document.getElementById('kemarin-range-start');
@@ -621,10 +744,73 @@
             document.getElementById('calc-ukuran-kemarin').textContent = calculatedUkuranKemarin;
         }
 
+        window.calcMati = function() {
+            const ekor = Number(document.getElementById('mati-ekor').value) || 0;
+            const kg = Number(document.getElementById('mati-kg').value) || 0;
+            
+            calculatedRataMati = ekor > 0 ? (kg / ekor) : 0;
+            calculatedUkuranMati = hitungUkuran(calculatedRataMati);
+            
+            document.getElementById('calc-rata-mati').textContent = calculatedRataMati.toFixed(2) + ' Kg';
+            document.getElementById('calc-ukuran-mati').textContent = calculatedUkuranMati;
+        }
+
+        window.openModalMati = function() {
+            document.getElementById('mati-id').value = crypto.randomUUID();
+            document.getElementById('mati-tanggal').value = new Date().toISOString().split('T')[0];
+            document.getElementById('mati-jenis-laporan').value = 'Ayam Mati';
+            document.getElementById('mati-waktu').value = 'pagi';
+            document.getElementById('mati-lokasi').value = 'kandang';
+            document.getElementById('mati-pelapor').value = '';
+            document.getElementById('mati-ekor').value = '';
+            document.getElementById('mati-kg').value = '';
+            calcMati();
+            const modal = document.getElementById('modal-mati');
+            const content = document.getElementById('modal-content-mati');
+            modal.classList.remove('hidden');
+            setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
+        }
+
+        window.closeModalMati = function() {
+            const modal = document.getElementById('modal-mati');
+            const content = document.getElementById('modal-content-mati');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        window.saveMati = async function() {
+            if(!document.getElementById('mati-tanggal').value || !document.getElementById('mati-ekor').value || !document.getElementById('mati-kg').value || !document.getElementById('mati-pelapor').value) {
+                alert('Harap isi semua field wajib (*)'); return;
+            }
+            if(typeof AuthGuard !== 'undefined' && !(await AuthGuard.consumeToken('create', 'Input Ayam Mati/Hilang'))) return;
+            
+            const payload = {
+                id: document.getElementById('mati-id').value,
+                jenis_stok: 'STOK_KEMARIN',
+                masukan_range: document.getElementById('mati-jenis-laporan').value === 'Ayam Mati' ? 'AYAM_MATI' : 'AYAM_HILANG',
+                tanggal: document.getElementById('mati-tanggal').value,
+                lokasi_kandang: document.getElementById('mati-lokasi').value,
+                nomor_antrian: document.getElementById('mati-waktu').value,
+                jumlah_ekor: Number(document.getElementById('mati-ekor').value),
+                jumlah_kg: Number(document.getElementById('mati-kg').value),
+                rata_rata_ayam: calculatedRataMati,
+                ukuran_ayam: calculatedUkuranMati,
+                nama_staf: document.getElementById('mati-pelapor').value
+            };
+            
+            if(window.DataLayer && window.DataLayer.saveStokAyam) {
+                await window.DataLayer.saveStokAyam(payload, false);
+                fetchData();
+                renderData();
+            }
+            closeModalMati();
+        }
+
         // Tab Handling
         function switchTab(activeTabId, showContentId, activeClass) {
-            const tabs = ['tab-do', 'tab-kemarin', 'tab-rekap'];
-            const contents = ['content-do', 'content-kemarin', 'content-rekap'];
+            const tabs = ['tab-do', 'tab-kemarin', 'tab-mati', 'tab-rekap'];
+            const contents = ['content-do', 'content-kemarin', 'content-mati', 'content-rekap'];
             
             tabs.forEach(t => {
                 const btn = document.getElementById(t);
@@ -650,6 +836,9 @@
         });
         document.getElementById('tab-kemarin').addEventListener('click', () => {
             switchTab('tab-kemarin', 'content-kemarin', 'bg-blue-50 text-blue-700 border-blue-600');
+        });
+        document.getElementById('tab-mati').addEventListener('click', () => {
+            switchTab('tab-mati', 'content-mati', 'bg-rose-50 text-rose-700 border-rose-600');
         });
         document.getElementById('tab-rekap').addEventListener('click', () => {
             switchTab('tab-rekap', 'content-rekap', 'bg-purple-50 text-purple-700 border-purple-600');
@@ -690,9 +879,8 @@
                 }
                 return a.id.localeCompare(b.id);
             });
-            
-            const dataDO = sortedStok.filter(s => s.jenis_stok === 'DO_MASUK');
-            const dataKemarin = sortedStok.filter(s => s.jenis_stok === 'STOK_KEMARIN');
+                       const dataDO = sortedStok.filter(s => s.jenis_stok === 'DO_MASUK');
+            const dataKemarin = sortedStok.filter(s => s.jenis_stok === 'STOK_KEMARIN' && s.masukan_range !== 'AYAM_MATI' && s.masukan_range !== 'AYAM_HILANG');
             
             // Hitung Total dari DO Masuk (Netto Ekor & Kg)
             dataDO.forEach(d => {
@@ -707,6 +895,14 @@
                 totalEkor += Number(d.jumlah_ekor);
                 totalKg += Number(d.jumlah_kg);
             });
+ 
+            // Kurangi Total dari Ayam Mati / Hilang di Gudang
+            const dataMatiGlobal = sortedStok.filter(s => s.jenis_stok === 'STOK_KEMARIN' && (s.masukan_range === 'AYAM_MATI' || s.masukan_range === 'AYAM_HILANG'));
+            dataMatiGlobal.forEach(d => {
+                totalEkor -= Number(d.jumlah_ekor);
+                totalKg -= Number(d.jumlah_kg);
+            });
+;
             
             document.getElementById('kpi-total-ekor').textContent = totalEkor.toLocaleString('id-ID');
             document.getElementById('kpi-total-kg').textContent = totalKg.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2});
@@ -789,6 +985,41 @@
             }
             document.getElementById('table-kemarin').innerHTML = kemarinHtml;
 
+            // Render Ayam Mati
+            const dataMati = sortedStok.filter(s => s.jenis_stok === 'AYAM_MATI' || s.jenis_stok === 'AYAM_HILANG');
+            if (dataMati.length === 0) {
+                document.getElementById('empty-mati').classList.remove('hidden');
+            } else {
+                document.getElementById('empty-mati').classList.add('hidden');
+             const dataMati = sortedStok.filter(s => s.jenis_stok === 'STOK_KEMARIN' && (s.masukan_range === 'AYAM_MATI' || s.masukan_range === 'AYAM_HILANG'));
+             if (dataMati.length === 0) {
+                 document.getElementById('empty-mati').classList.remove('hidden');
+             } else {
+                 document.getElementById('empty-mati').classList.add('hidden');
+                 let matiHtml = dataMati.map((d, i) => {
+                     const labelLaporan = d.masukan_range === 'AYAM_MATI' ? 'Ayam Mati' : 'Ayam Hilang';
+                     const colorBadge = d.masukan_range === 'AYAM_MATI' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800';
+                     return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                        <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-400">${i+1}</td>
+                        <td class="px-4 py-3 border-r border-slate-100">${d.tanggal}</td>
+                        <td class="px-4 py-3 border-r border-slate-100 text-center">
+                           <span class="${colorBadge} text-[10px] px-2 py-0.5 rounded font-bold">${labelLaporan}</span>
+                        </td>
+                        <td class="px-4 py-3 border-r border-slate-100 font-medium">${d.lokasi_kandang || '-'}</td>
+                        <td class="px-4 py-3 border-r border-slate-100 text-center text-xs font-semibold capitalize">${d.nomor_antrian || '-'}</td>
+                        <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${d.jumlah_ekor}</td>
+                        <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${Number(d.jumlah_kg).toFixed(2)}</td>
+                        <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${Number(d.rata_rata_ayam || 0).toFixed(2)} Kg</td>
+                        <td class="px-4 py-3 border-r border-slate-100 text-center"><span class="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded font-bold">${d.ukuran_ayam||'-'}</span></td>
+                        <td class="px-4 py-3 border-r border-slate-100 font-medium">${d.nama_staf || '-'}</td>
+                        <td class="px-4 py-3 text-center">
+                           <button onclick="deleteData('${d.id}')" class="text-rose-500 hover:underline font-semibold text-xs">Hapus</button>
+                        </td>
+                     </tr>`;
+                 }).join('');
+                 document.getElementById('table-mati').innerHTML = matiHtml;
+             }
+
             // Render Rekap Stok (Dikelompokkan Berdasarkan Tanggal & Ukuran)
             const normalisasiUkuran = (ukuran) => {
                 if (!ukuran) return '-';
@@ -823,6 +1054,8 @@
                         pulangJualKg: 0,
                         penjualanEkor: 0,
                         penjualanKg: 0,
+                        matiGudangEkor: 0,
+                        matiGudangKg: 0,
                         ekorAkhir: 0,
                         kgAkhir: 0
                     };
@@ -831,14 +1064,17 @@
                 const agg = aggregates[key];
                 
                 if (d.jenis_stok === 'DO_MASUK') {
-                    agg.ekorAwal += Number(d.jumlah_ekor) || 0;
-                    agg.kgAwal += Number(d.jumlah_kg) || 0;
-                    agg.matiEkor += Number(d.jumlah_mati_ekor || 0);
-                    agg.susutMatiKg += Number(d.jumlah_susut_kg || 0) + Number(d.jumlah_mati_kg || 0);
-                } else {
-                    agg.ekorAwal += Number(d.jumlah_ekor) || 0;
-                    agg.kgAwal += Number(d.jumlah_kg) || 0;
-                }
+                     agg.ekorAwal += Number(d.jumlah_ekor) || 0;
+                     agg.kgAwal += Number(d.jumlah_kg) || 0;
+                     agg.matiEkor += Number(d.jumlah_mati_ekor || 0);
+                     agg.susutMatiKg += Number(d.jumlah_susut_kg || 0) + Number(d.jumlah_mati_kg || 0);
+                 } else if (d.jenis_stok === 'STOK_KEMARIN' && d.masukan_range !== 'AYAM_MATI' && d.masukan_range !== 'AYAM_HILANG') {
+                     agg.ekorAwal += Number(d.jumlah_ekor) || 0;
+                     agg.kgAwal += Number(d.jumlah_kg) || 0;
+                 } else if (d.jenis_stok === 'STOK_KEMARIN' && (d.masukan_range === 'AYAM_MATI' || d.masukan_range === 'AYAM_HILANG')) {
+                     agg.matiGudangEkor += Number(d.jumlah_ekor) || 0;
+                     agg.matiGudangKg += Number(d.jumlah_kg) || 0;
+                 }
             });
 
             // Agregasi Data Penjualan dari Bon Penjualan (Non-Void)
@@ -869,6 +1105,8 @@
                             pulangJualKg: 0,
                             penjualanEkor: 0,
                             penjualanKg: 0,
+                            matiGudangEkor: 0,
+                            matiGudangKg: 0,
                             ekorAkhir: 0,
                             kgAkhir: 0
                         };
@@ -905,8 +1143,8 @@
                 const rataAwal = agg.ekorAwal > 0 ? (agg.kgAwal / agg.ekorAwal) : 0;
                 const estimasiPulangEkor = rataAwal > 0 ? Math.round(agg.pulangJualKg / rataAwal) : 0;
 
-                agg.ekorAkhir = agg.ekorAwal - agg.matiEkor - agg.penjualanEkor + estimasiPulangEkor;
-                agg.kgAkhir = agg.kgAwal - agg.susutMatiKg - agg.susutJual - agg.penjualanKg + agg.pulangJualKg;
+                agg.ekorAkhir = agg.ekorAwal - agg.matiEkor - agg.matiGudangEkor - agg.penjualanEkor + estimasiPulangEkor;
+                agg.kgAkhir = agg.kgAwal - agg.susutMatiKg - agg.susutJual - agg.matiGudangKg - agg.penjualanKg + agg.pulangJualKg;
             });
             
             // Urutkan berdasarkan tanggal descending, kemudian ukuran alfabetis
@@ -943,6 +1181,8 @@
                     let dateTotalMatiEkor = 0;
                     let dateTotalSusutMatiKg = 0;
                     let dateTotalSusutJual = 0;
+                    let dateTotalMatiGudangEkor = 0;
+                    let dateTotalMatiGudangKg = 0;
                     let dateTotalPenjualanEkor = 0;
                     let dateTotalPenjualanKg = 0;
                     let dateTotalEkorAkhir = 0;
@@ -954,6 +1194,8 @@
                         dateTotalMatiEkor += agg.matiEkor;
                         dateTotalSusutMatiKg += agg.susutMatiKg;
                         dateTotalSusutJual += agg.susutJual;
+                        dateTotalMatiGudangEkor += agg.matiGudangEkor;
+                        dateTotalMatiGudangKg += agg.matiGudangKg;
                         dateTotalPenjualanEkor += agg.penjualanEkor;
                         dateTotalPenjualanKg += agg.penjualanKg;
                         dateTotalEkorAkhir += agg.ekorAkhir;
@@ -984,6 +1226,13 @@
                              susutJualText = `<span class="text-rose-600 font-semibold">${Number(agg.susutJual.toFixed(2)).toLocaleString('id-ID')} Kg</span>`;
                         }
 
+                        let matiGudangText = '0';
+                        if (agg.matiGudangEkor > 0 || agg.matiGudangKg > 0) {
+                            const eStr = agg.matiGudangEkor > 0 ? `${agg.matiGudangEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                            const kStr = agg.matiGudangKg > 0 ? `${Number(agg.matiGudangKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                            matiGudangText = `<span class="text-rose-600 font-semibold">${eStr} / ${kStr}</span>`;
+                        }
+
                         let penjualanText = '0';
                         if (agg.penjualanEkor > 0 || agg.penjualanKg > 0) {
                             const jualEkorStr = agg.penjualanEkor > 0 ? `${agg.penjualanEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
@@ -1001,6 +1250,7 @@
                            <td class="px-4 py-3 border-r border-slate-100 text-right font-medium text-slate-700">${agg.kgAwal.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
                            <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${susutDOText}</td>
                            <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${susutJualText}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${matiGudangText}</td>
                            <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${penjualanText}</td>
                            <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${agg.ekorAkhir.toLocaleString('id-ID')}</td>
                            <td class="px-4 py-3 border-r border-slate-100 text-right font-bold text-slate-800">${agg.kgAkhir.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
@@ -1024,6 +1274,13 @@
                          totalSusutJualText = `<span class="text-rose-600 font-bold">${Number(dateTotalSusutJual.toFixed(2)).toLocaleString('id-ID')} Kg</span>`;
                     }
 
+                    let totalMatiGudangText = '0';
+                    if (dateTotalMatiGudangEkor > 0 || dateTotalMatiGudangKg > 0) {
+                        const eStr = dateTotalMatiGudangEkor > 0 ? `${dateTotalMatiGudangEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                        const kStr = dateTotalMatiGudangKg > 0 ? `${Number(dateTotalMatiGudangKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                        totalMatiGudangText = `<span class="text-rose-600 font-bold">${eStr} / ${kStr}</span>`;
+                    }
+
                     let totalPenjualanText = '0';
                     if (dateTotalPenjualanEkor > 0 || dateTotalPenjualanKg > 0) {
                         const totalJualEkorStr = dateTotalPenjualanEkor > 0 ? `${dateTotalPenjualanEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
@@ -1040,6 +1297,7 @@
                        <td class="px-4 py-3 border-r border-slate-100 text-right text-slate-900 font-extrabold">${dateTotalKgAwal.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
                        <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-900 font-extrabold text-xs">${totalSusutText}</td>
                        <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-900 font-extrabold text-xs">${totalSusutJualText}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-900 font-extrabold text-xs">${totalMatiGudangText}</td>
                        <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-900 font-extrabold text-xs">${totalPenjualanText}</td>
                        <td class="px-4 py-3 border-r border-slate-100 text-right text-slate-900 font-extrabold">${dateTotalEkorAkhir.toLocaleString('id-ID')}</td>
                        <td class="px-4 py-3 border-r border-slate-100 text-right text-slate-900 font-extrabold">${dateTotalKgAkhir.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
