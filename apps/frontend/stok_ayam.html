@@ -986,39 +986,35 @@
             document.getElementById('table-kemarin').innerHTML = kemarinHtml;
 
             // Render Ayam Mati
-            const dataMati = sortedStok.filter(s => s.jenis_stok === 'AYAM_MATI' || s.jenis_stok === 'AYAM_HILANG');
+            const dataMati = sortedStok.filter(s => s.jenis_stok === 'STOK_KEMARIN' && (s.masukan_range === 'AYAM_MATI' || s.masukan_range === 'AYAM_HILANG'));
             if (dataMati.length === 0) {
                 document.getElementById('empty-mati').classList.remove('hidden');
+                document.getElementById('table-mati').innerHTML = '';
             } else {
                 document.getElementById('empty-mati').classList.add('hidden');
-             const dataMati = sortedStok.filter(s => s.jenis_stok === 'STOK_KEMARIN' && (s.masukan_range === 'AYAM_MATI' || s.masukan_range === 'AYAM_HILANG'));
-             if (dataMati.length === 0) {
-                 document.getElementById('empty-mati').classList.remove('hidden');
-             } else {
-                 document.getElementById('empty-mati').classList.add('hidden');
-                 let matiHtml = dataMati.map((d, i) => {
-                     const labelLaporan = d.masukan_range === 'AYAM_MATI' ? 'Ayam Mati' : 'Ayam Hilang';
-                     const colorBadge = d.masukan_range === 'AYAM_MATI' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800';
-                     return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                        <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-400">${i+1}</td>
-                        <td class="px-4 py-3 border-r border-slate-100">${d.tanggal}</td>
-                        <td class="px-4 py-3 border-r border-slate-100 text-center">
-                           <span class="${colorBadge} text-[10px] px-2 py-0.5 rounded font-bold">${labelLaporan}</span>
-                        </td>
-                        <td class="px-4 py-3 border-r border-slate-100 font-medium">${d.lokasi_kandang || '-'}</td>
-                        <td class="px-4 py-3 border-r border-slate-100 text-center text-xs font-semibold capitalize">${d.nomor_antrian || '-'}</td>
-                        <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${d.jumlah_ekor}</td>
-                        <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${Number(d.jumlah_kg).toFixed(2)}</td>
-                        <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${Number(d.rata_rata_ayam || 0).toFixed(2)} Kg</td>
-                        <td class="px-4 py-3 border-r border-slate-100 text-center"><span class="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded font-bold">${d.ukuran_ayam||'-'}</span></td>
-                        <td class="px-4 py-3 border-r border-slate-100 font-medium">${d.nama_staf || '-'}</td>
-                        <td class="px-4 py-3 text-center">
-                           <button onclick="deleteData('${d.id}')" class="text-rose-500 hover:underline font-semibold text-xs">Hapus</button>
-                        </td>
-                     </tr>`;
-                 }).join('');
-                 document.getElementById('table-mati').innerHTML = matiHtml;
-             }
+                let matiHtml = dataMati.map((d, i) => {
+                    const labelLaporan = d.masukan_range === 'AYAM_MATI' ? 'Ayam Mati' : 'Ayam Hilang';
+                    const colorBadge = d.masukan_range === 'AYAM_MATI' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800';
+                    return `<tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-400">${i+1}</td>
+                       <td class="px-4 py-3 border-r border-slate-100">${d.tanggal}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center">
+                          <span class="${colorBadge} text-[10px] px-2 py-0.5 rounded font-bold">${labelLaporan}</span>
+                       </td>
+                       <td class="px-4 py-3 border-r border-slate-100 font-medium">${d.lokasi_kandang || '-'}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-xs font-semibold capitalize">${d.nomor_antrian || '-'}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${d.jumlah_ekor}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${Number(d.jumlah_kg).toFixed(2)}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${Number(d.rata_rata_ayam || 0).toFixed(2)} Kg</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center"><span class="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded font-bold">${d.ukuran_ayam||'-'}</span></td>
+                       <td class="px-4 py-3 border-r border-slate-100 font-medium">${d.nama_staf || '-'}</td>
+                       <td class="px-4 py-3 text-center">
+                          <button onclick="deleteData('${d.id}')" class="text-rose-500 hover:underline font-semibold text-xs">Hapus</button>
+                       </td>
+                    </tr>`;
+                }).join('');
+                document.getElementById('table-mati').innerHTML = matiHtml;
+            }
 
             // Render Rekap Stok (Dikelompokkan Berdasarkan Tanggal & Ukuran)
             const normalisasiUkuran = (ukuran) => {
