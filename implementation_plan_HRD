@@ -1,0 +1,52 @@
+# Rencana Implementasi Fitur HRD
+
+Tujuan dari rencana ini adalah menambahkan fitur manajemen Sumber Daya Manusia (HRD) pada sistem TATA GLOBAL, khususnya di halaman `dasbort_hrd.html`. Fitur ini akan mencatat kehadiran, produktivitas, pelanggaran, dan pengembangan karyawan yang datanya bersumber dari gabungan **Master Operasional** dan **Pengguna (Kecuali Owner)**. Output akhirnya adalah **Jurnal Per Individu per bulan** beserta rekapitulasinya.
+
+> [!IMPORTANT]
+> **Kebutuhan Review Pengguna**
+> 1. **Sumber Data Karyawan:** Data akan diambil dari 2 tabel berbeda: `master_operasional` (Staf Operasional) dan `app_users` (Pengguna dengan role selain OWNER). Kedua data ini akan digabungkan di *frontend* sebagai satu list dropdown Karyawan. Apakah pendekatan ini sudah sesuai dengan yang Bapak harapkan?
+> 2. **Struktur Tabel:** Mohon periksa usulan tabel di bawah. Jika ada informasi atau *field* tambahan yang perlu dicatat, mohon informasikan.
+
+---
+
+## Perubahan yang Diusulkan
+
+### 1. Struktur Database Tambahan (Supabase SQL)
+Kita akan membuat file SQL baru untuk dieksekusi di Supabase guna menampung data HRD tanpa mengganggu logika dan tabel yang sudah ada.
+
+#### [NEW] `setup_hrd.sql`
+Akan berisi instruksi pembuatan 4 tabel baru:
+- **`hrd_kehadiran`**: Menyimpan ID Karyawan, nama, asal tabel (`staf` atau `user`), tanggal, status (Hadir, Sakit, Alfa, Cuti, Izin), jam_datang, dan jam_pulang.
+- **`hrd_produktivitas`**: Menyimpan ID Karyawan, nama, tanggal, jumlah tangkap_ayam_per_hari (kotak), dan keterangan prestasi_lain.
+- **`hrd_pelanggaran`**: Menyimpan ID Karyawan, nama, tanggal, kategori (Ringan, Berat, Sangat Berat), dan detail_pelanggaran.
+- **`hrd_pengembangan`**: Menyimpan ID Karyawan, nama, tanggal, jenis_kegiatan (Briefing, Meeting, Training, Coaching), dan kehadiran.
+
+> *Catatan: Keempat tabel ini akan dipasang `DISABLE ROW LEVEL SECURITY` sama seperti tabel-tabel lainnya untuk kelancaran integrasi dari frontend Data Layer.*
+
+---
+
+### 2. Frontend & Logika Data Layer
+
+#### [MODIFY] `apps/frontend/data-layer.js`
+- Menambahkan _state_ baru di dalam `window.DataLayer.data` (seperti `hrd_kehadiran`, `hrd_produktivitas`, dll).
+- Memodifikasi fungsi `init()` agar ikut menarik data dari tabel-tabel HRD baru.
+- Menambahkan fungsi `saveHrdRecord()` untuk menyimpan, mengedit, atau menghapus data-data HRD ke Supabase.
+- Menyediakan *getter* yang sudah menggabungkan data staf operasional dan user menjadi satu _Array_ khusus HRD.
+
+#### [MODIFY] `apps/frontend/dasbort_hrd.html`
+- Membuat desain *dashboard* yang **elegan, premium, dan dinamis** sesuai dengan panduan desain modern (menggunakan efek *hover*, warna yang rapi, transisi *smooth*).
+- Membuat 5 sub-menu / *Tab* di dalam halaman ini:
+  1. **Kehadiran Karyawan**: Form untuk Jam datang, Jam pulang, dan Status (Sakit, Alfa, Cuti, dll).
+  2. **Produktivitas**: Form untuk mencatat tangkapan ayam per hari dan prestasi lain.
+  3. **Pelanggaran**: Form kategori pelanggaran (Ringan, Berat, Sangat Berat) beserta detail.
+  4. **Histori Pengembangan**: Form presensi untuk Briefing, Meeting, Training, dan Coaching.
+  5. **Jurnal & Rekapitulasi (Output)**: Tampilan visual laporan performa karyawan. User dapat memilih **Bulan** dan **Karyawan**, lalu sistem akan merender tabel Jurnal Individu yang rapi dan mudah dibaca.
+
+---
+
+## Rencana Verifikasi
+
+### Verifikasi Manual
+1. **Pengecekan Dropdown Karyawan**: Memastikan bahwa ketika menekan dropdown nama karyawan, isinya sudah mencakup seluruh data staf operasional + user aplikasi yang bukan Owner.
+2. **Proses Input Data**: Melakukan uji coba input data untuk setiap menu (Kehadiran, Produktivitas, Pelanggaran, Pengembangan) dan memastikannya tersimpan ke tabel Supabase (tanpa error RLS).
+3. **Pengecekan Jurnal**: Mengakses tab Jurnal & Rekapitulasi, memilih satu karyawan, lalu memastikan seluruh log aktivitas (hadir, produktivitas, pelanggaran) tampil berurutan dalam satu tampilan rekap yang komprehensif.

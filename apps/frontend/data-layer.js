@@ -10,7 +10,12 @@ window.DataLayer = {
     master_operasional: [],
     master_jalur: [],
     master_kandang: [],
-    stok_ayam: []
+    stok_ayam: [],
+    app_users: [],
+    hrd_kehadiran: [],
+    hrd_produktivitas: [],
+    hrd_pelanggaran: [],
+    hrd_pengembangan: []
   },
 
   async init() {
@@ -44,6 +49,37 @@ window.DataLayer = {
         const res2 = await supabase.from('data_stok_ayam').select('*').order('tanggal', { ascending: false });
         if (!res2.error) stok_ayam = res2.data;
       } catch(e) { console.warn('DataLayer: data_stok_ayam table not found, skipping.'); }
+
+      let app_users = null;
+      let hrd_kehadiran = null;
+      let hrd_produktivitas = null;
+      let hrd_pelanggaran = null;
+      let hrd_pengembangan = null;
+
+      try {
+        const resUsers = await supabase.from('app_users').select('*').neq('role', 'OWNER');
+        if (!resUsers.error) app_users = resUsers.data;
+      } catch(e) { console.warn('DataLayer: app_users fetch failed.'); }
+
+      try {
+        const resH1 = await supabase.from('hrd_kehadiran').select('*').order('tanggal', { ascending: false });
+        if (!resH1.error) hrd_kehadiran = resH1.data;
+      } catch(e) { console.warn('DataLayer: hrd_kehadiran table not found, skipping.'); }
+
+      try {
+        const resH2 = await supabase.from('hrd_produktivitas').select('*').order('tanggal', { ascending: false });
+        if (!resH2.error) hrd_produktivitas = resH2.data;
+      } catch(e) { console.warn('DataLayer: hrd_produktivitas table not found, skipping.'); }
+
+      try {
+        const resH3 = await supabase.from('hrd_pelanggaran').select('*').order('tanggal', { ascending: false });
+        if (!resH3.error) hrd_pelanggaran = resH3.data;
+      } catch(e) { console.warn('DataLayer: hrd_pelanggaran table not found, skipping.'); }
+
+      try {
+        const resH4 = await supabase.from('hrd_pengembangan').select('*').order('tanggal', { ascending: false });
+        if (!resH4.error) hrd_pengembangan = resH4.data;
+      } catch(e) { console.warn('DataLayer: hrd_pengembangan table not found, skipping.'); }
 
       // Process Bons
       this.data.bons = (bons || []).map(dbBon => ({
@@ -100,6 +136,11 @@ window.DataLayer = {
         id: d.id, nama: d.nama, alamat: d.alamat || '', kontak_person: d.kontak_person || '', updatedAt: new Date(d.created_at).getTime()
       }));
       this.data.stok_ayam = stok_ayam || [];
+      this.data.app_users = app_users || [];
+      this.data.hrd_kehadiran = hrd_kehadiran || [];
+      this.data.hrd_produktivitas = hrd_produktivitas || [];
+      this.data.hrd_pelanggaran = hrd_pelanggaran || [];
+      this.data.hrd_pengembangan = hrd_pengembangan || [];
 
       console.log('DataLayer: Initialization complete');
     } catch (e) {
@@ -256,5 +297,39 @@ window.DataLayer = {
       }
       await this.init(); // Refresh data
     } catch (e) { alert("Gagal Simpan Stok Ayam Cloud: " + e.message); console.error(e); }
+  },
+
+  getHrdKaryawan() {
+    const ops = this.data.master_operasional.map(o => ({ id: o.id, nama: o.nama, asal_tabel: 'operasional' }));
+    const usr = this.data.app_users.map(u => ({ id: u.id, nama: u.name, asal_tabel: 'user' }));
+    return [...ops, ...usr].sort((a, b) => a.nama.localeCompare(b.nama));
+  },
+  
+  getHrdData(type) {
+    return this.data[`hrd_${type}`] || [];
+  },
+
+  async saveHrdData(type, payload, isDelete = false) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { alert("Sesi cloud tidak ditemukan! Harap login ulang."); return; }
+    
+    const tableName = `hrd_${type}`;
+    try {
+      if (isDelete) {
+        const res = await supabase.from(tableName).delete().eq('id', payload.id);
+        if (res && res.error) throw new Error(res.error.message);
+      } else {
+        const dbPayload = { ...payload, user_id: user.id };
+        const { data: existing } = await supabase.from(tableName).select('id').eq('id', payload.id);
+        if (existing && existing.length > 0) {
+          const res = await supabase.from(tableName).update(dbPayload).eq('id', payload.id);
+          if (res && res.error) throw new Error(res.error.message);
+        } else {
+          const res = await supabase.from(tableName).insert([dbPayload]);
+          if (res && res.error) throw new Error(res.error.message);
+        }
+      }
+      await this.init(); // Refresh data
+    } catch (e) { alert(`Gagal Simpan HRD ${type} Cloud: ` + e.message); console.error(e); }
   }
 };
