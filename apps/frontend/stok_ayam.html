@@ -925,7 +925,7 @@
                         dateTotalEkorAkhir += agg.ekorAkhir;
                         dateTotalKgAkhir += agg.kgAkhir;
                         
-                        const rata = agg.ekorAkhir > 0 ? (agg.kgAkhir / agg.ekorAkhir) : 0;
+                        const rata = agg.ekorAkhir !== 0 ? Math.abs(agg.kgAkhir / agg.ekorAkhir) : 0;
                         
                         // Konversi Tanggal YYYY-MM-DD ke DD-MM-YYYY
                         const parts = agg.tanggal.split('-');
@@ -970,7 +970,7 @@
                     });
                     
                     // Render TOTAL Row for this date
-                    const totalRata = dateTotalEkorAkhir > 0 ? (dateTotalKgAkhir / dateTotalEkorAkhir) : 0;
+                    const totalRata = dateTotalEkorAkhir !== 0 ? Math.abs(dateTotalKgAkhir / dateTotalEkorAkhir) : 0;
                     
                     let totalSusutText = '0';
                     if (dateTotalMatiEkor > 0 || dateTotalSusutMatiKg > 0) {
