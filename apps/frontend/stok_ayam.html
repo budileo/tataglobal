@@ -114,6 +114,7 @@
          <button id="tab-kemarin" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Stok Kemarin</button>
          <button id="tab-mati" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Ayam Mati</button>
          <button id="tab-rekap" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Rekap Stok</button>
+         <button id="tab-susut" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Rekap Penyusutan</button>
       </div>
 
       <!-- Tab Content: DO Masuk -->
@@ -241,6 +242,39 @@
                  <tbody id="table-rekap" class="divide-y divide-slate-100"></tbody>
               </table>
               <div id="empty-rekap" class="hidden p-8 text-center text-slate-400"><p class="font-medium text-sm">Belum ada data Rekap Stok untuk periode ini.</p></div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Rekap Penyusutan -->
+      <div id="content-susut" class="tab-content hidden relative">
+        <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+           <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
+              <div class="flex items-center gap-3">
+                 <h3 class="font-bold text-slate-800">Rekapitulasi Penyusutan & Loss Ayam</h3>
+              </div>
+           </div>
+           <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-600 whitespace-nowrap">
+                 <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                    <tr>
+                          <th class="px-4 py-3 border-r border-slate-100 w-32 text-center" rowspan="2">Tanggal</th>
+                          <th class="px-4 py-3 border-r border-slate-100 text-center" rowspan="2">Ukuran</th>
+                          <th class="px-4 py-3 border-r border-slate-100 text-center" rowspan="2">Susut DO</th>
+                          <th class="px-4 py-3 border-r border-slate-100 text-center" colspan="3">Susut Jual</th>
+                          <th class="px-4 py-3 border-r border-slate-100 text-center" rowspan="2">Ayam Mati (Gudang)</th>
+                          <th class="px-4 py-3 border-r border-slate-100 text-center" rowspan="2">Total Susut</th>
+                          <th class="px-4 py-3 text-center" rowspan="2">% Terhadap DO</th>
+                    </tr>
+                    <tr>
+                          <th class="px-4 py-3 border-r border-slate-100 text-center bg-slate-100/50">Ayam Mati</th>
+                          <th class="px-4 py-3 border-r border-slate-100 text-center bg-slate-100/50">Ayam Susut</th>
+                          <th class="px-4 py-3 border-r border-slate-100 text-center bg-slate-100/50">Ayam Pulang</th>
+                    </tr>
+                 </thead>
+                 <tbody id="table-susut" class="divide-y divide-slate-100"></tbody>
+              </table>
+              <div id="empty-susut" class="hidden p-8 text-center text-slate-400"><p class="font-medium text-sm">Belum ada data Rekap Penyusutan untuk periode ini.</p></div>
            </div>
         </div>
       </div>
@@ -809,8 +843,8 @@
 
         // Tab Handling
         function switchTab(activeTabId, showContentId, activeClass) {
-            const tabs = ['tab-do', 'tab-kemarin', 'tab-mati', 'tab-rekap'];
-            const contents = ['content-do', 'content-kemarin', 'content-mati', 'content-rekap'];
+            const tabs = ['tab-do', 'tab-kemarin', 'tab-mati', 'tab-rekap', 'tab-susut'];
+            const contents = ['content-do', 'content-kemarin', 'content-mati', 'content-rekap', 'content-susut'];
             
             tabs.forEach(t => {
                 const btn = document.getElementById(t);
@@ -843,6 +877,9 @@
         document.getElementById('tab-rekap').addEventListener('click', () => {
             switchTab('tab-rekap', 'content-rekap', 'bg-purple-50 text-purple-700 border-purple-600');
         });
+        document.getElementById('tab-susut').addEventListener('click', () => {
+            switchTab('tab-susut', 'content-susut', 'bg-orange-50 text-orange-700 border-orange-600');
+        });
 
         window.toggleDetail = function(id) {
             const detailRow = document.getElementById('detail-' + id);
@@ -862,6 +899,7 @@
             let doHtml = '';
             let kemarinHtml = '';
             let rekapHtml = '';
+            let susutHtml = '';
             
             let totalEkor = 0;
             let totalKg = 0;
@@ -1177,6 +1215,9 @@
                     let dateTotalMatiEkor = 0;
                     let dateTotalSusutMatiKg = 0;
                     let dateTotalSusutJual = 0;
+                    let dateTotalMatiJualKg = 0;
+                    let dateTotalSusutJualKg = 0;
+                    let dateTotalPulangJualKg = 0;
                     let dateTotalMatiGudangEkor = 0;
                     let dateTotalMatiGudangKg = 0;
                     let dateTotalPenjualanEkor = 0;
@@ -1190,6 +1231,9 @@
                         dateTotalMatiEkor += agg.matiEkor;
                         dateTotalSusutMatiKg += agg.susutMatiKg;
                         dateTotalSusutJual += agg.susutJual;
+                        dateTotalMatiJualKg += agg.matiJualKg;
+                        dateTotalSusutJualKg += agg.susutJualKg;
+                        dateTotalPulangJualKg += agg.pulangJualKg;
                         dateTotalMatiGudangEkor += agg.matiGudangEkor;
                         dateTotalMatiGudangKg += agg.matiGudangKg;
                         dateTotalPenjualanEkor += agg.penjualanEkor;
@@ -1253,6 +1297,53 @@
                            <td class="px-4 py-3 text-right font-bold text-slate-800">${rata.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
                         </tr>
                         `;
+
+                        // Render Rekap Penyusutan individual row
+                        let rowSusutDOText = '0';
+                        if (agg.matiEkor > 0 || agg.susutMatiKg > 0) {
+                            const matiStr = agg.matiEkor > 0 ? `${agg.matiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                            const susutStr = agg.susutMatiKg > 0 ? `${Number(agg.susutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                            rowSusutDOText = `<span class="text-rose-600 font-semibold">${matiStr} / ${susutStr}</span>`;
+                        }
+
+                        const rowMatiJualText = agg.matiJualKg > 0 ? `<span class="text-rose-600 font-semibold">${Number(agg.matiJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '0 Kg';
+                        const rowSusutJualTextVal = agg.susutJualKg > 0 ? `<span class="text-rose-600 font-semibold">${Number(agg.susutJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '0 Kg';
+                        const rowPulangJualText = agg.pulangJualKg > 0 ? `<span class="text-rose-600 font-semibold">${Number(agg.pulangJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '0 Kg';
+
+                        let rowMatiGudangText = '0';
+                        if (agg.matiGudangEkor > 0 || agg.matiGudangKg > 0) {
+                            const eStr = agg.matiGudangEkor > 0 ? `${agg.matiGudangEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                            const kStr = agg.matiGudangKg > 0 ? `${Number(agg.matiGudangKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                            rowMatiGudangText = `<span class="text-rose-600 font-semibold">${eStr} / ${kStr}</span>`;
+                        }
+
+                        const totalLossEkor = agg.matiEkor + agg.matiGudangEkor;
+                        const totalLossKg = agg.susutMatiKg + agg.susutJual + agg.matiGudangKg;
+                        let rowTotalLossText = '0';
+                        if (totalLossEkor > 0 || totalLossKg > 0) {
+                            const eLossStr = totalLossEkor > 0 ? `${totalLossEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                            const kLossStr = totalLossKg > 0 ? `${Number(totalLossKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                            rowTotalLossText = `<span class="text-rose-600 font-bold">${eLossStr} / ${kLossStr}</span>`;
+                        }
+
+                        const pct = agg.kgAwal > 0 ? (totalLossKg / agg.kgAwal) * 100 : 0;
+                        const rowPctText = pct > 0 ? `<span class="text-rose-600 font-bold">${pct.toFixed(2)}%</span>` : '0%';
+
+                        susutHtml += `
+                        <tr class="bg-white hover:bg-slate-50/60 transition-colors border-b border-slate-100">
+                           ${dateCell}
+                           <td class="px-4 py-3 border-r border-slate-100 text-center font-bold">
+                              <span class="bg-purple-100 text-purple-800 text-xs px-2.5 py-1 rounded-full font-bold shadow-sm">${agg.ukuran}</span>
+                           </td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${rowSusutDOText}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${rowMatiJualText}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${rowSusutJualTextVal}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${rowPulangJualText}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${rowMatiGudangText}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-600">${rowTotalLossText}</td>
+                           <td class="px-4 py-3 text-center text-slate-800 font-bold">${rowPctText}</td>
+                        </tr>
+                        `;
                     });
                     
                     // Render TOTAL Row for this date
@@ -1300,9 +1391,64 @@
                        <td class="px-4 py-3 text-right text-slate-900 font-extrabold">${totalRata.toLocaleString('id-ID', {maximumFractionDigits: 2})}</td>
                     </tr>
                     `;
+
+                    // Render TOTAL Row for Rekap Penyusutan harian
+                    let harianSusutDOText = '0';
+                    if (dateTotalMatiEkor > 0 || dateTotalSusutMatiKg > 0) {
+                        const totalMatiStr = dateTotalMatiEkor > 0 ? `${dateTotalMatiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                        const totalSusutStr = dateTotalSusutMatiKg > 0 ? `${Number(dateTotalSusutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                        harianSusutDOText = `<span class="text-rose-600 font-bold">${totalMatiStr} / ${totalSusutStr}</span>`;
+                    }
+
+                    const harianMatiJualText = dateTotalMatiJualKg > 0 ? `<span class="text-rose-600 font-bold">${Number(dateTotalMatiJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '0 Kg';
+                    const harianSusutJualTextVal = dateTotalSusutJualKg > 0 ? `<span class="text-rose-600 font-bold">${Number(dateTotalSusutJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '0 Kg';
+                    const harianPulangJualText = dateTotalPulangJualKg > 0 ? `<span class="text-rose-600 font-bold">${Number(dateTotalPulangJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '0 Kg';
+
+                    let harianMatiGudangText = '0';
+                    if (dateTotalMatiGudangEkor > 0 || dateTotalMatiGudangKg > 0) {
+                        const eStr = dateTotalMatiGudangEkor > 0 ? `${dateTotalMatiGudangEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                        const kStr = dateTotalMatiGudangKg > 0 ? `${Number(dateTotalMatiGudangKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                        harianMatiGudangText = `<span class="text-rose-600 font-bold">${eStr} / ${kStr}</span>`;
+                    }
+
+                    const harianTotalLossEkor = dateTotalMatiEkor + dateTotalMatiGudangEkor;
+                    const harianTotalLossKg = dateTotalSusutMatiKg + dateTotalSusutJual + dateTotalMatiGudangKg;
+                    let harianTotalLossText = '0';
+                    if (harianTotalLossEkor > 0 || harianTotalLossKg > 0) {
+                        const eLossStr = harianTotalLossEkor > 0 ? `${harianTotalLossEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                        const kLossStr = harianTotalLossKg > 0 ? `${Number(harianTotalLossKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                        harianTotalLossText = `<span class="text-rose-600 font-bold">${eLossStr} / ${kLossStr}</span>`;
+                    }
+
+                    const harianPct = dateTotalKgAwal > 0 ? (harianTotalLossKg / dateTotalKgAwal) * 100 : 0;
+                    const harianPctText = harianPct > 0 ? `<span class="text-rose-600 font-extrabold">${harianPct.toFixed(2)}%</span>` : '0%';
+
+                    susutHtml += `
+                    <tr class="bg-slate-50 hover:bg-slate-100 font-bold border-b-2 border-slate-300">
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-800 font-extrabold uppercase tracking-wider text-[11px]">
+                          TOTAL
+                       </td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-950 font-bold text-xs">${harianSusutDOText}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-950 font-bold text-xs">${harianMatiJualText}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-950 font-bold text-xs">${harianSusutJualTextVal}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-950 font-bold text-xs">${harianPulangJualText}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-950 font-bold text-xs">${harianMatiGudangText}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-slate-950 font-bold text-xs">${harianTotalLossText}</td>
+                       <td class="px-4 py-3 text-center text-slate-950 font-extrabold">${harianPctText}</td>
+                    </tr>
+                    `;
                 });
             }
             document.getElementById('table-rekap').innerHTML = rekapHtml;
+
+            // Render Rekap Penyusutan
+            if (dates.length === 0) {
+                document.getElementById('empty-susut').classList.remove('hidden');
+                document.getElementById('table-susut').innerHTML = '';
+            } else {
+                document.getElementById('empty-susut').classList.add('hidden');
+                document.getElementById('table-susut').innerHTML = susutHtml;
+            }
         }
  
         // Modal DO
