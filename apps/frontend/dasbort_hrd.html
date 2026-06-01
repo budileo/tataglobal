@@ -669,6 +669,13 @@
 
       window.deleteRecord = async function(type, id) {
         if(!confirm('Anda yakin ingin menghapus data ini?')) return;
+        
+        const d = hrdData[type].find(x => x.id === id);
+        if (typeof AuthGuard !== 'undefined' && d) {
+          const actionMsg = 'Hapus data ' + type + ' karyawan: ' + d.nama;
+          if (!(await AuthGuard.consumeToken('delete', actionMsg))) return;
+        }
+
         await window.DataLayer.saveHrdData(type, {id: id}, true);
         refreshDataState();
         renderRingkasan();
@@ -680,6 +687,13 @@
         if(!k) return alert("Pilih karyawan!");
         
         const idField = document.getElementById('edit-id-' + type).value;
+        const isNew = !idField;
+
+        if (typeof AuthGuard !== 'undefined') {
+          const actionMsg = (isNew ? 'Tambah ' : 'Edit ') + 'data ' + type + ' karyawan: ' + k.nama;
+          if (!(await AuthGuard.consumeToken(isNew ? 'create' : 'update', actionMsg))) return;
+        }
+
         const payload = {
           karyawan_id: k.id, nama: k.nama, asal_tabel: k.asal_tabel,
           tanggal: document.getElementById('tanggal_' + type).value,
