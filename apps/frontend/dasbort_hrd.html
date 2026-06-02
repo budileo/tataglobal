@@ -642,7 +642,7 @@
         if (elAbsenList) elAbsenList.innerHTML = absen.length === 0 ? '-' : absen.map(x => `&bull; ${x.nama} (${x.status})`).join('<br>');
 
         // Widget Produktivitas Bulan Ini (WIB)
-        const prodThisMonth = hrdData.produktivitas.filter(x => x.tanggal.startsWith(thisMonth));
+        const prodThisMonth = hrdData.produktivitas.filter(x => x.tanggal && x.tanggal.startsWith(thisMonth));
         let sumTangkap = 0;
         let karyawanScores = {};
         prodThisMonth.forEach(p => {
@@ -667,12 +667,12 @@
         if (elTopKaryawan) elTopKaryawan.innerText = topName !== '-' ? `${topName} (${topScore} Kotak)` : '-';
 
         // Widget Pelanggaran Bulan Ini (WIB)
-        const pelThisMonth = hrdData.pelanggaran.filter(x => x.tanggal.startsWith(thisMonth));
+        const pelThisMonth = hrdData.pelanggaran.filter(x => x.tanggal && x.tanggal.startsWith(thisMonth));
         const elPelCount = document.getElementById('widget-pelanggaran-count');
         if (elPelCount) elPelCount.innerText = pelThisMonth.length;
 
         // Widget Pengembangan Bulan Ini (WIB)
-        const pengThisMonth = hrdData.pengembangan.filter(x => x.tanggal.startsWith(thisMonth));
+        const pengThisMonth = hrdData.pengembangan.filter(x => x.tanggal && x.tanggal.startsWith(thisMonth));
         const elPengCount = document.getElementById('widget-pengembangan-count');
         if (elPengCount) elPengCount.innerText = pengThisMonth.length;
 
@@ -684,7 +684,7 @@
         const elPeriodeText = document.getElementById('ringkasan-periode-text');
         if (elPeriodeText) elPeriodeText.innerText = `Periode: ${monthNames[currentMonth]} ${currentYear}`;
         
-        const kehadiranThisMonth = hrdData.kehadiran.filter(x => x.tanggal.startsWith(thisMonth));
+        const kehadiranThisMonth = hrdData.kehadiran.filter(x => x.tanggal && x.tanggal.startsWith(thisMonth));
         const totalHadirThisMonth = kehadiranThisMonth.filter(x => x.status === 'Hadir').length;
         const totalAbsenThisMonth = kehadiranThisMonth.filter(x => x.status !== 'Hadir').length;
         

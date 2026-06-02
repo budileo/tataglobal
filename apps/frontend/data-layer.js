@@ -300,9 +300,11 @@ window.DataLayer = {
   },
 
   getHrdKaryawan() {
-    const ops = this.data.master_operasional.map(o => ({ id: o.id, nama: o.nama, asal_tabel: 'operasional' }));
-    const usr = this.data.app_users.map(u => ({ id: u.id, nama: u.name, asal_tabel: 'user' }));
-    return [...ops, ...usr].sort((a, b) => a.nama.localeCompare(b.nama));
+    const ops = (this.data.master_operasional || []).map(o => ({ id: o.id, nama: o.nama || '', asal_tabel: 'operasional' }));
+    const usr = (this.data.app_users || []).map(u => ({ id: u.id, nama: u.name || u.username || '', asal_tabel: 'user' }));
+    return [...ops, ...usr]
+      .filter(k => k.id && k.nama)
+      .sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
   },
   
   getHrdData(type) {
