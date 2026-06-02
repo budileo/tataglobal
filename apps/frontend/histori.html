@@ -91,6 +91,117 @@
         <!-- Row 2: Entity + Action + Critical + Search -->
         <div class="flex flex-wrap items-center gap-2">
           <select id="filterEntity" class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-600 outline-emerald-500">
+            <option value="">Semua Entitas</option>
+            <option value="BON">BON</option>
+            <option value="PEMBAYARAN">PEMBAYARAN</option>
+            <option value="MASTER_KONSUMEN">Master Konsumen</option>
+            <option value="MASTER_MARKETING">Master Marketing</option>
+            <option value="MASTER_OPERASIONAL">Master Operasional</option>
+            <option value="USER">USER (Login/Logout)</option>
+          </select>
+          <select id="filterAction" class="border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-600 outline-emerald-500">
+            <option value="">Semua Aksi</option>
+            <option value="CREATE">CREATE</option>
+            <option value="UPDATE">UPDATE</option>
+            <option value="DELETE">DELETE</option>
+            <option value="VOID">VOID</option>
+            <option value="PAYMENT">PAYMENT</option>
+            <option value="LOGIN">LOGIN</option>
+          </select>
+          <label class="flex items-center gap-1.5 text-xs font-semibold text-rose-600 cursor-pointer bg-rose-50 px-3 py-1.5 rounded-lg border border-rose-100">
+            <input id="filterCritical" type="checkbox" class="accent-rose-600"> Hanya Kritis
+          </label>
+          <div class="relative flex-1 min-w-[200px]">
+            <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <input id="filterSearch" type="text" placeholder="Cari ID, pesan, entitas..." class="w-full pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg text-xs font-semibold outline-emerald-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- Log Table -->
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-600">
+            <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 uppercase tracking-wider text-[10px]">
+              <tr>
+                <th class="px-3 py-2.5 w-8 text-center">#</th>
+                <th class="px-3 py-2.5">Waktu</th>
+                <th class="px-3 py-2.5">Aksi</th>
+                <th class="px-3 py-2.5">Entitas</th>
+                <th class="px-3 py-2.5">ID Target</th>
+                <th class="px-3 py-2.5">Status</th>
+                <th class="px-3 py-2.5">Pesan / Detail</th>
+                <th class="px-3 py-2.5 text-center">Data</th>
+              </tr>
+            </thead>
+            <tbody id="log-tbody"></tbody>
+          </table>
+        </div>
+        <div id="log-empty" class="hidden p-12 text-center text-slate-400">
+          <svg class="w-14 h-14 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <p class="font-bold text-lg mb-1">Belum Ada Aktivitas</p>
+          <p class="text-sm">Tidak ada log aktivitas untuk filter yang dipilih.</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[85vh] overflow-hidden flex flex-col">
+        <div class="bg-slate-900 px-6 py-4 text-white flex items-center justify-between shrink-0">
+          <div>
+            <h3 class="text-lg font-black">Detail Perubahan Data</h3>
+            <p id="modal-subtitle" class="text-sm text-slate-400 mt-0.5"></p>
+          </div>
+          <button id="btn-close-modal" class="text-slate-400 hover:text-white p-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-1 space-y-4">
+          <div id="modal-meta" class="grid grid-cols-2 gap-3 text-xs"></div>
+          <div id="modal-diff-area" class="space-y-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="data-layer.js"></script>
+    <script>
+       if (typeof ActivityLogger !== 'undefined') {
+          // Initialize ActivityLogger if needed, wait for it
+       }
+    </script>
+    <script src="activity-logger.js"></script>
+    <script>
+    (function() {
+      // Helper to wait for module to load
+      function waitForSupabase(callback) {
+         if (window.supabaseClient) callback();
+         else setTimeout(() => waitForSupabase(callback), 50);
+      }
+
+      let activePeriod = 'hari-ini';
+      const formatRp = (n) => 'Rp ' + (n||0).toLocaleString('id-ID');
+
+      const actionConfig = {
+        CREATE:  { bg: 'bg-emerald-100', text: 'text-emerald-800', icon: '➕' },
+        UPDATE:  { bg: 'bg-blue-100',    text: 'text-blue-800',    icon: '✏️' },
+        DELETE:  { bg: 'bg-rose-100',    text: 'text-rose-800',    icon: '🗑️' },
+        VOID:    { bg: 'bg-rose-100',    text: 'text-rose-800',    icon: '🚫' },
+        PAYMENT: { bg: 'bg-amber-100',   text: 'text-amber-800',   icon: '💰' },
+        LOGIN:   { bg: 'bg-indigo-100',  text: 'text-indigo-800',  icon: '🔑' },
+        LOGOUT:  { bg: 'bg-slate-100',   text: 'text-slate-800',   icon: '🚪' },
+        SEARCH:  { bg: 'bg-purple-100',  text: 'text-purple-800',  icon: '🔍' },
+        UNKNOWN: { bg: 'bg-slate-100',   text: 'text-slate-600',   icon: '❓' }
+      };
+
+      const entityLabels = {
+        BON: 'BON Penjualan', PEMBAYARAN: 'Pembayaran',
+        MASTER_KONSUMEN: 'Master Konsumen', MASTER_MARKETING: 'Master Marketing',
+        MASTER_OPERASIONAL: 'Master Operasional', USER: 'User', SYSTEM: 'Sistem'
+      };
+
+      function getDateRange() {
+        const now = new Date(), ts = now.toISOString().split('T')[0];
+        switch(activePeriod) {
+          case 'hari-ini': return { dateFrom: ts, dateTo: ts };
           case 'kemarin': { const y = new Date(now); y.setDate(y.getDate()-1); return { dateFrom: y.toISOString().split('T')[0], dateTo: y.toISOString().split('T')[0] }; }
           case 'minggu-ini': { const d=now.getDay(), diff=now.getDate()-d+(d===0?-6:1), m=new Date(now); m.setDate(diff); return { dateFrom: m.toISOString().split('T')[0], dateTo: ts }; }
           case 'bulan-ini': return { dateFrom: ts.substring(0,8)+'01', dateTo: ts };
