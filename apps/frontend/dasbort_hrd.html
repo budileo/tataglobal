@@ -706,14 +706,26 @@
             const rowBgClass = isToday ? 'bg-emerald-50/30 font-medium' : 'hover:bg-slate-50/50';
             
             // 1. Tanggal cell
-            let displayTgl = tgl;
+            const formatIndoDate = (dateStr) => {
+              if (!dateStr) return '-';
+              const parts = dateStr.split('-');
+              if (parts.length !== 3) return dateStr;
+              const year = parts[0];
+              const monthIndex = parseInt(parts[1]) - 1;
+              const day = parts[2];
+              const fullMonthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+              return `${parseInt(day)} ${fullMonthNames[monthIndex]} ${year}`;
+            };
+            
+            const displayDateText = formatIndoDate(tgl);
+            let displayTgl = displayDateText;
             if (isToday) {
               displayTgl = `<div class="flex items-center gap-1.5 font-bold text-slate-900">
-                ${tgl}
+                ${displayDateText}
                 <span class="px-1.5 py-0.5 text-[9px] font-black bg-emerald-100 text-emerald-800 rounded uppercase tracking-wider shrink-0">Hari Ini</span>
               </div>`;
             } else {
-              displayTgl = `<span class="text-slate-600 font-semibold">${tgl}</span>`;
+              displayTgl = `<span class="text-slate-600 font-semibold">${displayDateText}</span>`;
             }
 
             // 2. Jumlah Hadir
