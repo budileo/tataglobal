@@ -496,6 +496,13 @@
     <script>
       let hrdData = { kehadiran: [], produktivitas: [], pelanggaran: [], pengembangan: [] };
       
+      function getLocalDateString(d = new Date()) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+      
       // Setup UI initial state
       window.switchTab = function(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -546,16 +553,20 @@
 
         // Set default dates
         const todayObj = new Date();
-        const today = todayObj.toISOString().split('T')[0];
-        const firstDay = new Date(todayObj.getFullYear(), todayObj.getMonth(), 1).toISOString().split('T')[0];
+        const today = getLocalDateString(todayObj);
+        const firstDay = getLocalDateString(new Date(todayObj.getFullYear(), todayObj.getMonth(), 1));
 
         ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(t => {
-          document.getElementById('tanggal_' + t).value = today;
+          const el = document.getElementById('tanggal_' + t);
+          if (el) el.value = today;
         });
-        document.getElementById('filter_bulan').value = today.substring(0, 7);
+        const elFilterBulan = document.getElementById('filter_bulan');
+        if (elFilterBulan) elFilterBulan.value = today.substring(0, 7);
         
-        document.getElementById('filter_rekap_start').value = firstDay;
-        document.getElementById('filter_rekap_end').value = today;
+        const elRekapStart = document.getElementById('filter_rekap_start');
+        if (elRekapStart) elRekapStart.value = firstDay;
+        const elRekapEnd = document.getElementById('filter_rekap_end');
+        if (elRekapEnd) elRekapEnd.value = today;
 
         // Fetch local data state
         refreshDataState();
@@ -572,16 +583,22 @@
       // --- WIDGET RINGKASAN & TABEL RINGKASAN HARIAN ---
       window.renderRingkasan = function() {
         const todayObj = new Date();
-        const today = todayObj.toISOString().split('T')[0];
+        const today = getLocalDateString(todayObj);
         const thisMonth = today.substring(0, 7);
 
         // Widget Kehadiran
         const hadirToday = hrdData.kehadiran.filter(x => x.tanggal === today);
         const absen = hadirToday.filter(x => x.status !== 'Hadir');
         const hadirCount = hadirToday.filter(x => x.status === 'Hadir').length;
-        document.getElementById('widget-hadir-count').innerText = hadirCount;
-        document.getElementById('widget-absen-count').innerText = absen.length + ' Tidak Hadir';
-        document.getElementById('widget-absen-list').innerHTML = absen.length === 0 ? '-' : absen.map(x => `&bull; ${x.nama} (${x.status})`).join('<br>');
+        
+        const elHadirToday = document.getElementById('widget-hadir-count');
+        if (elHadirToday) elHadirToday.innerText = hadirCount;
+        
+        const elAbsenToday = document.getElementById('widget-absen-count');
+        if (elAbsenToday) elAbsenToday.innerText = absen.length + ' Tidak Hadir';
+        
+        const elAbsenList = document.getElementById('widget-absen-list');
+        if (elAbsenList) elAbsenList.innerHTML = absen.length === 0 ? '-' : absen.map(x => `&bull; ${x.nama} (${x.status})`).join('<br>');
 
         // Widget Produktivitas
         const prodThisMonth = hrdData.produktivitas.filter(x => x.tanggal.startsWith(thisMonth));
@@ -592,7 +609,9 @@
           if(!karyawanScores[p.nama]) karyawanScores[p.nama] = 0;
           karyawanScores[p.nama] += (p.tangkap_ayam_kotak || 0);
         });
-        document.getElementById('widget-tangkap-count').innerText = sumTangkap;
+        
+        const elTangkapCount = document.getElementById('widget-tangkap-count');
+        if (elTangkapCount) elTangkapCount.innerText = sumTangkap;
         
         let topName = '-';
         let topScore = -1;
@@ -602,15 +621,19 @@
             topName = nama;
           }
         }
-        document.getElementById('widget-top-karyawan').innerText = topName !== '-' ? `${topName} (${topScore} Kotak)` : '-';
+        
+        const elTopKaryawan = document.getElementById('widget-top-karyawan');
+        if (elTopKaryawan) elTopKaryawan.innerText = topName !== '-' ? `${topName} (${topScore} Kotak)` : '-';
 
         // Widget Pelanggaran
         const pelThisMonth = hrdData.pelanggaran.filter(x => x.tanggal.startsWith(thisMonth));
-        document.getElementById('widget-pelanggaran-count').innerText = pelThisMonth.length;
+        const elPelCount = document.getElementById('widget-pelanggaran-count');
+        if (elPelCount) elPelCount.innerText = pelThisMonth.length;
 
         // Widget Pengembangan
         const pengThisMonth = hrdData.pengembangan.filter(x => x.tanggal.startsWith(thisMonth));
-        document.getElementById('widget-pengembangan-count').innerText = pengThisMonth.length;
+        const elPengCount = document.getElementById('widget-pengembangan-count');
+        if (elPengCount) elPengCount.innerText = pengThisMonth.length;
 
         // --- RENDERING TABEL RINGKASAN HARIAN BULAN INI ---
         const currentYear = todayObj.getFullYear();
@@ -618,18 +641,22 @@
         const currentDate = todayObj.getDate();
         const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         
-        document.getElementById('ringkasan-periode-text').innerText = `Periode: ${monthNames[currentMonth]} ${currentYear}`;
+        const elPeriodeText = document.getElementById('ringkasan-periode-text');
+        if (elPeriodeText) elPeriodeText.innerText = `Periode: ${monthNames[currentMonth]} ${currentYear}`;
         
         const kehadiranThisMonth = hrdData.kehadiran.filter(x => x.tanggal.startsWith(thisMonth));
         const totalHadirThisMonth = kehadiranThisMonth.filter(x => x.status === 'Hadir').length;
         const totalAbsenThisMonth = kehadiranThisMonth.filter(x => x.status !== 'Hadir').length;
         
-        document.getElementById('ringkasan-total-summary').innerHTML = `
-          Bulan Ini: 
-          <span class="text-emerald-600 font-bold">${totalHadirThisMonth} Hadir</span> | 
-          <span class="text-rose-600 font-bold">${totalAbsenThisMonth} Absen</span> | 
-          <span class="text-blue-600 font-bold">${sumTangkap} Kotak</span>
-        `;
+        const elTotalSummary = document.getElementById('ringkasan-total-summary');
+        if (elTotalSummary) {
+          elTotalSummary.innerHTML = `
+            Bulan Ini: 
+            <span class="text-emerald-600 font-bold">${totalHadirThisMonth} Hadir</span> | 
+            <span class="text-rose-600 font-bold">${totalAbsenThisMonth} Absen</span> | 
+            <span class="text-blue-600 font-bold">${sumTangkap} Kotak</span>
+          `;
+        }
 
         // Kumpulkan semua tanggal unik dari awal bulan ini sampai hari ini, dan tambahkan tanggal dari data jika ada
         const dateSet = new Set();
@@ -754,7 +781,8 @@
           });
         }
         
-        document.getElementById('ringkasan-harian-tbody').innerHTML = tableHtml;
+        const elHarianTbody = document.getElementById('ringkasan-harian-tbody');
+        if (elHarianTbody) elHarianTbody.innerHTML = tableHtml;
       }
 
       // --- CRUD RIWAYAT ---
@@ -835,7 +863,7 @@
       window.cancelEdit = function(type) {
         document.getElementById('form-' + type).reset();
         document.getElementById('edit-id-' + type).value = '';
-        document.getElementById('tanggal_' + type).value = new Date().toISOString().split('T')[0];
+        document.getElementById('tanggal_' + type).value = getLocalDateString();
         if(type === 'kehadiran') toggleTimeInputs();
 
         document.getElementById('btn-save-' + type).innerText = 'Simpan ' + type.charAt(0).toUpperCase() + type.slice(1);
