@@ -504,12 +504,16 @@
       }
       
       // Setup UI initial state
-      window.switchTab = function(tabId) {
+      window.switchTab = async function(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById('tab-' + tabId).classList.add('active');
-        document.getElementById('tab-btn-' + tabId).classList.add('active');
-        if(tabId === 'ringkasan') renderRingkasan();
+        const elTab = document.getElementById('tab-' + tabId);
+        if (elTab) elTab.classList.add('active');
+        const elBtn = document.getElementById('tab-btn-' + tabId);
+        if (elBtn) elBtn.classList.add('active');
+        if(tabId === 'ringkasan') {
+          await renderRingkasan();
+        }
       }
 
       window.toggleTimeInputs = function() {
@@ -570,7 +574,7 @@
 
         // Fetch local data state
         refreshDataState();
-        renderRingkasan();
+        await renderRingkasan();
       }
 
       function refreshDataState() {
@@ -581,12 +585,30 @@
       }
 
       // --- WIDGET RINGKASAN & TABEL RINGKASAN HARIAN ---
-      window.renderRingkasan = function() {
-        const todayObj = new Date();
-        const today = getLocalDateString(todayObj);
-        const thisMonth = today.substring(0, 7);
+      window.renderRingkasan = async function() {
+        // Tampilkan indikator memuat data pada tabel ringkasan
+        const elHarianTbody = document.getElementById('ringkasan-harian-tbody');
+        if (elHarianTbody && (elHarianTbody.innerHTML.includes('Loading data') || elHarianTbody.innerHTML.trim() === '')) {
+          elHarianTbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">Menyinkronkan data online...</td></tr>`;
+        }
 
-        // Widget Kehadiran
+        // Tarik data terbaru langsung dari online database (Supabase) untuk mendukung multi-user & multi-perangkat
+        if (window.DataLayer && window.DataLayer.init) {
+          try {
+            await window.DataLayer.init();
+            ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(t => {
+              hrdData[t] = window.DataLayer.getHrdData(t) || [];
+            });
+          } catch (e) {
+            console.error("Gagal menyinkronkan data online:", e);
+          }
+        }
+
+        const todayObj = new Date();
+        const today = getLocalDateString(todayObj); // format YYYY-MM-DD (WIB)
+        const thisMonth = today.substring(0, 7); // format YYYY-MM
+
+        // Widget Kehadiran Hari Ini (WIB)
         const hadirToday = hrdData.kehadiran.filter(x => x.tanggal === today);
         const absen = hadirToday.filter(x => x.status !== 'Hadir');
         const hadirCount = hadirToday.filter(x => x.status === 'Hadir').length;
@@ -600,7 +622,7 @@
         const elAbsenList = document.getElementById('widget-absen-list');
         if (elAbsenList) elAbsenList.innerHTML = absen.length === 0 ? '-' : absen.map(x => `&bull; ${x.nama} (${x.status})`).join('<br>');
 
-        // Widget Produktivitas
+        // Widget Produktivitas Bulan Ini (WIB)
         const prodThisMonth = hrdData.produktivitas.filter(x => x.tanggal.startsWith(thisMonth));
         let sumTangkap = 0;
         let karyawanScores = {};
@@ -625,12 +647,12 @@
         const elTopKaryawan = document.getElementById('widget-top-karyawan');
         if (elTopKaryawan) elTopKaryawan.innerText = topName !== '-' ? `${topName} (${topScore} Kotak)` : '-';
 
-        // Widget Pelanggaran
+        // Widget Pelanggaran Bulan Ini (WIB)
         const pelThisMonth = hrdData.pelanggaran.filter(x => x.tanggal.startsWith(thisMonth));
         const elPelCount = document.getElementById('widget-pelanggaran-count');
         if (elPelCount) elPelCount.innerText = pelThisMonth.length;
 
-        // Widget Pengembangan
+        // Widget Pengembangan Bulan Ini (WIB)
         const pengThisMonth = hrdData.pengembangan.filter(x => x.tanggal.startsWith(thisMonth));
         const elPengCount = document.getElementById('widget-pengembangan-count');
         if (elPengCount) elPengCount.innerText = pengThisMonth.length;
@@ -638,7 +660,6 @@
         // --- RENDERING TABEL RINGKASAN HARIAN BULAN INI ---
         const currentYear = todayObj.getFullYear();
         const currentMonth = todayObj.getMonth();
-        const currentDate = todayObj.getDate();
         const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         
         const elPeriodeText = document.getElementById('ringkasan-periode-text');
@@ -658,14 +679,13 @@
           `;
         }
 
-        // Kumpulkan semua tanggal unik dari awal bulan ini sampai hari ini, dan tambahkan tanggal dari data jika ada
+        // Kumpulkan semua tanggal unik dari database online Supabase untuk bulan ini
         const dateSet = new Set();
-        for (let d = 1; d <= currentDate; d++) {
-          const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-          dateSet.add(dateStr);
-        }
         
-        // Scan data untuk tanggal unik lainnya di bulan ini (antisipasi data masa depan atau input lain)
+        // Selalu tampilkan hari ini di bagian teratas meskipun belum ada data terinput agar user merasa interaktif
+        dateSet.add(today);
+        
+        // Ambil semua tanggal transaksi riil dari database online Supabase
         ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(type => {
           (hrdData[type] || []).forEach(item => {
             if (item.tanggal && item.tanggal.startsWith(thisMonth)) {
@@ -679,7 +699,7 @@
         
         let tableHtml = '';
         if (sortedDates.length === 0) {
-          tableHtml = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">Tidak ada data untuk bulan ini.</td></tr>`;
+          tableHtml = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">Tidak ada data di database online untuk bulan ini.</td></tr>`;
         } else {
           sortedDates.forEach(tgl => {
             const isToday = (tgl === today);
