@@ -598,10 +598,14 @@
       }
 
       function refreshDataState() {
-        ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(t => {
-          hrdData[t] = window.DataLayer.getHrdData(t) || [];
-          renderRiwayat(t);
-        });
+        try {
+          ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(t => {
+            hrdData[t] = (window.DataLayer && window.DataLayer.getHrdData) ? (window.DataLayer.getHrdData(t) || []) : [];
+            renderRiwayat(t);
+          });
+        } catch (e) {
+          console.error("Gagal refreshDataState:", e);
+        }
       }
 
       // --- WIDGET RINGKASAN & TABEL RINGKASAN HARIAN ---
@@ -954,44 +958,56 @@
       }
 
       async function submitForm(type, payloadOverrides) {
-        const k = getSelectedKaryawanData('karyawan_' + type);
-        if(!k) return alert("Pilih karyawan!");
-        
-        const idField = document.getElementById('edit-id-' + type).value;
-        const isNew = !idField;
-        const actionMsg = (isNew ? 'Tambah ' : 'Edit ') + 'data ' + type + ' karyawan: ' + k.nama;
+        try {
+          const k = getSelectedKaryawanData('karyawan_' + type);
+          if(!k) return alert("Pilih karyawan!");
+          
+          const idField = document.getElementById('edit-id-' + type).value;
+          const isNew = !idField;
+          const actionMsg = (isNew ? 'Tambah ' : 'Edit ') + 'data ' + type + ' karyawan: ' + k.nama;
 
-        if (typeof AuthGuard !== 'undefined') {
-          if (!(await AuthGuard.consumeToken(isNew ? 'create' : 'update', actionMsg))) return;
+          if (typeof AuthGuard !== 'undefined') {
+            if (!(await AuthGuard.consumeToken(isNew ? 'create' : 'update', actionMsg))) {
+              console.warn("AuthGuard blocked saving");
+              return;
+            }
+          }
+
+          const payload = {
+            karyawan_id: k.id, nama: k.nama, asal_tabel: k.asal_tabel,
+            tanggal: document.getElementById('tanggal_' + type).value,
+            ...payloadOverrides
+          };
+          if(idField) payload.id = idField; // if edit
+
+          // Ambil data lama jika edit
+          const oldData = !isNew ? hrdData[type].find(x => x.id === idField) : null;
+
+          if (!window.DataLayer || !window.DataLayer.saveHrdData) {
+            throw new Error("Sistem data online (DataLayer) belum siap. Harap muat ulang halaman.");
+          }
+
+          await window.DataLayer.saveHrdData(type, payload);
+          
+          if (typeof ActivityLogger !== 'undefined') {
+            await ActivityLogger.log({
+              action: isNew ? 'CREATE' : 'UPDATE',
+              entityType: 'HRD_' + type.toUpperCase(),
+              entityId: k.id,
+              oldData: oldData,
+              newData: payload,
+              message: actionMsg
+            });
+          }
+
+          alert("Data berhasil disimpan.");
+          cancelEdit(type);
+          refreshDataState();
+          renderRingkasan();
+        } catch (e) {
+          alert("Terjadi kesalahan sistem saat menyimpan: " + e.message);
+          console.error(e);
         }
-
-        const payload = {
-          karyawan_id: k.id, nama: k.nama, asal_tabel: k.asal_tabel,
-          tanggal: document.getElementById('tanggal_' + type).value,
-          ...payloadOverrides
-        };
-        if(idField) payload.id = idField; // if edit
-
-        // Ambil data lama jika edit
-        const oldData = !isNew ? hrdData[type].find(x => x.id === idField) : null;
-
-        await window.DataLayer.saveHrdData(type, payload);
-        
-        if (typeof ActivityLogger !== 'undefined') {
-          await ActivityLogger.log({
-            action: isNew ? 'CREATE' : 'UPDATE',
-            entityType: 'HRD_' + type.toUpperCase(),
-            entityId: k.id,
-            oldData: oldData,
-            newData: payload,
-            message: actionMsg
-          });
-        }
-
-        alert("Data berhasil disimpan.");
-        cancelEdit(type);
-        refreshDataState();
-        renderRingkasan();
       }
 
       // Hook up form submits
