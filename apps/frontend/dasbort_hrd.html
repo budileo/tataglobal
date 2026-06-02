@@ -511,8 +511,27 @@
         if (elTab) elTab.classList.add('active');
         const elBtn = document.getElementById('tab-btn-' + tabId);
         if (elBtn) elBtn.classList.add('active');
+
+        // Tarik data terbaru dari database online saat ganti tab demi mendukung multi-user real-time
+        if (window.DataLayer && window.DataLayer.init) {
+          try {
+            await window.DataLayer.init();
+            refreshDataState();
+          } catch (e) {
+            console.error("Gagal sinkronisasi data online saat ganti tab:", e);
+          }
+        }
+
         if(tabId === 'ringkasan') {
           await renderRingkasan();
+        } else if(tabId === 'jurnal') {
+          const kId = document.getElementById('filter_karyawan').value;
+          const bulan = document.getElementById('filter_bulan').value;
+          if (kId && bulan) renderJurnal();
+        } else if(tabId === 'rekap') {
+          const startD = document.getElementById('filter_rekap_start').value;
+          const endD = document.getElementById('filter_rekap_end').value;
+          if (startD && endD) renderRekapGlobal();
         }
       }
 

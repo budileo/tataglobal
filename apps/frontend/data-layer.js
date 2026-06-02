@@ -316,15 +316,24 @@ window.DataLayer = {
     const tableName = `hrd_${type}`;
     try {
       if (isDelete) {
+        if (!payload.id) throw new Error("ID tidak boleh kosong untuk penghapusan.");
         const res = await supabase.from(tableName).delete().eq('id', payload.id);
         if (res && res.error) throw new Error(res.error.message);
       } else {
         const dbPayload = { ...payload, user_id: user.id };
-        const { data: existing } = await supabase.from(tableName).select('id').eq('id', payload.id);
+        
+        let existing = null;
+        if (payload.id) {
+          const { data, error } = await supabase.from(tableName).select('id').eq('id', payload.id);
+          if (!error) existing = data;
+        }
+
         if (existing && existing.length > 0) {
           const res = await supabase.from(tableName).update(dbPayload).eq('id', payload.id);
           if (res && res.error) throw new Error(res.error.message);
         } else {
+          // If inserting a new record, ensure undefined id is not sent to Supabase
+          if (dbPayload.id === undefined) delete dbPayload.id;
           const res = await supabase.from(tableName).insert([dbPayload]);
           if (res && res.error) throw new Error(res.error.message);
         }
