@@ -591,9 +591,10 @@
         const elRekapEnd = document.getElementById('filter_rekap_end');
         if (elRekapEnd) elRekapEnd.value = today;
 
-        // Fetch local data state
-        refreshDataState();
+        // Fetch data online terlebih dahulu lewat renderRingkasan
         await renderRingkasan();
+        // Baru render riwayat tab setelah data didapat
+        refreshDataState();
       }
 
       function refreshDataState() {

@@ -330,6 +330,9 @@ const AuthGuard = (function() {
     const user = getCurrentUser();
     if (!user) return false;
 
+    // Owner tidak perlu potong token
+    if (user.role === 'OWNER') return true;
+
     const cost = await getTarifCost(actionCode);
 
     // Baca saldo terbaru dari Supabase
