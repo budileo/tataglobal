@@ -304,7 +304,12 @@ window.DataLayer = {
     const usr = (this.data.app_users || []).map(u => ({ id: u.id, nama: u.name || u.username || '', asal_tabel: 'user' }));
     return [...ops, ...usr]
       .filter(k => k.id && k.nama)
-      .sort((a, b) => String(a.nama || '').localeCompare(String(b.nama || '')));
+      .sort((a, b) => {
+        // Operasional first, then others
+        if (a.asal_tabel === 'operasional' && b.asal_tabel !== 'operasional') return -1;
+        if (a.asal_tabel !== 'operasional' && b.asal_tabel === 'operasional') return 1;
+        return String(a.nama || '').localeCompare(String(b.nama || ''));
+      });
   },
   
   getHrdData(type) {
