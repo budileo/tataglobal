@@ -593,7 +593,9 @@ const AuthGuard = (function() {
     'dasbort_menu.html': 'dashboard.view',
     'dasbort_finance.html': 'dashboard.view',
     'dasbort_marketing.html': 'dashboard.view',
-    'dasbort_hrd.html': 'dashboard.view'
+    'dasbort_hrd.html': 'dashboard.view',
+    'dasbort_crm.html': 'dashboard.view',
+    'komplain_pelanggan.html': 'dashboard.view'
   };
 
   /**
