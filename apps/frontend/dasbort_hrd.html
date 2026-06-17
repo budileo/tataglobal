@@ -413,9 +413,28 @@
           <form id="form-pengembangan" class="space-y-4 max-w-2xl">
             <input type="hidden" id="edit-id-pengembangan">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Pilih Karyawan</label>
-                <select id="karyawan_pengembangan" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-purple-500" required></select>
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Pilih Karyawan <span class="text-emerald-600 font-normal">(bisa pilih lebih dari 1)</span></label>
+                <div class="multi-select-wrapper" id="ms-karyawan-pengembangan">
+                  <div class="multi-select-trigger" tabindex="0">
+                    <span class="placeholder">-- Pilih Karyawan --</span>
+                    <span class="arrow">▼</span>
+                  </div>
+                  <div class="multi-select-dropdown">
+                    <input type="text" class="multi-select-search" placeholder="Cari nama karyawan...">
+                    <div class="multi-select-actions">
+                      <button type="button" class="btn-select-all">Pilih Semua</button>
+                      <button type="button" class="btn-clear-all">Hapus Semua</button>
+                    </div>
+                    <div class="multi-select-options"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Pemateri (Pemberi Materi)</label>
+                <select id="pemateri_pengembangan" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-purple-500">
+                  <option value="">-- Kosongkan jika tidak ada --</option>
+                </select>
               </div>
               <div>
                 <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal Kegiatan</label>
@@ -817,14 +836,19 @@
         const optionsHtml = `<option value="">-- Pilih Karyawan --</option>` + 
           karyawanList.map(k => `<option value="${k.id}" data-asal="${k.asal_tabel}">${k.nama} (${k.asal_tabel})</option>`).join('');
 
-        // Kehadiran uses multi-select, so we init separately
-        ['produktivitas', 'pelanggaran', 'pengembangan'].forEach(t => {
+        // Initialize simple select options
+        ['produktivitas', 'pelanggaran'].forEach(t => {
           document.getElementById('karyawan_' + t).innerHTML = optionsHtml;
         });
         document.getElementById('filter_karyawan').innerHTML = optionsHtml;
 
-        // Initialize multi-select for kehadiran
+        // Populate pemateri combo box
+        document.getElementById('pemateri_pengembangan').innerHTML = `<option value="">-- Kosongkan jika tidak ada --</option>` + 
+          karyawanList.map(k => `<option value="${k.id}" data-asal="${k.asal_tabel}">${k.nama} (${k.asal_tabel})</option>`).join('');
+
+        // Initialize multi-selects
         initMultiSelect('ms-karyawan-kehadiran', karyawanList);
+        initMultiSelect('ms-karyawan-pengembangan', karyawanList);
 
         // Set default dates
         const todayObj = new Date();
@@ -1056,7 +1080,9 @@
             if (tglPengList.length > 0) {
               const activities = {};
               tglPengList.forEach(x => {
-                const actType = x.jenis_kegiatan || 'Kegiatan';
+                let actType = x.jenis_kegiatan || 'Kegiatan';
+                if (x.pemateri) actType += ` (Oleh: ${x.pemateri})`;
+                
                 if (!activities[actType]) activities[actType] = [];
                 if (x.kehadiran === 'Hadir') {
                   activities[actType].push(x.nama);
@@ -1115,7 +1141,7 @@
             cols = `<td class="px-4 py-2 border-r border-slate-100"><span class="px-2 py-0.5 rounded text-[10px] bg-rose-100 text-rose-700 font-bold">${d.kategori}</span></td>
                     <td class="px-4 py-2 border-r border-slate-100 text-xs">${d.detail_pelanggaran||'-'}</td>`;
           } else if(type === 'pengembangan') {
-            cols = `<td class="px-4 py-2 border-r border-slate-100 font-bold text-purple-600">${d.jenis_kegiatan}</td>
+            cols = `<td class="px-4 py-2 border-r border-slate-100 font-bold text-purple-600">${d.jenis_kegiatan}${d.pemateri ? '<br><span class="text-xs font-normal text-slate-500">Pemateri: ' + d.pemateri + '</span>' : ''}</td>
                     <td class="px-4 py-2 border-r border-slate-100 text-xs"><span class="font-bold text-slate-600">${d.kehadiran}</span><br>${d.keterangan||'-'}</td>`;
           }
 
@@ -1140,6 +1166,8 @@
         if(type === 'kehadiran') {
           // For kehadiran, set multi-select to single value
           setMultiSelectValues('ms-karyawan-kehadiran', [d.karyawan_id]);
+        } else if(type === 'pengembangan') {
+          setMultiSelectValues('ms-karyawan-pengembangan', [d.karyawan_id]);
         } else {
           document.getElementById('karyawan_' + type).value = d.karyawan_id;
         }
@@ -1161,6 +1189,16 @@
           document.getElementById('jenis_pengembangan').value = d.jenis_kegiatan || 'Briefing';
           document.getElementById('hadir_pengembangan').value = d.kehadiran || 'Hadir';
           document.getElementById('keterangan_pengembangan').value = d.keterangan || '';
+          
+          let pemateriValue = '';
+          const pemateriSelect = document.getElementById('pemateri_pengembangan');
+          for(let i = 0; i < pemateriSelect.options.length; i++) {
+            if(pemateriSelect.options[i].text.includes(d.pemateri)) {
+              pemateriValue = pemateriSelect.options[i].value;
+              break;
+            }
+          }
+          pemateriSelect.value = pemateriValue;
         }
 
         document.getElementById('btn-save-' + type).innerText = 'Update Data';
@@ -1179,6 +1217,8 @@
         if(type === 'kehadiran') {
           toggleTimeInputs();
           msClearAll('ms-karyawan-kehadiran');
+        } else if(type === 'pengembangan') {
+          msClearAll('ms-karyawan-pengembangan');
         }
 
         document.getElementById('btn-save-' + type).innerText = 'Simpan ' + type.charAt(0).toUpperCase() + type.slice(1);
@@ -1421,14 +1461,124 @@
           detail_pelanggaran: document.getElementById('detail_pelanggaran').value
         });
       });
-      document.getElementById('form-pengembangan').addEventListener('submit', e => {
+      document.getElementById('form-pengembangan').addEventListener('submit', async e => {
         e.preventDefault();
-        submitForm('pengembangan', {
+
+        const idField = document.getElementById('edit-id-pengembangan').value;
+        const isEditMode = !!idField;
+        
+        let pemateriText = null;
+        const pemateriSel = document.getElementById('pemateri_pengembangan');
+        if(pemateriSel.value) {
+           pemateriText = pemateriSel.options[pemateriSel.selectedIndex].text.split(' (')[0];
+        }
+
+        const payloadBase = {
           jenis_kegiatan: document.getElementById('jenis_pengembangan').value,
           kehadiran: document.getElementById('hadir_pengembangan').value,
-          keterangan: document.getElementById('keterangan_pengembangan').value
-        });
+          keterangan: document.getElementById('keterangan_pengembangan').value,
+          pemateri: pemateriText
+        };
+
+        if (isEditMode) {
+          const selectedList = getMultiSelectedKaryawan('ms-karyawan-pengembangan');
+          if (selectedList.length === 0) return alert('Pilih karyawan!');
+          const k = selectedList[0];
+          await submitPengembanganSingle(k, payloadBase, idField);
+        } else {
+          const selectedList = getMultiSelectedKaryawan('ms-karyawan-pengembangan');
+          if (selectedList.length === 0) return alert('Pilih minimal 1 karyawan!');
+
+          const tanggal = document.getElementById('tanggal_pengembangan').value;
+          const actionMsg = 'Tambah pengembangan ' + selectedList.length + ' karyawan';
+          
+          if (typeof AuthGuard !== 'undefined') {
+            if (!(await AuthGuard.consumeToken('create', actionMsg))) return;
+          }
+
+          const btnSave = document.getElementById('btn-save-pengembangan');
+          const originalText = btnSave.innerText;
+          btnSave.disabled = true;
+
+          let successCount = 0;
+          let errorList = [];
+
+          for (let i = 0; i < selectedList.length; i++) {
+            const k = selectedList[i];
+            btnSave.innerText = `Menyimpan ${i + 1}/${selectedList.length}...`;
+            try {
+              const payload = {
+                karyawan_id: k.id, nama: k.nama, asal_tabel: k.asal_tabel,
+                tanggal: tanggal,
+                ...payloadBase
+              };
+
+              if (!window.DataLayer || !window.DataLayer.saveHrdData) {
+                throw new Error('Sistem data online belum siap.');
+              }
+              await window.DataLayer.saveHrdData('pengembangan', payload);
+              if (typeof ActivityLogger !== 'undefined') {
+                await ActivityLogger.log({
+                  action: 'CREATE', entityType: 'HRD_PENGEMBANGAN', entityId: k.id, newData: payload, message: 'Tambah pengembangan karyawan: ' + k.nama
+                });
+              }
+              successCount++;
+            } catch (err) {
+              errorList.push(k.nama + ': ' + err.message);
+            }
+          }
+
+          btnSave.disabled = false;
+          btnSave.innerText = originalText;
+
+          if (errorList.length > 0) {
+            alert(`Berhasil: ${successCount}, Gagal: ${errorList.length}\\n\\nError:\\n${errorList.join('\\n')}`);
+          } else {
+            alert(`Data pengembangan ${successCount} karyawan berhasil disimpan.`);
+          }
+
+          cancelEdit('pengembangan');
+          refreshDataState();
+          renderRingkasan();
+        }
       });
+
+      async function submitPengembanganSingle(k, payloadOverrides, editId) {
+        try {
+          const actionMsg = 'Edit data pengembangan karyawan: ' + k.nama;
+          if (typeof AuthGuard !== 'undefined') {
+            if (!(await AuthGuard.consumeToken('update', actionMsg))) return;
+          }
+
+          const payload = {
+            karyawan_id: k.id, nama: k.nama, asal_tabel: k.asal_tabel,
+            tanggal: document.getElementById('tanggal_pengembangan').value,
+            id: editId,
+            ...payloadOverrides
+          };
+
+          const oldData = hrdData.pengembangan.find(x => x.id === editId);
+
+          if (!window.DataLayer || !window.DataLayer.saveHrdData) {
+             throw new Error('Sistem data online belum siap.');
+          }
+
+          await window.DataLayer.saveHrdData('pengembangan', payload);
+          if (typeof ActivityLogger !== 'undefined') {
+            await ActivityLogger.log({
+              action: 'UPDATE', entityType: 'HRD_PENGEMBANGAN', entityId: k.id, oldData: oldData, newData: payload, message: actionMsg
+            });
+          }
+
+          alert('Data berhasil diupdate.');
+          cancelEdit('pengembangan');
+          refreshDataState();
+          renderRingkasan();
+        } catch (e) {
+          alert('Terjadi kesalahan sistem: ' + e.message);
+          console.error(e);
+        }
+      }
 
       // --- JURNAL REKAPITULASI ---
       window.renderJurnal = function() {
@@ -1635,7 +1785,7 @@
                                                            <div class="keterangan">${x.detail_pelanggaran}</div>`).join('<div class="separator"></div>') : '-';
             
             const pengText = peng.length > 0 ? peng.map(x => `<div class="status giat">${x.jenis_kegiatan} (${x.kehadiran})</div>
-                                                              <div class="keterangan">${x.keterangan||''}</div>`).join('<div class="separator"></div>') : '-';
+                                                              <div class="keterangan">${x.keterangan||''}${x.pemateri ? '<br><i>Pemateri: ' + x.pemateri + '</i>' : ''}</div>`).join('<div class="separator"></div>') : '-';
 
             rowsHtml += `
               <tr>

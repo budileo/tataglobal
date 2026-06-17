@@ -1,0 +1,47 @@
+# Rencana Implementasi: Pembaruan Form Pengembangan HRD
+
+Berdasarkan permintaan Anda, saya akan memodifikasi bagian **Pengembangan** pada Dashboard HRD (`dasbort_hrd.html`) agar pengguna dapat memilih lebih dari satu karyawan (Multi-Select) dan menambahkan kolom baru untuk **Pemateri**.
+
+## User Review Required
+
+> [!IMPORTANT]
+> - **Struktur Database**: Saya akan memodifikasi file `setup_hrd.sql` dengan menambahkan kolom `pemateri TEXT` ke dalam tabel `hrd_pengembangan`. Jika tabel sudah terbuat di Supabase, akan ada instruksi `ALTER TABLE` di dalamnya agar Anda dapat menjalankannya.
+> - **Input Multi-Select**: Input karyawan pada Pengembangan akan diubah menggunakan komponen Multi-Select yang sama seperti di form Kehadiran (sudah mengurutkan *Operasional* terlebih dahulu).
+> - **Pemateri**: Akan ditambahkan sebuah *combo box* baru bernama **Pemateri (Pemberi Materi)** yang isinya sama dengan daftar karyawan.
+> - **Proses Simpan**: Ketika disimpan (mode Tambah Baru), sistem akan melooping karyawan yang dipilih dan menyimpannya satu persatu ke database.
+
+## Proposed Changes
+
+### Database Setup
+#### [MODIFY] [setup_hrd.sql](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/setup_hrd.sql)
+- Menambahkan kolom `pemateri TEXT` pada deklarasi `CREATE TABLE public.hrd_pengembangan`.
+- Menambahkan baris komentar dan query `ALTER TABLE public.hrd_pengembangan ADD COLUMN IF NOT EXISTS pemateri TEXT;` di bagian bawah file untuk memudahkan update skema tanpa menghapus data lama.
+
+### Dashboard Frontend
+#### [MODIFY] [dasbort_hrd.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/dasbort_hrd.html)
+- **HTML Form Pengembangan**: 
+  - Mengganti elemen `<select id="karyawan_pengembangan">` menjadi `<div class="multi-select-wrapper" id="ms-karyawan-pengembangan">...</div>`.
+  - Menambahkan *dropdown* baru `<select id="pemateri_pengembangan">` dengan label "Pemateri (Memberi Materi)".
+- **Inisialisasi (`initHRD`)**: 
+  - Memanggil `initMultiSelect('ms-karyawan-pengembangan', karyawanList)` agar combo tersebut memiliki fitur checkbox dan pencarian.
+  - Memasukkan daftar `karyawanList` ke dalam elemen `pemateri_pengembangan`. Data karyawan sudah otomatis urut berdasarkan Operasional dari data-layernya (jika tidak, kita akan mengurutkannya khusus untuk form ini dan multi-select).
+- **Proses Edit & Cancel (`editRecord`, `cancelEdit`)**:
+  - Menyambungkan form edit agar dapat membaca & menampilkan multi-select untuk `pengembangan` saat mode Edit (hanya terisi 1 orang).
+  - Menyambungkan field `pemateri_pengembangan`.
+- **Proses Simpan (`submit form-pengembangan`)**:
+  - Mengganti *event listener* `submitForm('pengembangan', ...)` dengan logika looping persis seperti form Kehadiran.
+  - Untuk setiap karyawan yang dipilih, data akan diunggah dengan status dan pemateri yang sama.
+- **Tampilan Riwayat & Jurnal PDF**:
+  - Mengubah fungsi `renderRiwayat('pengembangan')`, `renderJurnal()`, dan `downloadJurnalIndividuPDF()` agar ikut menampilkan nama Pemateri (contoh: `Briefing (Hadir) - Pemateri: Pak Budi`).
+
+---
+
+## Verification Plan
+
+### Manual Verification
+1. Eksekusi file SQL `setup_hrd.sql` di Supabase untuk memastikan kolom `pemateri` tersedia.
+2. Buka halaman `dasbort_hrd.html` dan masuk ke tab **Pengembangan**.
+3. Pastikan combo box **Pilih Karyawan** sekarang bisa dicentang lebih dari satu orang dan daftar pertamanya adalah bagian Operasional.
+4. Cek apakah terdapat pilihan **Pemateri**.
+5. Simpan data baru untuk 3 orang sekaligus. Pastikan ada notifikasi "Berhasil menyimpan 3 data" dan muncul 3 baris secara terpisah di tabel riwayat.
+6. Cek PDF di Tab Jurnal Individu untuk memastikan nama Pemateri ikut tercetak pada detail pengembangan.

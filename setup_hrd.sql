@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS public.hrd_pengembangan (
     jenis_kegiatan TEXT NOT NULL, -- 'Briefing', 'Meeting', 'Training', 'Coaching'
     kehadiran TEXT NOT NULL, -- 'Hadir', 'Tidak Hadir'
     keterangan TEXT,
+    pemateri TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     user_id TEXT
 );
@@ -61,3 +62,6 @@ ALTER TABLE public.hrd_kehadiran DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.hrd_produktivitas DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.hrd_pelanggaran DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.hrd_pengembangan DISABLE ROW LEVEL SECURITY;
+
+-- Migration script if table already exists (safe for existing data):
+ALTER TABLE public.hrd_pengembangan ADD COLUMN IF NOT EXISTS pemateri TEXT;
