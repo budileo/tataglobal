@@ -115,6 +115,7 @@
          <button id="tab-mati" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Ayam Mati</button>
          <button id="tab-rekap" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Rekap Stok</button>
          <button id="tab-susut" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Rekap Penyusutan</button>
+         <button id="tab-jurnal" class="tab-btn shrink-0 px-5 py-2.5 rounded-t-lg text-slate-500 font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all">Jurnal Kandang</button>
       </div>
 
       <!-- Tab Content: DO Masuk -->
@@ -275,6 +276,40 @@
                  <tbody id="table-susut" class="divide-y divide-slate-100"></tbody>
               </table>
               <div id="empty-susut" class="hidden p-8 text-center text-slate-400"><p class="font-medium text-sm">Belum ada data Rekap Penyusutan untuk periode ini.</p></div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Tab Content: Jurnal Kandang -->
+      <div id="content-jurnal" class="tab-content hidden relative">
+        <div class="bg-white p-0 rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+           <div class="p-4 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50">
+              <div class="flex items-center gap-3">
+                 <div class="p-2 bg-teal-50 rounded-lg text-teal-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                 </div>
+                 <h3 class="font-bold text-slate-800">Jurnal Kandang — Transaksi per Kandang</h3>
+              </div>
+           </div>
+           <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm text-slate-600 whitespace-nowrap">
+                 <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                    <tr>
+                       <th class="px-4 py-3 border-r border-slate-100 w-12 text-center">No</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Nama Kandang</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Tgl</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Nama Supir</th>
+                       <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor</th>
+                       <th class="px-4 py-3 border-r border-slate-100 text-right">Netto (Kg)</th>
+                       <th class="px-4 py-3 border-r border-slate-100 text-right">Ayam Mati</th>
+                       <th class="px-4 py-3 border-r border-slate-100 text-right">Susut Kilo</th>
+                       <th class="px-4 py-3 border-r border-slate-100">Keterangan</th>
+                       <th class="px-4 py-3 text-right">Total</th>
+                    </tr>
+                 </thead>
+                 <tbody id="table-jurnal" class="divide-y divide-slate-100"></tbody>
+              </table>
+              <div id="empty-jurnal" class="hidden p-8 text-center text-slate-400"><p class="font-medium text-sm">Belum ada data Jurnal Kandang untuk periode ini.</p></div>
            </div>
         </div>
       </div>
@@ -843,8 +878,8 @@
 
         // Tab Handling
         function switchTab(activeTabId, showContentId, activeClass) {
-            const tabs = ['tab-do', 'tab-kemarin', 'tab-mati', 'tab-rekap', 'tab-susut'];
-            const contents = ['content-do', 'content-kemarin', 'content-mati', 'content-rekap', 'content-susut'];
+            const tabs = ['tab-do', 'tab-kemarin', 'tab-mati', 'tab-rekap', 'tab-susut', 'tab-jurnal'];
+            const contents = ['content-do', 'content-kemarin', 'content-mati', 'content-rekap', 'content-susut', 'content-jurnal'];
             
             tabs.forEach(t => {
                 const btn = document.getElementById(t);
@@ -879,6 +914,9 @@
         });
         document.getElementById('tab-susut').addEventListener('click', () => {
             switchTab('tab-susut', 'content-susut', 'bg-orange-50 text-orange-700 border-orange-600');
+        });
+        document.getElementById('tab-jurnal').addEventListener('click', () => {
+            switchTab('tab-jurnal', 'content-jurnal', 'bg-teal-50 text-teal-700 border-teal-600');
         });
 
         window.toggleDetail = function(id) {
@@ -1448,6 +1486,111 @@
             } else {
                 document.getElementById('empty-susut').classList.add('hidden');
                 document.getElementById('table-susut').innerHTML = susutHtml;
+            }
+
+            // ===== Render Jurnal Kandang =====
+            // Mengelompokkan data DO_MASUK per Kandang, menampilkan setiap transaksi
+            const dataJurnal = sortedStok.filter(s => s.jenis_stok === 'DO_MASUK');
+            
+            if (dataJurnal.length === 0) {
+                document.getElementById('empty-jurnal').classList.remove('hidden');
+                document.getElementById('table-jurnal').innerHTML = '';
+            } else {
+                document.getElementById('empty-jurnal').classList.add('hidden');
+                
+                // Kelompokkan per kandang
+                const jurnalByKandang = {};
+                dataJurnal.forEach(d => {
+                    const kndg = dbKandang.find(k => k.id === d.id_kandang);
+                    const kndgName = kndg ? kndg.nama : (d.id_kandang || 'Tidak Diketahui');
+                    if (!jurnalByKandang[kndgName]) {
+                        jurnalByKandang[kndgName] = [];
+                    }
+                    jurnalByKandang[kndgName].push(d);
+                });
+                
+                // Urutkan nama kandang
+                const sortedKandangNames = Object.keys(jurnalByKandang).sort((a, b) => a.localeCompare(b));
+                
+                let jurnalHtml = '';
+                let jurnalNo = 1;
+                
+                sortedKandangNames.forEach(kandangName => {
+                    const items = jurnalByKandang[kandangName];
+                    const rowspan = items.length + 1; // +1 untuk baris total per kandang
+                    
+                    // Hitung total per kandang
+                    let totalEkorKandang = 0;
+                    let totalNettoKandang = 0;
+                    let totalMatiEkorKandang = 0;
+                    let totalSusutKgKandang = 0;
+                    
+                    items.forEach((d, idx) => {
+                        const nettoKg = Number(d.jumlah_kg) || 0;
+                        const ekor = Number(d.jumlah_ekor) || 0;
+                        const matiEkor = Number(d.jumlah_mati_ekor) || 0;
+                        const matiKg = Number(d.jumlah_mati_kg) || 0;
+                        const susutKg = Number(d.jumlah_susut_kg) || 0;
+                        
+                        totalEkorKandang += ekor;
+                        totalNettoKandang += nettoKg;
+                        totalMatiEkorKandang += matiEkor;
+                        totalSusutKgKandang += susutKg;
+                        
+                        // Konversi tanggal
+                        const parts = d.tanggal ? d.tanggal.split('-') : [];
+                        const tglDisplay = parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : (d.tanggal || '-');
+                        
+                        // Baris pertama per kandang mendapat rowspan untuk No dan Nama Kandang
+                        const noCell = idx === 0 
+                            ? `<td rowspan="${rowspan}" class="px-4 py-3 border-r border-slate-200 text-center font-bold text-slate-500 align-middle bg-slate-50/50">${jurnalNo}</td>` 
+                            : '';
+                        const nameCell = idx === 0 
+                            ? `<td rowspan="${rowspan}" class="px-4 py-3 border-r border-slate-200 font-bold text-slate-800 align-middle bg-slate-50/50">
+                                  <div class="text-sm font-bold">${kandangName}</div>
+                                  <div class="text-[10px] text-slate-400 mt-0.5">${items.length} transaksi</div>
+                               </td>` 
+                            : '';
+                        
+                        const matiDisplay = matiEkor > 0 ? `<span class="text-rose-600 font-semibold">${matiEkor} ekor (${matiKg.toFixed(2)} kg)</span>` : '<span class="text-slate-400">0</span>';
+                        const susutDisplay = susutKg > 0 ? `<span class="text-rose-600 font-semibold">${susutKg.toFixed(2)} kg</span>` : '<span class="text-slate-400">0</span>';
+                        
+                        // Total = Netto - Susut - Mati Kg (bersih masuk stok)
+                        const totalBersih = nettoKg - susutKg - matiKg;
+                        
+                        jurnalHtml += `
+                        <tr class="bg-white hover:bg-slate-50/60 transition-colors border-b border-slate-100">
+                           ${noCell}
+                           ${nameCell}
+                           <td class="px-4 py-3 border-r border-slate-100 text-sm">${tglDisplay}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-sm font-medium">${d.nama_supir || '-'}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${ekor.toLocaleString('id-ID')}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right font-medium">${nettoKg.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right">${matiDisplay}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-right">${susutDisplay}</td>
+                           <td class="px-4 py-3 border-r border-slate-100 text-sm text-slate-500">${d.keterangan_ayam || '-'}</td>
+                           <td class="px-4 py-3 text-right font-bold text-slate-800">${totalBersih.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kg</td>
+                        </tr>`;
+                    });
+                    
+                    // Baris Total per Kandang
+                    const totalBersihKandang = totalNettoKandang - totalSusutKgKandang - (items.reduce((s, d) => s + (Number(d.jumlah_mati_kg) || 0), 0));
+                    jurnalHtml += `
+                    <tr class="bg-teal-50/50 hover:bg-teal-100/50 font-bold border-b-2 border-slate-300">
+                       <td class="px-4 py-3 border-r border-slate-100 text-center text-teal-800 font-extrabold text-[11px] uppercase tracking-wider" colspan="1">TOTAL</td>
+                       <td class="px-4 py-3 border-r border-slate-100"></td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right text-teal-900 font-extrabold">${totalEkorKandang.toLocaleString('id-ID')}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right text-teal-900 font-extrabold">${totalNettoKandang.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right text-rose-600 font-extrabold">${totalMatiEkorKandang > 0 ? totalMatiEkorKandang.toLocaleString('id-ID') + ' ekor' : '0'}</td>
+                       <td class="px-4 py-3 border-r border-slate-100 text-right text-rose-600 font-extrabold">${totalSusutKgKandang > 0 ? totalSusutKgKandang.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' kg' : '0'}</td>
+                       <td class="px-4 py-3 border-r border-slate-100"></td>
+                       <td class="px-4 py-3 text-right text-teal-900 font-extrabold">${totalBersihKandang.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kg</td>
+                    </tr>`;
+                    
+                    jurnalNo++;
+                });
+                
+                document.getElementById('table-jurnal').innerHTML = jurnalHtml;
             }
         }
  

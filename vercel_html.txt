@@ -1,0 +1,1176 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard HRD - TATA GLOBAL</title>
+    <meta name="description" content="Dashboard sumber daya manusia TATA GLOBAL" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={theme:{extend:{colors:{emerald:{600:'#059669',700:'#047857'},navy:{900:'#0f172a'}}}}}</script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      .fade-in { animation: fadeIn 0.4s ease-out; }
+      .tab-content { display: none; }
+      .tab-content.active { display: block; animation: fadeIn 0.4s ease-out; }
+      .tab-btn.active { background-color: #f8fafc; color: #0f172a; border-bottom: 2px solid #059669; }
+    </style>
+    <script type="module" crossorigin src="/assets/supabaseClient-Bn06gKdh.js"></script>
+    <script type="module" crossorigin src="/assets/data-layer-Dd-18fC5.js"></script>
+    <script type="module" crossorigin src="/assets/cloud-auth-guard-5WIj09_Y.js"></script>
+  </head>
+  <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-3">
+        <a href="dasbort_menu.html" class="p-2 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-500 hover:text-emerald-700 transition-all" title="Kembali ke Menu Utama">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+        </a>
+        <h2 class="text-xl font-bold text-slate-900 hidden md:block">Dashboard HRD</h2>
+        <span class="text-lg font-bold text-slate-900 md:hidden">HRD</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="header-role-badge" class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Role: -</span>
+        <div id="header-user-avatar" class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">-</div>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
+      <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
+          <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
+        </div>
+        <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+      <div id="sidebar-menu-container" class="flex md:flex-col md:w-full w-max md:space-y-1"></div>
+      <div class="hidden md:block md:mt-auto w-full">
+        <div class="px-6 py-3 border-t border-slate-800">
+          <p id="sidebar-user-name" class="text-sm font-semibold text-white sidebar-text">-</p>
+          <p id="sidebar-user-email" class="text-[11px] text-slate-500 sidebar-text">-</p>
+        </div>
+        <a href="#" onclick="AuthGuard.logout(); return false;" title="Keluar" class="flex items-center gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          <span class="sidebar-text">Keluar</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="p-4 md:p-8 max-w-screen-2xl mx-auto">
+      
+      <!-- Tabs -->
+      <div class="flex overflow-x-auto border-b border-slate-200 mb-6 gap-2 hide-scrollbar">
+        <button onclick="switchTab('ringkasan')" id="tab-btn-ringkasan" class="tab-btn active px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Ringkasan Dasbor</button>
+        <button onclick="switchTab('kehadiran')" id="tab-btn-kehadiran" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Kehadiran</button>
+        <button onclick="switchTab('produktivitas')" id="tab-btn-produktivitas" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Produktivitas</button>
+        <button onclick="switchTab('pelanggaran')" id="tab-btn-pelanggaran" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Pelanggaran</button>
+        <button onclick="switchTab('pengembangan')" id="tab-btn-pengembangan" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Pengembangan</button>
+        <button onclick="switchTab('jurnal')" id="tab-btn-jurnal" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Jurnal Individu</button>
+        <button onclick="switchTab('rekap')" id="tab-btn-rekap" class="tab-btn px-4 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors whitespace-nowrap rounded-t-lg">Rekap Global</button>
+      </div>
+
+      <!-- Content: Ringkasan -->
+      <div id="tab-ringkasan" class="tab-content active">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          
+          <!-- Kehadiran Widget -->
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Kehadiran Hari Ini</h3>
+            <div class="flex items-end gap-3 mb-4">
+              <span id="widget-hadir-count" class="text-4xl font-black text-emerald-600">0</span>
+              <span class="text-sm font-semibold text-slate-400 mb-1">Hadir</span>
+            </div>
+            <div class="text-xs text-slate-500 border-t border-slate-100 pt-3">
+              <span class="font-bold text-rose-500" id="widget-absen-count">0 Tidak Hadir</span>
+              <div id="widget-absen-list" class="mt-1 line-clamp-3"></div>
+            </div>
+          </div>
+
+          <!-- Produktivitas Widget -->
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Produktivitas Bulan Ini</h3>
+            <div class="flex items-end gap-3 mb-4">
+              <span id="widget-tangkap-count" class="text-4xl font-black text-blue-600">0</span>
+              <span class="text-sm font-semibold text-slate-400 mb-1">Kotak</span>
+            </div>
+            <div class="text-xs text-slate-500 border-t border-slate-100 pt-3">
+              <span class="font-bold text-slate-700">Top Karyawan:</span>
+              <div id="widget-top-karyawan" class="mt-1 font-semibold text-blue-600 truncate">-</div>
+            </div>
+          </div>
+
+          <!-- Pelanggaran Widget -->
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Pelanggaran Bln Ini</h3>
+            <div class="flex items-end gap-3 mb-4">
+              <span id="widget-pelanggaran-count" class="text-4xl font-black text-rose-600">0</span>
+              <span class="text-sm font-semibold text-slate-400 mb-1">Kasus</span>
+            </div>
+            <div class="text-xs text-slate-500 border-t border-slate-100 pt-3">
+              Mewajibkan evaluasi jika terus meningkat.
+            </div>
+          </div>
+
+          <!-- Pengembangan Widget -->
+          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Giat Pengembangan</h3>
+            <div class="flex items-end gap-3 mb-4">
+              <span id="widget-pengembangan-count" class="text-4xl font-black text-purple-600">0</span>
+              <span class="text-sm font-semibold text-slate-400 mb-1">Sesi Bln Ini</span>
+            </div>
+            <div class="text-xs text-slate-500 border-t border-slate-100 pt-3">
+              Briefing, meeting, atau training.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tabel Ringkasan Harian Bulan Ini -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mt-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 border-b border-slate-100 pb-3">
+            <div>
+              <h3 class="text-lg font-bold text-slate-800">Laporan Harian Bulan Ini</h3>
+              <p class="text-xs text-slate-500 mt-1" id="ringkasan-periode-text">Periode: -</p>
+            </div>
+            <div class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg" id="ringkasan-total-summary">
+              Memuat ringkasan bulan ini...
+            </div>
+          </div>
+          <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="w-full text-left text-sm border-collapse min-w-[900px]">
+               <thead class="bg-slate-50 text-slate-600 text-[11px] uppercase tracking-wider">
+                 <tr>
+                   <th class="px-4 py-3 font-semibold border-b border-slate-200 w-32">Tgl</th>
+                   <th class="px-4 py-3 font-semibold border-b border-slate-200 text-center w-32">Jumlah Hadir</th>
+                   <th class="px-4 py-3 font-semibold border-b border-slate-200">Jumlah Tidak Hadir (Detail)</th>
+                   <th class="px-4 py-3 font-semibold border-b border-slate-200 text-center w-40">Produktivitas (Total)</th>
+                   <th class="px-4 py-3 font-semibold border-b border-slate-200">Pelanggaran (Detail)</th>
+                   <th class="px-4 py-3 font-semibold border-b border-slate-200">Pengembangan (Detail)</th>
+                 </tr>
+               </thead>
+               <tbody id="ringkasan-harian-tbody" class="divide-y divide-slate-100 text-slate-700 bg-white">
+                 <tr>
+                   <td colspan="6" class="px-4 py-8 text-center text-slate-400">Loading data...</td>
+                 </tr>
+               </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content: Kehadiran -->
+      <div id="tab-kehadiran" class="tab-content">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Catat Kehadiran Karyawan</h3>
+          <form id="form-kehadiran" class="space-y-4 max-w-2xl">
+            <input type="hidden" id="edit-id-kehadiran">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Pilih Karyawan</label>
+                <select id="karyawan_kehadiran" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-emerald-500" required></select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal</label>
+                <input type="date" id="tanggal_kehadiran" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-emerald-500" required>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Status Kehadiran</label>
+                <select id="status_kehadiran" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-emerald-500" required onchange="toggleTimeInputs()">
+                  <option value="Hadir">Hadir</option>
+                  <option value="Sakit">Sakit</option>
+                  <option value="Alfa">Alfa</option>
+                  <option value="Cuti">Cuti</option>
+                  <option value="Izin">Izin</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="time-inputs-container">
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Jam Datang</label>
+                <input type="time" id="jam_datang" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-emerald-500">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Jam Pulang</label>
+                <input type="time" id="jam_pulang" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-emerald-500">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Keterangan Tambahan</label>
+              <textarea id="keterangan_kehadiran" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-emerald-500 h-20" placeholder="Tulis catatan jika ada..."></textarea>
+            </div>
+            <div class="pt-2 flex gap-3">
+              <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors" id="btn-save-kehadiran">Simpan Kehadiran</button>
+              <button type="button" onclick="cancelEdit('kehadiran')" id="btn-cancel-kehadiran" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-6 rounded-lg transition-colors">Batal Edit</button>
+            </div>
+          </form>
+
+          <h3 class="text-md font-bold text-slate-800 mt-10 mb-4 border-b border-slate-100 pb-2">30 Riwayat Kehadiran Terakhir</h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200">
+            <table class="w-full text-left text-sm border-collapse min-w-[600px]">
+               <thead class="bg-slate-100 text-slate-600 text-[11px] uppercase">
+                 <tr>
+                   <th class="px-4 py-2 font-semibold">Tgl / Nama</th>
+                   <th class="px-4 py-2 font-semibold">Status / Jam</th>
+                   <th class="px-4 py-2 font-semibold">Keterangan</th>
+                   <th class="px-4 py-2 font-semibold text-center w-24">Aksi</th>
+                 </tr>
+               </thead>
+               <tbody id="riwayat-kehadiran" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content: Produktivitas -->
+      <div id="tab-produktivitas" class="tab-content">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Catat Produktivitas Karyawan</h3>
+          <form id="form-produktivitas" class="space-y-4 max-w-2xl">
+            <input type="hidden" id="edit-id-produktivitas">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Pilih Karyawan</label>
+                <select id="karyawan_produktivitas" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-blue-500" required></select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal</label>
+                <input type="date" id="tanggal_produktivitas" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-blue-500" required>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Tangkap Ayam Per Hari (Kotak)</label>
+                <input type="number" min="0" id="tangkap_ayam" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-blue-500" placeholder="0" required>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Prestasi Lain / Keterangan</label>
+              <textarea id="prestasi_lain" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-blue-500 h-20" placeholder="Misal: Mencapai target bonus..."></textarea>
+            </div>
+            <div class="pt-2 flex gap-3">
+              <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors" id="btn-save-produktivitas">Simpan Produktivitas</button>
+              <button type="button" onclick="cancelEdit('produktivitas')" id="btn-cancel-produktivitas" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-6 rounded-lg transition-colors">Batal Edit</button>
+            </div>
+          </form>
+
+          <h3 class="text-md font-bold text-slate-800 mt-10 mb-4 border-b border-slate-100 pb-2">30 Riwayat Produktivitas Terakhir</h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200">
+            <table class="w-full text-left text-sm border-collapse min-w-[600px]">
+               <thead class="bg-slate-100 text-slate-600 text-[11px] uppercase">
+                 <tr>
+                   <th class="px-4 py-2 font-semibold">Tgl / Nama</th>
+                   <th class="px-4 py-2 font-semibold">Tangkapan</th>
+                   <th class="px-4 py-2 font-semibold">Keterangan</th>
+                   <th class="px-4 py-2 font-semibold text-center w-24">Aksi</th>
+                 </tr>
+               </thead>
+               <tbody id="riwayat-produktivitas" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content: Pelanggaran -->
+      <div id="tab-pelanggaran" class="tab-content">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Catat Pelanggaran Karyawan</h3>
+          <form id="form-pelanggaran" class="space-y-4 max-w-2xl">
+            <input type="hidden" id="edit-id-pelanggaran">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Pilih Karyawan</label>
+                <select id="karyawan_pelanggaran" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-rose-500" required></select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal</label>
+                <input type="date" id="tanggal_pelanggaran" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-rose-500" required>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Kategori Pelanggaran</label>
+                <select id="kategori_pelanggaran" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-rose-500" required>
+                  <option value="Ringan">Ringan</option>
+                  <option value="Berat">Berat</option>
+                  <option value="Sangat Berat">Sangat Berat</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Detail Pelanggaran</label>
+              <textarea id="detail_pelanggaran" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-rose-500 h-24" placeholder="Jelaskan kronologi atau pelanggaran yang dilakukan..." required></textarea>
+            </div>
+            <div class="pt-2 flex gap-3">
+              <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors" id="btn-save-pelanggaran">Simpan Pelanggaran</button>
+              <button type="button" onclick="cancelEdit('pelanggaran')" id="btn-cancel-pelanggaran" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-6 rounded-lg transition-colors">Batal Edit</button>
+            </div>
+          </form>
+
+          <h3 class="text-md font-bold text-slate-800 mt-10 mb-4 border-b border-slate-100 pb-2">30 Riwayat Pelanggaran Terakhir</h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200">
+            <table class="w-full text-left text-sm border-collapse min-w-[600px]">
+               <thead class="bg-slate-100 text-slate-600 text-[11px] uppercase">
+                 <tr>
+                   <th class="px-4 py-2 font-semibold">Tgl / Nama</th>
+                   <th class="px-4 py-2 font-semibold">Kategori</th>
+                   <th class="px-4 py-2 font-semibold">Detail</th>
+                   <th class="px-4 py-2 font-semibold text-center w-24">Aksi</th>
+                 </tr>
+               </thead>
+               <tbody id="riwayat-pelanggaran" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content: Pengembangan -->
+      <div id="tab-pengembangan" class="tab-content">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Catat Histori Pengembangan</h3>
+          <form id="form-pengembangan" class="space-y-4 max-w-2xl">
+            <input type="hidden" id="edit-id-pengembangan">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Pilih Karyawan</label>
+                <select id="karyawan_pengembangan" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-purple-500" required></select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal Kegiatan</label>
+                <input type="date" id="tanggal_pengembangan" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-purple-500" required>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Jenis Kegiatan</label>
+                <select id="jenis_pengembangan" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-purple-500" required>
+                  <option value="Briefing">Briefing</option>
+                  <option value="Meeting">Meeting</option>
+                  <option value="Training">Training</option>
+                  <option value="Coaching">Coaching</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Kehadiran</label>
+                <select id="hadir_pengembangan" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-purple-500" required>
+                  <option value="Hadir">Hadir</option>
+                  <option value="Tidak Hadir">Tidak Hadir</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Keterangan / Materi Singkat</label>
+              <textarea id="keterangan_pengembangan" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-purple-500 h-20" placeholder="Opsional..."></textarea>
+            </div>
+            <div class="pt-2 flex gap-3">
+              <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-colors" id="btn-save-pengembangan">Simpan Pengembangan</button>
+              <button type="button" onclick="cancelEdit('pengembangan')" id="btn-cancel-pengembangan" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-6 rounded-lg transition-colors">Batal Edit</button>
+            </div>
+          </form>
+
+          <h3 class="text-md font-bold text-slate-800 mt-10 mb-4 border-b border-slate-100 pb-2">30 Riwayat Pengembangan Terakhir</h3>
+          <div class="overflow-x-auto rounded-lg border border-slate-200">
+            <table class="w-full text-left text-sm border-collapse min-w-[600px]">
+               <thead class="bg-slate-100 text-slate-600 text-[11px] uppercase">
+                 <tr>
+                   <th class="px-4 py-2 font-semibold">Tgl / Nama</th>
+                   <th class="px-4 py-2 font-semibold">Kegiatan</th>
+                   <th class="px-4 py-2 font-semibold">Kehadiran & Ket.</th>
+                   <th class="px-4 py-2 font-semibold text-center w-24">Aksi</th>
+                 </tr>
+               </thead>
+               <tbody id="riwayat-pengembangan" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content: Jurnal & Rekapitulasi -->
+      <div id="tab-jurnal" class="tab-content">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Jurnal Karyawan Per Bulan</h3>
+          
+          <div class="flex flex-col md:flex-row gap-4 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Pilih Karyawan</label>
+              <select id="filter_karyawan" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-slate-500"></select>
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Bulan</label>
+              <input type="month" id="filter_bulan" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-slate-500">
+            </div>
+            <div class="flex items-end">
+              <button onclick="renderJurnal()" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors h-[38px]">Tampilkan Jurnal</button>
+            </div>
+          </div>
+
+          <div id="jurnal-container" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl text-center">
+                <p class="text-[10px] uppercase font-bold text-emerald-600 mb-1">Total Kehadiran</p>
+                <h4 id="rekap-hadir" class="text-2xl font-black text-emerald-700">0</h4>
+              </div>
+              <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl text-center">
+                <p class="text-[10px] uppercase font-bold text-blue-600 mb-1">Total Tangkap (Kotak)</p>
+                <h4 id="rekap-tangkap" class="text-2xl font-black text-blue-700">0</h4>
+              </div>
+              <div class="bg-rose-50 border border-rose-100 p-4 rounded-xl text-center">
+                <p class="text-[10px] uppercase font-bold text-rose-600 mb-1">Pelanggaran</p>
+                <h4 id="rekap-pelanggaran" class="text-2xl font-black text-rose-700">0</h4>
+              </div>
+              <div class="bg-purple-50 border border-purple-100 p-4 rounded-xl text-center">
+                <p class="text-[10px] uppercase font-bold text-purple-600 mb-1">Giat Pengembangan</p>
+                <h4 id="rekap-pengembangan" class="text-2xl font-black text-purple-700">0</h4>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-slate-200">
+              <table class="w-full text-left border-collapse min-w-[800px]">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-600 text-[11px] uppercase tracking-wider">
+                    <th class="px-4 py-3 font-semibold border-b border-slate-200">Tanggal</th>
+                    <th class="px-4 py-3 font-semibold border-b border-slate-200">Kehadiran</th>
+                    <th class="px-4 py-3 font-semibold border-b border-slate-200">Produktivitas</th>
+                    <th class="px-4 py-3 font-semibold border-b border-slate-200">Pelanggaran</th>
+                    <th class="px-4 py-3 font-semibold border-b border-slate-200">Pengembangan</th>
+                  </tr>
+                </thead>
+                <tbody id="jurnal-tbody" class="text-sm bg-white divide-y divide-slate-100">
+                  <!-- JS Injected -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div id="jurnal-empty" class="py-12 text-center text-slate-400">
+            Silakan pilih Karyawan dan Bulan untuk menampilkan jurnal.
+          </div>
+        </div>
+      </div>
+
+      <!-- Content: Rekap Global -->
+      <div id="tab-rekap" class="tab-content">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+          <h3 class="text-lg font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Rekapitulasi Karyawan Per Periode</h3>
+          
+          <div class="flex flex-col md:flex-row gap-4 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal Mulai</label>
+              <input type="date" id="filter_rekap_start" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-slate-500">
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Tanggal Akhir</label>
+              <input type="date" id="filter_rekap_end" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-slate-500">
+            </div>
+            <div class="flex items-end">
+              <button onclick="renderRekapGlobal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors h-[38px] shadow-md">Tampilkan Rekap</button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto rounded-lg border border-slate-200">
+            <table class="w-full text-left border-collapse min-w-[1000px] text-sm">
+              <thead>
+                <tr class="bg-indigo-50 text-indigo-800 text-[11px] uppercase tracking-wider">
+                  <th class="px-4 py-3 font-semibold border-b border-indigo-100 text-center w-12">No</th>
+                  <th class="px-4 py-3 font-semibold border-b border-indigo-100">Nama Karyawan</th>
+                  <th class="px-3 py-3 font-bold border-b border-indigo-100 text-center text-emerald-700">Hadir</th>
+                  <th class="px-3 py-3 font-semibold border-b border-indigo-100 text-center text-slate-600">Cuti</th>
+                  <th class="px-3 py-3 font-semibold border-b border-indigo-100 text-center text-amber-600">Sakit</th>
+                  <th class="px-3 py-3 font-semibold border-b border-indigo-100 text-center text-amber-600">Izin</th>
+                  <th class="px-3 py-3 font-bold border-b border-indigo-100 text-center text-rose-600">Alfa</th>
+                  <th class="px-3 py-3 font-bold border-b border-indigo-100 text-center text-blue-700">Total Produksi</th>
+                  <th class="px-3 py-3 font-bold border-b border-indigo-100 text-center text-rose-700">Pelanggaran</th>
+                  <th class="px-3 py-3 font-bold border-b border-indigo-100 text-center text-purple-700">Pengembangan</th>
+                </tr>
+              </thead>
+              <tbody id="rekap-tbody" class="bg-white divide-y divide-slate-100">
+                <tr><td colspan="10" class="py-12 text-center text-slate-400">Silakan tentukan periode dan klik Tampilkan Rekap.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <script>
+      let hrdData = { kehadiran: [], produktivitas: [], pelanggaran: [], pengembangan: [] };
+      
+      function getLocalDateString(d = new Date()) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+      
+      // Setup UI initial state
+      window.switchTab = async function(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        const elTab = document.getElementById('tab-' + tabId);
+        if (elTab) elTab.classList.add('active');
+        const elBtn = document.getElementById('tab-btn-' + tabId);
+        if (elBtn) elBtn.classList.add('active');
+
+        // Tarik data terbaru dari database online saat ganti tab demi mendukung multi-user real-time
+        if (window.DataLayer && window.DataLayer.init) {
+          try {
+            await window.DataLayer.init();
+            refreshDataState();
+          } catch (e) {
+            console.error("Gagal sinkronisasi data online saat ganti tab:", e);
+          }
+        }
+
+        if(tabId === 'ringkasan') {
+          await renderRingkasan();
+        } else if(tabId === 'jurnal') {
+          const kId = document.getElementById('filter_karyawan').value;
+          const bulan = document.getElementById('filter_bulan').value;
+          if (kId && bulan) renderJurnal();
+        } else if(tabId === 'rekap') {
+          const startD = document.getElementById('filter_rekap_start').value;
+          const endD = document.getElementById('filter_rekap_end').value;
+          if (startD && endD) renderRekapGlobal();
+        }
+      }
+
+      window.toggleTimeInputs = function() {
+        const status = document.getElementById('status_kehadiran').value;
+        const container = document.getElementById('time-inputs-container');
+        if(status === 'Hadir') {
+          container.style.display = 'grid';
+        } else {
+          container.style.display = 'none';
+        }
+      }
+
+      function getSelectedKaryawanData(selectId) {
+        const select = document.getElementById(selectId);
+        if(!select.value) return null;
+        const opt = select.options[select.selectedIndex];
+        return {
+          id: select.value,
+          nama: opt.text.split(' (')[0], // Get only the name part before (operasional)
+          asal_tabel: opt.dataset.asal
+        };
+      }
+
+      async function initHRD() {
+        if(!window.DataLayer || !window.DataLayer.getHrdKaryawan) {
+          setTimeout(initHRD, 500);
+          return;
+        }
+
+        // Initialize data
+        await window.DataLayer.init();
+
+        const karyawanList = window.DataLayer.getHrdKaryawan();
+        const optionsHtml = `<option value="">-- Pilih Karyawan --</option>` + 
+          karyawanList.map(k => `<option value="${k.id}" data-asal="${k.asal_tabel}">${k.nama} (${k.asal_tabel})</option>`).join('');
+
+        ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(t => {
+          document.getElementById('karyawan_' + t).innerHTML = optionsHtml;
+        });
+        document.getElementById('filter_karyawan').innerHTML = optionsHtml;
+
+        // Set default dates
+        const todayObj = new Date();
+        const today = getLocalDateString(todayObj);
+        const firstDay = getLocalDateString(new Date(todayObj.getFullYear(), todayObj.getMonth(), 1));
+
+        ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(t => {
+          const el = document.getElementById('tanggal_' + t);
+          if (el) el.value = today;
+        });
+        const elFilterBulan = document.getElementById('filter_bulan');
+        if (elFilterBulan) elFilterBulan.value = today.substring(0, 7);
+        
+        const elRekapStart = document.getElementById('filter_rekap_start');
+        if (elRekapStart) elRekapStart.value = firstDay;
+        const elRekapEnd = document.getElementById('filter_rekap_end');
+        if (elRekapEnd) elRekapEnd.value = today;
+
+        // Fetch data online terlebih dahulu lewat renderRingkasan
+        await renderRingkasan();
+        // Baru render riwayat tab setelah data didapat
+        refreshDataState();
+      }
+
+      function refreshDataState() {
+        ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(t => {
+          hrdData[t] = window.DataLayer.getHrdData(t) || [];
+          renderRiwayat(t);
+        });
+      }
+
+      // --- WIDGET RINGKASAN & TABEL RINGKASAN HARIAN ---
+      window.renderRingkasan = async function() {
+        // Tampilkan indikator memuat data pada tabel ringkasan
+        const elHarianTbody = document.getElementById('ringkasan-harian-tbody');
+        if (elHarianTbody && (elHarianTbody.innerHTML.includes('Loading data') || elHarianTbody.innerHTML.trim() === '')) {
+          elHarianTbody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">Menyinkronkan data online...</td></tr>`;
+        }
+
+        // Tarik data terbaru langsung dari online database (Supabase) untuk mendukung multi-user & multi-perangkat
+        if (window.DataLayer && window.DataLayer.init) {
+          try {
+            await window.DataLayer.init();
+            ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(t => {
+              hrdData[t] = window.DataLayer.getHrdData(t) || [];
+            });
+          } catch (e) {
+            console.error("Gagal menyinkronkan data online:", e);
+          }
+        }
+
+        const todayObj = new Date();
+        const today = getLocalDateString(todayObj); // format YYYY-MM-DD (WIB)
+        const thisMonth = today.substring(0, 7); // format YYYY-MM
+
+        // Widget Kehadiran Hari Ini (WIB)
+        const hadirToday = hrdData.kehadiran.filter(x => x.tanggal === today);
+        const absen = hadirToday.filter(x => x.status !== 'Hadir');
+        const hadirCount = hadirToday.filter(x => x.status === 'Hadir').length;
+        
+        const elHadirToday = document.getElementById('widget-hadir-count');
+        if (elHadirToday) elHadirToday.innerText = hadirCount;
+        
+        const elAbsenToday = document.getElementById('widget-absen-count');
+        if (elAbsenToday) elAbsenToday.innerText = absen.length + ' Tidak Hadir';
+        
+        const elAbsenList = document.getElementById('widget-absen-list');
+        if (elAbsenList) elAbsenList.innerHTML = absen.length === 0 ? '-' : absen.map(x => `&bull; ${x.nama} (${x.status})`).join('<br>');
+
+        // Widget Produktivitas Bulan Ini (WIB)
+        const prodThisMonth = hrdData.produktivitas.filter(x => x.tanggal && x.tanggal.startsWith(thisMonth));
+        let sumTangkap = 0;
+        let karyawanScores = {};
+        prodThisMonth.forEach(p => {
+          sumTangkap += (p.tangkap_ayam_kotak || 0);
+          if(!karyawanScores[p.nama]) karyawanScores[p.nama] = 0;
+          karyawanScores[p.nama] += (p.tangkap_ayam_kotak || 0);
+        });
+        
+        const elTangkapCount = document.getElementById('widget-tangkap-count');
+        if (elTangkapCount) elTangkapCount.innerText = sumTangkap;
+        
+        let topName = '-';
+        let topScore = -1;
+        for(let nama in karyawanScores) {
+          if(karyawanScores[nama] > topScore) {
+            topScore = karyawanScores[nama];
+            topName = nama;
+          }
+        }
+        
+        const elTopKaryawan = document.getElementById('widget-top-karyawan');
+        if (elTopKaryawan) elTopKaryawan.innerText = topName !== '-' ? `${topName} (${topScore} Kotak)` : '-';
+
+        // Widget Pelanggaran Bulan Ini (WIB)
+        const pelThisMonth = hrdData.pelanggaran.filter(x => x.tanggal && x.tanggal.startsWith(thisMonth));
+        const elPelCount = document.getElementById('widget-pelanggaran-count');
+        if (elPelCount) elPelCount.innerText = pelThisMonth.length;
+
+        // Widget Pengembangan Bulan Ini (WIB)
+        const pengThisMonth = hrdData.pengembangan.filter(x => x.tanggal && x.tanggal.startsWith(thisMonth));
+        const elPengCount = document.getElementById('widget-pengembangan-count');
+        if (elPengCount) elPengCount.innerText = pengThisMonth.length;
+
+        // --- RENDERING TABEL RINGKASAN HARIAN BULAN INI ---
+        const currentYear = todayObj.getFullYear();
+        const currentMonth = todayObj.getMonth();
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        
+        const elPeriodeText = document.getElementById('ringkasan-periode-text');
+        if (elPeriodeText) elPeriodeText.innerText = `Periode: ${monthNames[currentMonth]} ${currentYear}`;
+        
+        const kehadiranThisMonth = hrdData.kehadiran.filter(x => x.tanggal && x.tanggal.startsWith(thisMonth));
+        const totalHadirThisMonth = kehadiranThisMonth.filter(x => x.status === 'Hadir').length;
+        const totalAbsenThisMonth = kehadiranThisMonth.filter(x => x.status !== 'Hadir').length;
+        
+        const elTotalSummary = document.getElementById('ringkasan-total-summary');
+        if (elTotalSummary) {
+          elTotalSummary.innerHTML = `
+            Bulan Ini: 
+            <span class="text-emerald-600 font-bold">${totalHadirThisMonth} Hadir</span> | 
+            <span class="text-rose-600 font-bold">${totalAbsenThisMonth} Absen</span> | 
+            <span class="text-blue-600 font-bold">${sumTangkap} Kotak</span>
+          `;
+        }
+
+        // Kumpulkan semua tanggal unik dari database online Supabase untuk bulan ini
+        const dateSet = new Set();
+        
+        // Selalu tampilkan hari ini di bagian teratas meskipun belum ada data terinput agar user merasa interaktif
+        dateSet.add(today);
+        
+        // Ambil semua tanggal transaksi riil dari database online Supabase
+        ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(type => {
+          (hrdData[type] || []).forEach(item => {
+            if (item.tanggal && item.tanggal.startsWith(thisMonth)) {
+              dateSet.add(item.tanggal);
+            }
+          });
+        });
+
+        // Urutkan tanggal descending (terbaru di atas) sesuai permintaan
+        const sortedDates = Array.from(dateSet).sort((a, b) => b.localeCompare(a));
+        
+        let tableHtml = '';
+        if (sortedDates.length === 0) {
+          tableHtml = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">Tidak ada data di database online untuk bulan ini.</td></tr>`;
+        } else {
+          sortedDates.forEach(tgl => {
+            const isToday = (tgl === today);
+            const rowBgClass = isToday ? 'bg-emerald-50/30 font-medium' : 'hover:bg-slate-50/50';
+            
+            // 1. Tanggal cell
+            const formatIndoDate = (dateStr) => {
+              if (!dateStr) return '-';
+              const parts = dateStr.split('-');
+              if (parts.length !== 3) return dateStr;
+              const year = parts[0];
+              const monthIndex = parseInt(parts[1]) - 1;
+              const day = parts[2];
+              const fullMonthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+              return `${parseInt(day)} ${fullMonthNames[monthIndex]} ${year}`;
+            };
+            
+            const displayDateText = formatIndoDate(tgl);
+            let displayTgl = displayDateText;
+            if (isToday) {
+              displayTgl = `<div class="flex items-center gap-1.5 font-bold text-slate-900">
+                ${displayDateText}
+                <span class="px-1.5 py-0.5 text-[9px] font-black bg-emerald-100 text-emerald-800 rounded uppercase tracking-wider shrink-0">Hari Ini</span>
+              </div>`;
+            } else {
+              displayTgl = `<span class="text-slate-600 font-semibold">${displayDateText}</span>`;
+            }
+
+            // 2. Jumlah Hadir
+            const tglHadirList = hrdData.kehadiran.filter(x => x.tanggal === tgl && x.status === 'Hadir');
+            const tglHadirCount = tglHadirList.length;
+            const hadirCell = tglHadirCount > 0 
+              ? `<span class="font-bold text-emerald-600 text-base">${tglHadirCount}</span> <span class="text-xs text-slate-400 font-medium">Orang</span>`
+              : `<span class="text-slate-400 font-semibold">0 Orang</span>`;
+
+            // 3. Jumlah Tidak Hadir (Detail)
+            const tglAbsenList = hrdData.kehadiran.filter(x => x.tanggal === tgl && x.status !== 'Hadir');
+            const tglAbsenCount = tglAbsenList.length;
+            let absenCell = '';
+            if (tglAbsenCount > 0) {
+              const detailAbsen = tglAbsenList.map(x => `<span class="font-semibold text-rose-700">${x.nama}</span> <span class="text-slate-400">[${x.status}]</span>`).join(', ');
+              absenCell = `
+                <div class="flex flex-col gap-0.5">
+                  <div class="font-bold text-rose-600">${tglAbsenCount} Orang</div>
+                  <div class="text-xs text-slate-500 leading-normal">${detailAbsen}</div>
+                </div>
+              `;
+            } else {
+              absenCell = `<span class="text-slate-400 font-medium">-</span>`;
+            }
+
+            // 4. Produktivitas (Total Kotak)
+            const tglProdList = hrdData.produktivitas.filter(x => x.tanggal === tgl);
+            const tglTotalTangkap = tglProdList.reduce((sum, x) => sum + (x.tangkap_ayam_kotak || 0), 0);
+            const prodCell = tglTotalTangkap > 0
+              ? `<span class="font-bold text-blue-600 text-base">${tglTotalTangkap}</span> <span class="text-xs text-slate-400 font-medium">Kotak</span>`
+              : `<span class="text-slate-400 font-medium">-</span>`;
+
+            // 5. Pelanggaran (Detail)
+            const tglPelList = hrdData.pelanggaran.filter(x => x.tanggal === tgl);
+            const tglPelCount = tglPelList.length;
+            let pelCell = '';
+            if (tglPelCount > 0) {
+              const detailPel = tglPelList.map(x => `<span class="font-semibold text-rose-700">${x.nama}</span> <span class="text-slate-400">[${x.kategori}: ${x.detail_pelanggaran || '-'}]</span>`).join(', ');
+              pelCell = `
+                <div class="flex flex-col gap-0.5">
+                  <div class="font-bold text-rose-600">${tglPelCount} Kasus</div>
+                  <div class="text-xs text-slate-500 leading-normal">${detailPel}</div>
+                </div>
+              `;
+            } else {
+              pelCell = `<span class="text-slate-400 font-medium">-</span>`;
+            }
+
+            // 6. Pengembangan (Detail)
+            const tglPengList = hrdData.pengembangan.filter(x => x.tanggal === tgl);
+            let pengCell = '';
+            if (tglPengList.length > 0) {
+              const activities = {};
+              tglPengList.forEach(x => {
+                const actType = x.jenis_kegiatan || 'Kegiatan';
+                if (!activities[actType]) activities[actType] = [];
+                if (x.kehadiran === 'Hadir') {
+                  activities[actType].push(x.nama);
+                }
+              });
+              
+              const actStrings = Object.keys(activities).map(actType => {
+                const sdmList = activities[actType];
+                const detailSdm = sdmList.length > 0 
+                  ? sdmList.map(name => `<span class="font-semibold text-purple-700">${name}</span>`).join(', ')
+                  : `<span class="text-slate-400 italic">tidak ada sdm hadir</span>`;
+                return `<div><span class="font-bold text-purple-600">1 ${actType}</span> (${detailSdm})</div>`;
+              });
+              
+              pengCell = `<div class="flex flex-col gap-1 leading-normal text-xs text-slate-700">${actStrings.join('')}</div>`;
+            } else {
+              pengCell = `<span class="text-slate-400 font-medium">-</span>`;
+            }
+
+            tableHtml += `
+              <tr class="${rowBgClass} transition-colors">
+                <td class="px-4 py-3 border-b border-slate-100">${displayTgl}</td>
+                <td class="px-4 py-3 border-b border-slate-100 text-center">${hadirCell}</td>
+                <td class="px-4 py-3 border-b border-slate-100">${absenCell}</td>
+                <td class="px-4 py-3 border-b border-slate-100 text-center">${prodCell}</td>
+                <td class="px-4 py-3 border-b border-slate-100">${pelCell}</td>
+                <td class="px-4 py-3 border-b border-slate-100">${pengCell}</td>
+              </tr>
+            `;
+          });
+        }
+        
+        const elHarianTbody = document.getElementById('ringkasan-harian-tbody');
+        if (elHarianTbody) elHarianTbody.innerHTML = tableHtml;
+      }
+
+      // --- CRUD RIWAYAT ---
+      function renderRiwayat(type) {
+        const data = hrdData[type].slice(0, 30); // 30 latest
+        const tbody = document.getElementById('riwayat-' + type);
+        if(!tbody) return;
+
+        if(data.length === 0) {
+           tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-6 text-center text-slate-400">Belum ada riwayat data.</td></tr>`;
+           return;
+        }
+
+        tbody.innerHTML = data.map(d => {
+          let cols = '';
+          if(type === 'kehadiran') {
+            cols = `<td class="px-4 py-2 border-r border-slate-100"><span class="font-bold text-slate-700">${d.status}</span><br><span class="text-xs text-slate-500">${d.jam_datang||'-'} s/d ${d.jam_pulang||'-'}</span></td>
+                    <td class="px-4 py-2 border-r border-slate-100 text-xs">${d.keterangan_tambahan||'-'}</td>`;
+          } else if(type === 'produktivitas') {
+            cols = `<td class="px-4 py-2 border-r border-slate-100 font-bold text-blue-600">${d.tangkap_ayam_kotak||0} Kotak</td>
+                    <td class="px-4 py-2 border-r border-slate-100 text-xs">${d.prestasi_lain||'-'}</td>`;
+          } else if(type === 'pelanggaran') {
+            cols = `<td class="px-4 py-2 border-r border-slate-100"><span class="px-2 py-0.5 rounded text-[10px] bg-rose-100 text-rose-700 font-bold">${d.kategori}</span></td>
+                    <td class="px-4 py-2 border-r border-slate-100 text-xs">${d.detail_pelanggaran||'-'}</td>`;
+          } else if(type === 'pengembangan') {
+            cols = `<td class="px-4 py-2 border-r border-slate-100 font-bold text-purple-600">${d.jenis_kegiatan}</td>
+                    <td class="px-4 py-2 border-r border-slate-100 text-xs"><span class="font-bold text-slate-600">${d.kehadiran}</span><br>${d.keterangan||'-'}</td>`;
+          }
+
+          return `
+            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+               <td class="px-4 py-2 border-r border-slate-100"><span class="text-xs text-slate-400">${d.tanggal}</span><br><span class="font-semibold text-slate-700">${d.nama}</span></td>
+               ${cols}
+               <td class="px-4 py-2 text-center whitespace-nowrap">
+                  <button onclick="editRecord('${type}', '${d.id}')" class="text-blue-500 hover:underline text-[11px] font-bold mr-2">Edit</button>
+                  <button onclick="deleteRecord('${type}', '${d.id}')" class="text-rose-500 hover:underline text-[11px] font-bold">Hapus</button>
+               </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      window.editRecord = function(type, id) {
+        const d = hrdData[type].find(x => x.id === id);
+        if(!d) return;
+        
+        document.getElementById('edit-id-' + type).value = id;
+        document.getElementById('karyawan_' + type).value = d.karyawan_id;
+        document.getElementById('tanggal_' + type).value = d.tanggal;
+
+        if(type === 'kehadiran') {
+          document.getElementById('status_kehadiran').value = d.status;
+          document.getElementById('jam_datang').value = d.jam_datang || '';
+          document.getElementById('jam_pulang').value = d.jam_pulang || '';
+          document.getElementById('keterangan_kehadiran').value = d.keterangan_tambahan || '';
+          toggleTimeInputs();
+        } else if(type === 'produktivitas') {
+          document.getElementById('tangkap_ayam').value = d.tangkap_ayam_kotak || 0;
+          document.getElementById('prestasi_lain').value = d.prestasi_lain || '';
+        } else if(type === 'pelanggaran') {
+          document.getElementById('kategori_pelanggaran').value = d.kategori || 'Ringan';
+          document.getElementById('detail_pelanggaran').value = d.detail_pelanggaran || '';
+        } else if(type === 'pengembangan') {
+          document.getElementById('jenis_pengembangan').value = d.jenis_kegiatan || 'Briefing';
+          document.getElementById('hadir_pengembangan').value = d.kehadiran || 'Hadir';
+          document.getElementById('keterangan_pengembangan').value = d.keterangan || '';
+        }
+
+        document.getElementById('btn-save-' + type).innerText = 'Update Data';
+        document.getElementById('btn-save-' + type).classList.replace('bg-' + (type==='kehadiran'?'emerald':type==='produktivitas'?'blue':type==='pelanggaran'?'rose':'purple')+'-600', 'bg-amber-500');
+        document.getElementById('btn-save-' + type).classList.replace('hover:bg-' + (type==='kehadiran'?'emerald':type==='produktivitas'?'blue':type==='pelanggaran'?'rose':'purple')+'-700', 'hover:bg-amber-600');
+        document.getElementById('btn-cancel-' + type).classList.remove('hidden');
+        
+        // Scroll to form
+        document.getElementById('form-' + type).scrollIntoView({behavior: 'smooth', block: 'center'});
+      }
+
+      window.cancelEdit = function(type) {
+        document.getElementById('form-' + type).reset();
+        document.getElementById('edit-id-' + type).value = '';
+        document.getElementById('tanggal_' + type).value = getLocalDateString();
+        if(type === 'kehadiran') toggleTimeInputs();
+
+        document.getElementById('btn-save-' + type).innerText = 'Simpan ' + type.charAt(0).toUpperCase() + type.slice(1);
+        document.getElementById('btn-save-' + type).classList.replace('bg-amber-500', 'bg-' + (type==='kehadiran'?'emerald':type==='produktivitas'?'blue':type==='pelanggaran'?'rose':'purple')+'-600');
+        document.getElementById('btn-save-' + type).classList.replace('hover:bg-amber-600', 'hover:bg-' + (type==='kehadiran'?'emerald':type==='produktivitas'?'blue':type==='pelanggaran'?'rose':'purple')+'-700');
+        document.getElementById('btn-cancel-' + type).classList.add('hidden');
+      }
+
+      window.deleteRecord = async function(type, id) {
+        if(!confirm('Anda yakin ingin menghapus data ini?')) return;
+        
+        const d = hrdData[type].find(x => x.id === id);
+        let actionMsg = '';
+        if (d) {
+          actionMsg = 'Hapus data ' + type + ' karyawan: ' + d.nama;
+          if (typeof AuthGuard !== 'undefined') {
+            if (!(await AuthGuard.consumeToken('delete', actionMsg))) return;
+          }
+        }
+
+        await window.DataLayer.saveHrdData(type, {id: id}, true);
+        
+        if (typeof ActivityLogger !== 'undefined' && d) {
+          await ActivityLogger.log({
+            action: 'DELETE',
+            entityType: 'HRD_' + type.toUpperCase(),
+            entityId: d.karyawan_id,
+            oldData: d,
+            message: actionMsg
+          });
+        }
+
+        refreshDataState();
+        renderRingkasan();
+        alert('Data berhasil dihapus.');
+      }
+
+      async function submitForm(type, payloadOverrides) {
+        const k = getSelectedKaryawanData('karyawan_' + type);
+        if(!k) return alert("Pilih karyawan!");
+        
+        const idField = document.getElementById('edit-id-' + type).value;
+        const isNew = !idField;
+        const actionMsg = (isNew ? 'Tambah ' : 'Edit ') + 'data ' + type + ' karyawan: ' + k.nama;
+
+        if (typeof AuthGuard !== 'undefined') {
+          if (!(await AuthGuard.consumeToken(isNew ? 'create' : 'update', actionMsg))) return;
+        }
+
+        const payload = {
+          karyawan_id: k.id, nama: k.nama, asal_tabel: k.asal_tabel,
+          tanggal: document.getElementById('tanggal_' + type).value,
+          ...payloadOverrides
+        };
+        if(idField) payload.id = idField; // if edit
+
+        // Ambil data lama jika edit
+        const oldData = !isNew ? hrdData[type].find(x => x.id === idField) : null;
+
+        await window.DataLayer.saveHrdData(type, payload);
+        
+        if (typeof ActivityLogger !== 'undefined') {
+          await ActivityLogger.log({
+            action: isNew ? 'CREATE' : 'UPDATE',
+            entityType: 'HRD_' + type.toUpperCase(),
+            entityId: k.id,
+            oldData: oldData,
+            newData: payload,
+            message: actionMsg
+          });
+        }
+
+        alert("Data berhasil disimpan.");
+        cancelEdit(type);
+        refreshDataState();
+        renderRingkasan();
+      }
+
+      // Hook up form submits
+      document.getElementById('form-kehadiran').addEventListener('submit', e => {
+        e.preventDefault();
+        submitForm('kehadiran', {
+          status: document.getElementById('status_kehadiran').value,
+          jam_datang: document.getElementById('jam_datang').value || null,
+          jam_pulang: document.getElementById('jam_pulang').value || null,
+          keterangan_tambahan: document.getElementById('keterangan_kehadiran').value
+        });
+      });
+      document.getElementById('form-produktivitas').addEventListener('submit', e => {
+        e.preventDefault();
+        submitForm('produktivitas', {
+          tangkap_ayam_kotak: parseInt(document.getElementById('tangkap_ayam').value) || 0,
+          prestasi_lain: document.getElementById('prestasi_lain').value
+        });
+      });
+      document.getElementById('form-pelanggaran').addEventListener('submit', e => {
+        e.preventDefault();
+        submitForm('pelanggaran', {
+          kategori: document.getElementById('kategori_pelanggaran').value,
+          detail_pelanggaran: document.getElementById('detail_pelanggaran').value
+        });
+      });
+      document.getElementById('form-pengembangan').addEventListener('submit', e => {
+        e.preventDefault();
+        submitForm('pengembangan', {
+          jenis_kegiatan: document.getElementById('jenis_pengembangan').value,
+          kehadiran: document.getElementById('hadir_pengembangan').value,
+          keterangan: document.getElementById('keterangan_pengembangan').value
+        });
+      });
+
+      // --- JURNAL REKAPITULASI ---
+      window.renderJurnal = function() {
+        const kId = document.getElementById('filter_karyawan').value;
+        const bulan = document.getElementById('filter_bulan').value; // YYYY-MM
+        
+        if(!kId || !bulan) {
+          alert("Pilih Karyawan dan Bulan terlebih dahulu.");
+          return;
+        }
+
+        const kehadiran = hrdData.kehadiran.filter(x => x.karyawan_id === kId && x.tanggal.startsWith(bulan));
+        const produktivitas = hrdData.produktivitas.filter(x => x.karyawan_id === kId && x.tanggal.startsWith(bulan));
+        const pelanggaran = hrdData.pelanggaran.filter(x => x.karyawan_id === kId && x.tanggal.startsWith(bulan));
+        const pengembangan = hrdData.pengembangan.filter(x => x.karyawan_id === kId && x.tanggal.startsWith(bulan));
+
+        const tglSet = new Set();
+        kehadiran.forEach(x => tglSet.add(x.tanggal));
+        produktivitas.forEach(x => tglSet.add(x.tanggal));
+        pelanggaran.forEach(x => tglSet.add(x.tanggal));
+        pengembangan.forEach(x => tglSet.add(x.tanggal));
+
+        const tglArray = Array.from(tglSet).sort();
+
+        let totalHadir = 0, totalTangkap = 0;
+
+        let html = '';
+        if(tglArray.length === 0) {
+          html = `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400">Tidak ada catatan di bulan ini.</td></tr>`;
+        } else {
+          tglArray.forEach(tgl => {
+            const h = kehadiran.find(x => x.tanggal === tgl);
+            const p = produktivitas.find(x => x.tanggal === tgl);
+            const pel = pelanggaran.filter(x => x.tanggal === tgl);
+            const peng = pengembangan.filter(x => x.tanggal === tgl);
+
+            if(h && h.status === 'Hadir') totalHadir++;
+            if(p && p.tangkap_ayam_kotak) totalTangkap += p.tangkap_ayam_kotak;
+
+            let hText = h ? `<span class="font-semibold ${h.status==='Hadir'?'text-emerald-600':(h.status==='Sakit'||h.status==='Izin'?'text-amber-600':'text-rose-600')}">${h.status}</span><br><span class="text-xs text-slate-500">${h.jam_datang||'-'} - ${h.jam_pulang||'-'}</span><br><span class="text-xs italic">${h.keterangan_tambahan||''}</span>` : '-';
+            let pText = p ? `<span class="font-semibold text-blue-600">Tangkap: ${p.tangkap_ayam_kotak||0} Kotak</span><br><span class="text-xs text-slate-500">${p.prestasi_lain||''}</span>` : '-';
+            let pelText = pel.length > 0 ? pel.map(x => `<span class="px-2 py-0.5 rounded text-[10px] bg-rose-100 text-rose-700 font-bold">${x.kategori}</span><br><span class="text-xs">${x.detail_pelanggaran}</span>`).join('<hr class="my-1">') : '-';
+            let pengText = peng.length > 0 ? peng.map(x => `<span class="font-semibold text-purple-600">${x.jenis_kegiatan} (${x.kehadiran})</span><br><span class="text-xs text-slate-500">${x.keterangan||''}</span>`).join('<hr class="my-1">') : '-';
+
+            html += `
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-4 py-3 border-b border-slate-100 font-medium whitespace-nowrap">${tgl}</td>
+                <td class="px-4 py-3 border-b border-slate-100">${hText}</td>
+                <td class="px-4 py-3 border-b border-slate-100">${pText}</td>
+                <td class="px-4 py-3 border-b border-slate-100">${pelText}</td>
+                <td class="px-4 py-3 border-b border-slate-100">${pengText}</td>
+              </tr>
+            `;
+          });
+        }
+
+        document.getElementById('jurnal-tbody').innerHTML = html;
+        document.getElementById('rekap-hadir').innerText = totalHadir;
+        document.getElementById('rekap-tangkap').innerText = totalTangkap;
+        document.getElementById('rekap-pelanggaran').innerText = pelanggaran.length;
+        document.getElementById('rekap-pengembangan').innerText = pengembangan.length;
+
+        document.getElementById('jurnal-empty').classList.add('hidden');
+        document.getElementById('jurnal-container').classList.remove('hidden');
+      }
+
+      // --- REKAPITULASI GLOBAL ---
+      window.renderRekapGlobal = function() {
+        const startD = document.getElementById('filter_rekap_start').value;
+        const endD = document.getElementById('filter_rekap_end').value;
+
+        if(!startD || !endD) {
+          alert('Silakan tentukan tanggal mulai dan tanggal akhir.');
+          return;
+        }
+        if(startD > endD) {
+          alert('Tanggal mulai tidak boleh lebih dari tanggal akhir.');
+          return;
+        }
+
+        const karyawanList = window.DataLayer.getHrdKaryawan();
+        const tbody = document.getElementById('rekap-tbody');
+
+        let html = '';
+        let counter = 1;
+        karyawanList.forEach(k => {
+          const kId = k.id;
+          
+          const kh = hrdData.kehadiran.filter(x => x.karyawan_id === kId && x.tanggal >= startD && x.tanggal <= endD);
+          const pr = hrdData.produktivitas.filter(x => x.karyawan_id === kId && x.tanggal >= startD && x.tanggal <= endD);
+          const pl = hrdData.pelanggaran.filter(x => x.karyawan_id === kId && x.tanggal >= startD && x.tanggal <= endD);
+          const pg = hrdData.pengembangan.filter(x => x.karyawan_id === kId && x.tanggal >= startD && x.tanggal <= endD);
+
+          let hadir = 0, cuti = 0, sakit = 0, izin = 0, alfa = 0;
+          kh.forEach(x => {
+            if(x.status === 'Hadir') hadir++;
+            else if(x.status === 'Cuti') cuti++;
+            else if(x.status === 'Sakit') sakit++;
+            else if(x.status === 'Izin') izin++;
+            else if(x.status === 'Alfa') alfa++;
+          });
+
+          let sumProduksi = 0;
+          pr.forEach(x => sumProduksi += (x.tangkap_ayam_kotak || 0));
+
+          let sumPelanggaran = pl.length;
+          let sumPengembangan = pg.length;
+
+          // Saring jika tidak ada data sama sekali
+          if(hadir === 0 && cuti === 0 && sakit === 0 && izin === 0 && alfa === 0 && sumProduksi === 0 && sumPelanggaran === 0 && sumPengembangan === 0) {
+             return;
+          }
+
+          html += `
+            <tr class="hover:bg-indigo-50/50 transition-colors">
+              <td class="px-4 py-3 border-b border-slate-100 text-center text-slate-400 font-medium">${counter++}</td>
+              <td class="px-4 py-3 border-b border-slate-100 font-bold text-slate-700">${k.nama}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center font-black text-emerald-600 bg-emerald-50/30">${hadir}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center text-slate-500">${cuti}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center text-amber-600">${sakit}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center text-amber-600">${izin}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center font-bold text-rose-600 bg-rose-50/30">${alfa}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center font-bold text-blue-600 bg-blue-50/30">${sumProduksi}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center font-bold text-rose-600">${sumPelanggaran}</td>
+              <td class="px-3 py-3 border-b border-slate-100 text-center font-bold text-purple-600">${sumPengembangan}</td>
+            </tr>
+          `;
+        });
+
+        if(counter === 1) {
+           html = `<tr><td colspan="10" class="py-12 text-center text-slate-400">Tidak ada catatan karyawan pada periode ini.</td></tr>`;
+        }
+
+        tbody.innerHTML = html;
+      }
+
+      document.addEventListener('DOMContentLoaded', initHRD);
+
+    </script>
+    <script src="auth-guard.js"></script>
+    <script src="activity-logger.js"></script>
+    <script src="app.js"></script>
+    <script src="sidebar.js"></script>
+  </body>
+</html>
+
