@@ -1509,8 +1509,11 @@
                     jurnalByKandang[kndgName].push(d);
                 });
                 
-                // Urutkan nama kandang
-                const sortedKandangNames = Object.keys(jurnalByKandang).sort((a, b) => a.localeCompare(b));
+                // Urutkan berdasarkan jumlah transaksi terbanyak, jika sama urutkan alfabetis
+                const sortedKandangNames = Object.keys(jurnalByKandang).sort((a, b) => {
+                    const diff = jurnalByKandang[b].length - jurnalByKandang[a].length;
+                    return diff !== 0 ? diff : a.localeCompare(b);
+                });
                 
                 let jurnalHtml = '';
                 let jurnalNo = 1;
