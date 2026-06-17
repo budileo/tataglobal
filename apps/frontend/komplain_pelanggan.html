@@ -259,11 +259,68 @@
         </div>
       </div>
 
+      <!-- Toast Container -->
+      <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+      <!-- Confirm Modal -->
+      <div id="confirm-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-navy-900/50 backdrop-blur-sm transition-opacity opacity-0">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 transform scale-95 transition-transform duration-300">
+          <h3 class="text-lg font-bold text-slate-800 mb-2">Konfirmasi</h3>
+          <p class="text-slate-600 mb-6" id="confirm-message">Apakah Anda yakin?</p>
+          <div class="flex justify-end gap-3">
+            <button id="btn-confirm-cancel" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors">Batal</button>
+            <button id="btn-confirm-ok" class="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded-lg hover:bg-rose-700 transition-colors">Ya, Lanjutkan</button>
+          </div>
+        </div>
+      </div>
+
     </main>
 
     <script type="module" src="data-layer.js"></script>
     <script type="module">
       import { supabase } from './supabaseClient.js';
+      
+      window.showToast = function(msg, type='success') {
+        const container = document.getElementById('toast-container');
+        if(!container) return;
+        const toast = document.createElement('div');
+        const bg = type === 'error' ? 'bg-rose-500' : 'bg-emerald-600';
+        toast.className = `${bg} text-white px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-y-[-20px] opacity-0 flex items-center justify-between min-w-[250px]`;
+        toast.innerHTML = `<span class="font-medium text-sm">${msg}</span><button class="ml-4 text-white hover:text-gray-200" onclick="this.parentElement.remove()">&times;</button>`;
+        container.appendChild(toast);
+        
+        requestAnimationFrame(() => toast.classList.remove('translate-y-[-20px]', 'opacity-0'));
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-[-20px]');
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      };
+
+      window.showConfirm = function(msg, onConfirm) {
+        const modal = document.getElementById('confirm-modal');
+        document.getElementById('confirm-message').innerText = msg;
+        modal.classList.remove('hidden');
+        
+        requestAnimationFrame(() => {
+          modal.classList.remove('opacity-0');
+          modal.querySelector('div').classList.remove('scale-95');
+        });
+
+        const btnCancel = document.getElementById('btn-confirm-cancel');
+        const btnOk = document.getElementById('btn-confirm-ok');
+        
+        const close = () => {
+          modal.classList.add('opacity-0');
+          modal.querySelector('div').classList.add('scale-95');
+          setTimeout(() => modal.classList.add('hidden'), 300);
+          btnCancel.onclick = null;
+          btnOk.onclick = null;
+        };
+
+        btnCancel.onclick = close;
+        btnOk.onclick = () => { close(); onConfirm(); };
+      };
+
       // Multi-Select logic
       function initMultiSelect(wrapperId, karyawanList, userFirst = false) {
         const wrapper = document.getElementById(wrapperId);
@@ -462,7 +519,7 @@
           await loadKomplainData();
         } catch (err) {
           console.error("Gagal memuat data awal:", err);
-          alert("Gagal memuat data pelanggan/karyawan. Refresh halaman.");
+          showToast("Gagal memuat data pelanggan/karyawan. Refresh halaman.", "error");
         }
       }
 
@@ -573,9 +630,10 @@
           
           resetForm();
           await loadKomplainData();
+          showToast('Data komplain berhasil disimpan!');
         } catch (err) {
           console.error('Error saving komplain:', err);
-          alert('Gagal menyimpan data komplain!');
+          showToast('Gagal menyimpan data komplain!', 'error');
         } finally {
           btnSubmit.innerText = originalText;
           btnSubmit.disabled = false;
@@ -605,8 +663,8 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
-      window.hapusKomplain = async function(id) {
-        if(confirm('Yakin ingin menghapus komplain ini?')) {
+      window.hapusKomplain = function(id) {
+        showConfirm('Yakin ingin menghapus komplain ini?', async () => {
           try {
             const { error } = await supabase
               .from('crm_komplain')
@@ -616,11 +674,12 @@
             if(error) throw error;
             
             await loadKomplainData();
+            showToast('Data komplain berhasil dihapus!');
           } catch(err) {
             console.error('Error delete:', err);
-            alert('Gagal menghapus komplain!');
+            showToast('Gagal menghapus komplain!', 'error');
           }
-        }
+        });
       }
 
       window.resetForm = function() {
