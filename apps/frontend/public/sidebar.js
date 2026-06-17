@@ -33,12 +33,7 @@
     
     // 1. Deteksi apakah produksi menggunakan tanda hubung (-) untuk halaman dasbort
     const isHyphenated = window.location.pathname.includes('dasbort-') || 
-                         window.location.pathname.includes('dashboard-') || 
-                         (window.location.pathname.includes('dasbort_') === false && 
-                          (window.location.pathname.includes('finance') || 
-                           window.location.pathname.includes('marketing') || 
-                           window.location.pathname.includes('hrd') || 
-                           window.location.pathname.includes('menu')));
+                         window.location.pathname.includes('dashboard-');
     
     if (isHyphenated) {
       target = target.replace(/dasbort_/g, 'dasbort-');
