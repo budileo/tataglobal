@@ -1623,7 +1623,7 @@
             let hText = h ? `<span class="font-semibold ${h.status==='Hadir'?'text-emerald-600':(h.status==='Sakit'||h.status==='Izin'?'text-amber-600':'text-rose-600')}">${h.status}</span><br><span class="text-xs text-slate-500">${h.jam_datang||'-'} - ${h.jam_pulang||'-'}</span><br><span class="text-xs italic">${h.keterangan_tambahan||''}</span>` : '-';
             let pText = p ? `<span class="font-semibold text-blue-600">Tangkap: ${p.tangkap_ayam_kotak||0} Kotak</span><br><span class="text-xs text-slate-500">${p.prestasi_lain||''}</span>` : '-';
             let pelText = pel.length > 0 ? pel.map(x => `<span class="px-2 py-0.5 rounded text-[10px] bg-rose-100 text-rose-700 font-bold">${x.kategori}</span><br><span class="text-xs">${x.detail_pelanggaran}</span>`).join('<hr class="my-1">') : '-';
-            let pengText = peng.length > 0 ? peng.map(x => `<span class="font-semibold text-purple-600">${x.jenis_kegiatan} (${x.kehadiran})</span><br><span class="text-xs text-slate-500">${x.keterangan||''}</span>`).join('<hr class="my-1">') : '-';
+            let pengText = peng.length > 0 ? peng.map(x => `<span class="font-semibold text-purple-600">${x.jenis_kegiatan} (${x.kehadiran})</span><br><span class="text-xs text-slate-500">${x.keterangan||''}${x.pemateri ? '<br><i class="text-purple-500">Pemateri: ' + x.pemateri + '</i>' : ''}</span>`).join('<hr class="my-1">') : '-';
 
             html += `
               <tr class="hover:bg-slate-50 transition-colors">
