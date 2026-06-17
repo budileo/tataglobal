@@ -479,8 +479,12 @@
               <label class="block text-xs font-semibold text-slate-500 mb-1">Bulan</label>
               <input type="month" id="filter_bulan" class="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-slate-500">
             </div>
-            <div class="flex items-end">
-              <button onclick="renderJurnal()" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors h-[38px]">Tampilkan Jurnal</button>
+            <div class="flex items-end gap-2">
+              <button onclick="renderJurnal()" class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors h-[38px] shrink-0">Tampilkan Jurnal</button>
+              <button id="btn-download-jurnal-pdf" onclick="downloadJurnalIndividuPDF()" class="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors h-[38px] flex items-center gap-2 hidden shrink-0 shadow-lg shadow-teal-600/20">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Download PDF
+              </button>
             </div>
           </div>
 
@@ -608,7 +612,12 @@
         } else if(tabId === 'jurnal') {
           const kId = document.getElementById('filter_karyawan').value;
           const bulan = document.getElementById('filter_bulan').value;
-          if (kId && bulan) renderJurnal();
+          if (kId && bulan) {
+            renderJurnal();
+          } else {
+            const btnPdf = document.getElementById('btn-download-jurnal-pdf');
+            if(btnPdf) btnPdf.classList.add('hidden');
+          }
         } else if(tabId === 'rekap') {
           const startD = document.getElementById('filter_rekap_start').value;
           const endD = document.getElementById('filter_rekap_end').value;
@@ -1449,7 +1458,9 @@
         let html = '';
         if(tglArray.length === 0) {
           html = `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400">Tidak ada catatan di bulan ini.</td></tr>`;
+          document.getElementById('btn-download-jurnal-pdf').classList.add('hidden');
         } else {
+          document.getElementById('btn-download-jurnal-pdf').classList.remove('hidden');
           tglArray.forEach(tgl => {
             const h = kehadiran.find(x => x.tanggal === tgl);
             const p = produktivitas.find(x => x.tanggal === tgl);
@@ -1556,6 +1567,216 @@
         }
 
         tbody.innerHTML = html;
+      }
+
+      // --- DOWNLOAD JURNAL PDF ---
+      window.downloadJurnalIndividuPDF = async function() {
+        const kId = document.getElementById('filter_karyawan').value;
+        const bulan = document.getElementById('filter_bulan').value; // YYYY-MM
+        
+        if(!kId || !bulan) {
+          alert("Pilih Karyawan dan Bulan terlebih dahulu.");
+          return;
+        }
+
+        const kSel = document.getElementById('filter_karyawan');
+        const kNama = kSel.options[kSel.selectedIndex]?.text || kId;
+        
+        if(typeof AuthGuard !== 'undefined' && !(await AuthGuard.consumeToken('download', 'Print PDF Jurnal Karyawan: ' + kNama))) return;
+
+        const karyawanList = window.DataLayer.getHrdKaryawan();
+        const karyawanData = karyawanList.find(k => k.id === kId);
+        const kAsalTabel = karyawanData ? karyawanData.asal_tabel : '-';
+
+        const kehadiran = hrdData.kehadiran.filter(x => x.karyawan_id === kId && x.tanggal.startsWith(bulan));
+        const produktivitas = hrdData.produktivitas.filter(x => x.karyawan_id === kId && x.tanggal.startsWith(bulan));
+        const pelanggaran = hrdData.pelanggaran.filter(x => x.karyawan_id === kId && x.tanggal.startsWith(bulan));
+        const pengembangan = hrdData.pengembangan.filter(x => x.karyawan_id === kId && x.tanggal.startsWith(bulan));
+
+        const tglSet = new Set();
+        kehadiran.forEach(x => tglSet.add(x.tanggal));
+        produktivitas.forEach(x => tglSet.add(x.tanggal));
+        pelanggaran.forEach(x => tglSet.add(x.tanggal));
+        pengembangan.forEach(x => tglSet.add(x.tanggal));
+
+        const tglArray = Array.from(tglSet).sort();
+
+        if (tglArray.length === 0) {
+          alert("Tidak ada data jurnal untuk periode ini.");
+          return;
+        }
+
+        let totalHadir = 0, totalTangkap = 0;
+        let rowsHtml = '';
+
+        const fmtDate = (tgl) => {
+            if (!tgl) return '-';
+            const p = tgl.split('-');
+            return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : tgl;
+        };
+
+        tglArray.forEach(tgl => {
+            const h = kehadiran.find(x => x.tanggal === tgl);
+            const p = produktivitas.find(x => x.tanggal === tgl);
+            const pel = pelanggaran.filter(x => x.tanggal === tgl);
+            const peng = pengembangan.filter(x => x.tanggal === tgl);
+
+            if(h && h.status === 'Hadir') totalHadir++;
+            if(p && p.tangkap_ayam_kotak) totalTangkap += p.tangkap_ayam_kotak;
+
+            const hText = h ? `<div class="status ${h.status==='Hadir'?'hadir':(h.status==='Sakit'||h.status==='Izin'?'izin':'alfa')}">${h.status}</div>
+                               <div class="meta">${h.jam_datang||'-'} s/d ${h.jam_pulang||'-'}</div>
+                               <div class="keterangan">${h.keterangan_tambahan||''}</div>` : '-';
+            
+            const pText = p ? `<div class="status tangkap">Tangkap: ${p.tangkap_ayam_kotak||0} Kotak</div>
+                               <div class="keterangan">${p.prestasi_lain||''}</div>` : '-';
+            
+            const pelText = pel.length > 0 ? pel.map(x => `<div class="status alfa">${x.kategori}</div>
+                                                           <div class="keterangan">${x.detail_pelanggaran}</div>`).join('<div class="separator"></div>') : '-';
+            
+            const pengText = peng.length > 0 ? peng.map(x => `<div class="status giat">${x.jenis_kegiatan} (${x.kehadiran})</div>
+                                                              <div class="keterangan">${x.keterangan||''}</div>`).join('<div class="separator"></div>') : '-';
+
+            rowsHtml += `
+              <tr>
+                <td class="tgl-cell">${fmtDate(tgl)}</td>
+                <td>${hText}</td>
+                <td>${pText}</td>
+                <td>${pelText}</td>
+                <td>${pengText}</td>
+              </tr>
+            `;
+        });
+
+        const blnParts = bulan.split('-');
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const bulanIndo = blnParts.length === 2 ? `${monthNames[parseInt(blnParts[1])-1]} ${blnParts[0]}` : bulan;
+
+        const printHtml = `<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Jurnal Karyawan - ${kNama} - ${bulanIndo}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 portrait; margin: 15mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; font-size: 10px; color: #1e293b; padding: 10mm; }
+  .header { border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .header-left h1 { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.02em; }
+  .header-left p { font-size: 11px; color: #64748b; font-weight: 600; }
+  .header-right { text-align: right; font-size: 10px; color: #475569; }
+  .header-right .brand { font-size: 14px; font-weight: 800; color: #059669; margin-bottom: 2px; }
+  
+  .meta-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 20px; display: flex; gap: 40px; }
+  .meta-item .label { font-size: 9px; text-transform: uppercase; color: #64748b; font-weight: 700; margin-bottom: 2px; }
+  .meta-item .val { font-size: 12px; font-weight: 700; color: #0f172a; }
+  
+  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .card { padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
+  .card .card-title { font-size: 9px; text-transform: uppercase; font-weight: 800; margin-bottom: 4px; }
+  .card .card-val { font-size: 24px; font-weight: 800; }
+  .card.hadir { background: #ecfdf5; border-color: #d1fae5; color: #047857; }
+  .card.tangkap { background: #eff6ff; border-color: #dbeafe; color: #1d4ed8; }
+  .card.pelanggaran { background: #fff1f2; border-color: #ffe4e6; color: #be123c; }
+  .card.giat { background: #faf5ff; border-color: #f3e8ff; color: #6b21a8; }
+  
+  table { width: 100%; border-collapse: collapse; font-size: 9.5px; page-break-inside: auto; }
+  tr { page-break-inside: avoid; page-break-after: auto; }
+  th { background: #0f172a; color: white; padding: 10px 8px; text-align: left; font-weight: 600; border: 1px solid #334155; }
+  td { padding: 8px; border: 1px solid #cbd5e1; vertical-align: top; }
+  tr:nth-child(even) { background: #f8fafc; }
+  
+  .tgl-cell { font-weight: 700; color: #334155; white-space: nowrap; width: 80px; }
+  .status { display: inline-block; font-weight: 700; font-size: 9px; padding: 2px 6px; border-radius: 4px; margin-bottom: 3px; }
+  .status.hadir { background: #d1fae5; color: #047857; }
+  .status.izin { background: #fef3c7; color: #b45309; }
+  .status.alfa { background: #ffe4e6; color: #be123c; }
+  .status.tangkap { background: #dbeafe; color: #1d4ed8; }
+  .status.giat { background: #f3e8ff; color: #6b21a8; }
+  
+  .meta { font-size: 8.5px; color: #64748b; margin-bottom: 2px; }
+  .keterangan { font-size: 9px; color: #475569; line-height: 1.3; }
+  .separator { height: 1px; background: #e2e8f0; margin: 6px 0; }
+  
+  .footer { margin-top: 20px; font-size: 8.5px; color: #94a3b8; display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+  @media print { body { padding: 0; } .no-print { display: none; } }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <h1>JURNAL INDIVIDU KARYAWAN</h1>
+      <p>Rekapitulasi Kehadiran, Produktivitas, Pelanggaran & Pengembangan</p>
+    </div>
+    <div class="header-right">
+      <div class="brand">TATA GLOBAL</div>
+      <div>Human Resources Dept.</div>
+    </div>
+  </div>
+  
+  <div class="meta-box">
+    <div class="meta-item">
+      <div class="label">Nama Karyawan</div>
+      <div class="val">${kNama}</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Bulan / Periode</div>
+      <div class="val">${bulanIndo}</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Kategori / Unit</div>
+      <div class="val">${kAsalTabel.toUpperCase()}</div>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="card hadir">
+      <div class="card-title">Total Kehadiran</div>
+      <div class="card-val">${totalHadir}</div>
+    </div>
+    <div class="card tangkap">
+      <div class="card-title">Produktivitas (Kotak)</div>
+      <div class="card-val">${totalTangkap}</div>
+    </div>
+    <div class="card pelanggaran">
+      <div class="card-title">Kasus Pelanggaran</div>
+      <div class="card-val">${pelanggaran.length}</div>
+    </div>
+    <div class="card giat">
+      <div class="card-title">Giat Pengembangan</div>
+      <div class="card-val">${pengembangan.length}</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tanggal</th>
+        <th style="width:20%">Kehadiran</th>
+        <th style="width:20%">Produktivitas</th>
+        <th style="width:25%">Pelanggaran</th>
+        <th style="width:20%">Pengembangan</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rowsHtml}
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <span>Dicetak oleh Sistem HRD Tata Global pada ${new Date().toLocaleString('id-ID')}</span>
+  </div>
+</body>
+</html>`;
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(printHtml);
+        printWindow.document.close();
+        printWindow.onload = function() {
+            printWindow.focus();
+            printWindow.print();
+        };
       }
 
       document.addEventListener('DOMContentLoaded', initHRD);
