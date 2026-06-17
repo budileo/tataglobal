@@ -1,0 +1,84 @@
+# Implementasi Fitur Komplain Pelanggan (CRM)
+
+Berdasarkan permintaan Anda, berikut adalah rencana implementasi untuk membuat sistem perekaman Data Komplain Pelanggan di dalam modul Box CRM.
+
+## Deskripsi Tujuan
+Membangun fitur CRM untuk merekam keluhan pelanggan (komplain), menyimpan detail masalah, melibatkan petugas operasional, dan merekam hasil *recovery*. Fitur ini akan mencakup form input, tabel data historis, serta dashboard rekapitulasi data komplain, tanpa mengganggu data atau aplikasi yang sudah ada.
+
+> [!IMPORTANT]
+> **User Review Required**
+> Mohon periksa struktur tabel dan rencana UI/UX di bawah ini. Apakah jenis komplain sudah lengkap? Apakah Anda setuju dengan pembuatan file `setup_crm.sql` untuk mengeksekusi tabel baru ini?
+
+## Rencana Perubahan (Proposed Changes)
+
+---
+
+### 1. Database (Supabase)
+Kita akan membuat sebuah skrip SQL baru untuk menambahkan tabel komplain tanpa merusak tabel lain.
+
+#### [NEW] [setup_crm.sql](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/setup_crm.sql)
+Skrip ini akan berisi struktur tabel `crm_komplain` sebagai berikut:
+```sql
+CREATE TABLE IF NOT EXISTS public.crm_komplain (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tgl_komplain DATE NOT NULL,
+    nama_customer TEXT NOT NULL,
+    no_bon TEXT,
+    jenis_komplain TEXT NOT NULL,
+    detail_komplain TEXT,
+    petugas_operasional JSONB DEFAULT '[]'::jsonb, -- Menyimpan array nama karyawan operasional
+    petugas_recovery JSONB DEFAULT '[]'::jsonb, -- Menyimpan array nama karyawan recovery
+    hasil_recovery TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Mematikan RLS untuk kemudahan integrasi dengan UI (sesuai standar tabel lainnya)
+ALTER TABLE public.crm_komplain DISABLE ROW LEVEL SECURITY;
+```
+
+---
+
+### 2. Tampilan Frontend Utama
+Kita akan menghubungkan menu CRM di halaman menu utama ke halaman dashboard CRM yang baru.
+
+#### [MODIFY] [dasbort_menu.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/dasbort_menu.html)
+- Mengubah tautan pada kartu "CRM" (Menu ke-6) dari `<a href="#">` menjadi `<a href="dasbort_crm.html" onclick="localStorage.setItem('active_module', 'crm');">`
+
+#### [NEW] [dasbort_crm.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/dasbort_crm.html)
+- Membuat halaman dashboard khusus CRM.
+- Menambahkan kartu menu dengan nama **"Komplain Pelanggan"** yang akan mengarah ke `komplain_pelanggan.html`.
+- Dashboard ini juga dapat menampilkan ringkasan data keluhan secara umum jika diperlukan ke depannya.
+
+---
+
+### 3. Modul Komplain Pelanggan
+Pembuatan form dan dashboard khusus untuk komplain.
+
+#### [NEW] [komplain_pelanggan.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/komplain_pelanggan.html)
+Akan berisi dua bagian utama:
+1. **Bagian Form Input Komplain**:
+   - **Tgl Komplain**: Input date picker.
+   - **Nama Customer**: Select dropdown atau input teks dengan auto-complete, datanya ditarik dari `window.DataLayer.getMaster('konsumen')`.
+   - **No Bon**: Input teks opsional.
+   - **Jenis Komplain**: Select dropdown statis dengan opsi: *Ayam Hilang, Ayam Mati, Ayam Susut, Ayam Cacat Pengkor, Ayam Kurus Sakit, Ayam Tembolok, Layanan Marketing, Layanan Operasional, Layanan Pengutipan, Layanan Supir, Komplain Harga, Komplain Lainnya, Terlambat Pengantaran, Selisih Kg Timbangan, Tidak Sesuai dengan Order, Tidak Ada Komplain*.
+   - **Detail Komplain**: Textarea.
+   - **Petugas Operasional (Multiple)**: Komponen multi-select. Data ditarik dari `window.DataLayer.getHrdKaryawan()`. Diurutkan di mana karyawan dengan `asal_tabel === 'operasional'` tampil di urutan atas.
+   - **Petugas Recovery (Multiple)**: Komponen multi-select. Data ditarik dari fungsi yang sama. Diurutkan di mana karyawan dengan `asal_tabel !== 'operasional'` (User biasa) tampil di urutan atas.
+   - **Hasil Recovery**: Textarea.
+
+2. **Bagian Dashboard / Tabel Riwayat**:
+   - Tabel untuk menampilkan daftar riwayat komplain yang sudah masuk.
+   - *Chart / Widget* ringkasan (misal: Komplain Terbanyak Berdasarkan Jenis, Total Komplain Bulan Ini).
+
+#### [MODIFY] [sidebar.js](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/public/sidebar.js) (Jika diperlukan)
+- Menambahkan navigasi CRM / Komplain Pelanggan di sidebar agar pengguna bisa berpindah tab dari dalam menu lain tanpa harus ke menu utama.
+
+---
+
+## Verifikasi Plan
+1. **Verifikasi Manual**: 
+   - Membuka halaman login dan navigasi ke menu CRM.
+   - Mengisi form komplain pelanggan dengan beberapa petugas (operasional dan recovery).
+   - Memastikan data berhasil tersimpan ke Supabase dan muncul di tabel riwayat/dashboard komplain pelanggan.
+   - Memastikan urutan combo box sesuai dengan kriteria yang diminta (Operasional di atas, dan sebaliknya).
