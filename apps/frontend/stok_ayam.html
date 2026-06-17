@@ -1609,35 +1609,7 @@
         }
 
         // ===== Download Jurnal Kandang sebagai PDF =====
-        // Helper: Muat script secara dinamis
-        function loadScript(url) {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = url;
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
-
-        window.downloadJurnalPDF = async function() {
-            // Muat library jsPDF secara dinamis jika belum ada
-            if (!window.jspdf) {
-                try {
-                    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js');
-                    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
-                } catch(e) {
-                    alert('Gagal memuat library PDF. Periksa koneksi internet Anda.');
-                    console.error('jsPDF load error:', e);
-                    return;
-                }
-            }
-
-            if (!window.jspdf) {
-                alert('Library PDF gagal dimuat. Periksa koneksi internet Anda.');
-                return;
-            }
-
+        window.downloadJurnalPDF = function() {
             const filteredStok = dbStok.filter(d => {
                 if (!d.tanggal) return false;
                 return d.tanggal >= filterStartDate && d.tanggal <= filterEndDate;
@@ -1669,7 +1641,6 @@
                 return diff !== 0 ? diff : a.localeCompare(b);
             });
 
-            // Format helper
             const fmtNum = (n) => Number(n).toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             const fmtDate = (tgl) => {
                 if (!tgl) return '-';
@@ -1677,16 +1648,17 @@
                 return p.length === 3 ? `${p[2]}-${p[1]}-${p[0]}` : tgl;
             };
 
-            // Build table body rows
-            const tableBody = [];
+            // Build table rows HTML
+            let rowsHtml = '';
             let no = 1;
 
             sortedNames.forEach(kandangName => {
                 const items = jurnalByKandang[kandangName];
+                const rowspan = items.length + 1;
 
                 let tEkor = 0, tNetto = 0, tMatiE = 0, tMatiKg = 0, tSusut = 0;
 
-                items.forEach(d => {
+                items.forEach((d, idx) => {
                     const ekor = Number(d.jumlah_ekor) || 0;
                     const nettoKg = Number(d.jumlah_kg) || 0;
                     const matiEkor = Number(d.jumlah_mati_ekor) || 0;
@@ -1700,105 +1672,109 @@
                     tMatiKg += matiKg;
                     tSusut += susutKg;
 
-                    tableBody.push([
-                        { content: String(no), styles: { halign: 'center' } },
-                        kandangName,
-                        fmtDate(d.tanggal),
-                        d.nama_supir || '-',
-                        { content: ekor.toLocaleString('id-ID'), styles: { halign: 'right' } },
-                        { content: fmtNum(nettoKg), styles: { halign: 'right' } },
-                        { content: matiEkor > 0 ? `${matiEkor} ekor (${fmtNum(matiKg)} kg)` : '0', styles: { halign: 'right' } },
-                        { content: susutKg > 0 ? `${fmtNum(susutKg)} kg` : '0', styles: { halign: 'right' } },
-                        d.keterangan_ayam || '-',
-                        { content: fmtNum(totalBersih) + ' kg', styles: { halign: 'right', fontStyle: 'bold' } }
-                    ]);
+                    const noCell = idx === 0 ? `<td rowspan="${rowspan}" class="no-cell">${no}</td>` : '';
+                    const nameCell = idx === 0 ? `<td rowspan="${rowspan}" class="kandang-cell">${kandangName}<br><small>${items.length} transaksi</small></td>` : '';
+                    const matiText = matiEkor > 0 ? `${matiEkor} ekor (${fmtNum(matiKg)} kg)` : '0';
+                    const susutText = susutKg > 0 ? `${fmtNum(susutKg)} kg` : '0';
+
+                    rowsHtml += `<tr>
+                        ${noCell}${nameCell}
+                        <td>${fmtDate(d.tanggal)}</td>
+                        <td>${d.nama_supir || '-'}</td>
+                        <td class="right">${ekor.toLocaleString('id-ID')}</td>
+                        <td class="right">${fmtNum(nettoKg)}</td>
+                        <td class="right" style="color:#e11d48">${matiText}</td>
+                        <td class="right" style="color:#e11d48">${susutText}</td>
+                        <td>${d.keterangan_ayam || '-'}</td>
+                        <td class="right bold">${fmtNum(totalBersih)} kg</td>
+                    </tr>`;
                 });
 
                 // Total per kandang
                 const totalBersihKandang = tNetto - tSusut - tMatiKg;
-                tableBody.push([
-                    { content: '', styles: { fillColor: [224, 242, 235] } },
-                    { content: 'TOTAL ' + kandangName, styles: { fontStyle: 'bold', fillColor: [224, 242, 235] } },
-                    { content: '', styles: { fillColor: [224, 242, 235] } },
-                    { content: '', styles: { fillColor: [224, 242, 235] } },
-                    { content: tEkor.toLocaleString('id-ID'), styles: { halign: 'right', fontStyle: 'bold', fillColor: [224, 242, 235] } },
-                    { content: fmtNum(tNetto), styles: { halign: 'right', fontStyle: 'bold', fillColor: [224, 242, 235] } },
-                    { content: tMatiE > 0 ? `${tMatiE.toLocaleString('id-ID')} ekor (${fmtNum(tMatiKg)} kg)` : '0', styles: { halign: 'right', fontStyle: 'bold', fillColor: [224, 242, 235] } },
-                    { content: tSusut > 0 ? `${fmtNum(tSusut)} kg` : '0', styles: { halign: 'right', fontStyle: 'bold', fillColor: [224, 242, 235] } },
-                    { content: '', styles: { fillColor: [224, 242, 235] } },
-                    { content: fmtNum(totalBersihKandang) + ' kg', styles: { halign: 'right', fontStyle: 'bold', fillColor: [224, 242, 235] } }
-                ]);
+                const totalMatiText = tMatiE > 0 ? `${tMatiE.toLocaleString('id-ID')} ekor (${fmtNum(tMatiKg)} kg)` : '0';
+                const totalSusutText = tSusut > 0 ? `${fmtNum(tSusut)} kg` : '0';
+
+                rowsHtml += `<tr class="total-row">
+                    <td class="bold">TOTAL</td>
+                    <td></td>
+                    <td class="right bold">${tEkor.toLocaleString('id-ID')}</td>
+                    <td class="right bold">${fmtNum(tNetto)}</td>
+                    <td class="right bold" style="color:#e11d48">${totalMatiText}</td>
+                    <td class="right bold" style="color:#e11d48">${totalSusutText}</td>
+                    <td></td>
+                    <td class="right bold">${fmtNum(totalBersihKandang)} kg</td>
+                </tr>`;
 
                 no++;
             });
 
-            // Create PDF
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            // Build full HTML page for print
+            const printHtml = `<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Jurnal Kandang - ${fmtDate(filterStartDate)} s/d ${fmtDate(filterEndDate)}</title>
+<style>
+  @page { size: landscape; margin: 10mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 9px; color: #1e293b; padding: 8mm; }
+  .header { text-align: center; margin-bottom: 12px; }
+  .header h1 { font-size: 18px; font-weight: bold; margin-bottom: 3px; }
+  .header p { font-size: 11px; color: #475569; }
+  .header .sub { font-size: 9px; color: #94a3b8; margin-top: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: 8.5px; }
+  th { background: #0f172a; color: white; padding: 6px 5px; text-align: center; font-weight: bold; font-size: 8.5px; border: 1px solid #334155; }
+  td { padding: 4px 5px; border: 1px solid #cbd5e1; vertical-align: top; }
+  .right { text-align: right; }
+  .bold { font-weight: bold; }
+  .no-cell { text-align: center; font-weight: bold; color: #64748b; background: #f8fafc; vertical-align: middle; }
+  .kandang-cell { font-weight: bold; background: #f8fafc; vertical-align: middle; }
+  .kandang-cell small { font-weight: normal; color: #94a3b8; font-size: 7.5px; }
+  .total-row { background: #e0f2eb; }
+  .total-row td { font-weight: bold; border-top: 2px solid #0d9488; }
+  tr:nth-child(even):not(.total-row) { background: #f8fafc; }
+  .footer { margin-top: 10px; font-size: 7.5px; color: #94a3b8; display: flex; justify-content: space-between; }
+  @media print { body { padding: 0; } .no-print { display: none; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>JURNAL KANDANG</h1>
+  <p>Periode: ${fmtDate(filterStartDate)} s/d ${fmtDate(filterEndDate)}</p>
+  <div class="sub">TATA GLOBAL — Transaksi per Kandang</div>
+</div>
+<table>
+  <thead>
+    <tr>
+      <th style="width:30px">No</th>
+      <th style="width:120px">Nama Kandang</th>
+      <th style="width:70px">Tgl</th>
+      <th style="width:90px">Nama Supir</th>
+      <th style="width:50px">Ekor</th>
+      <th style="width:70px">Netto (Kg)</th>
+      <th style="width:100px">Ayam Mati</th>
+      <th style="width:70px">Susut Kilo</th>
+      <th>Keterangan</th>
+      <th style="width:80px">Total</th>
+    </tr>
+  </thead>
+  <tbody>${rowsHtml}</tbody>
+</table>
+<div class="footer">
+  <span>Dicetak: ${new Date().toLocaleString('id-ID')}</span>
+</div>
+</body>
+</html>`;
 
-            // Header
-            doc.setFontSize(16);
-            doc.setFont('helvetica', 'bold');
-            doc.text('JURNAL KANDANG', 148.5, 15, { align: 'center' });
-
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'normal');
-            const periodeStart = fmtDate(filterStartDate);
-            const periodeEnd = fmtDate(filterEndDate);
-            doc.text(`Periode: ${periodeStart} s/d ${periodeEnd}`, 148.5, 22, { align: 'center' });
-
-            doc.setFontSize(9);
-            doc.setTextColor(100);
-            doc.text('TATA GLOBAL - Transaksi per Kandang', 148.5, 27, { align: 'center' });
-            doc.setTextColor(0);
-
-            // Table
-            doc.autoTable({
-                startY: 32,
-                head: [['No', 'Nama Kandang', 'Tgl', 'Nama Supir', 'Ekor', 'Netto (Kg)', 'Ayam Mati', 'Susut Kilo', 'Keterangan', 'Total']],
-                body: tableBody,
-                theme: 'grid',
-                styles: {
-                    fontSize: 7.5,
-                    cellPadding: 2,
-                    lineColor: [200, 200, 200],
-                    lineWidth: 0.2
-                },
-                headStyles: {
-                    fillColor: [15, 23, 42],
-                    textColor: 255,
-                    fontStyle: 'bold',
-                    fontSize: 8,
-                    halign: 'center'
-                },
-                columnStyles: {
-                    0: { cellWidth: 12, halign: 'center' },
-                    1: { cellWidth: 38 },
-                    2: { cellWidth: 24 },
-                    3: { cellWidth: 28 },
-                    4: { cellWidth: 18, halign: 'right' },
-                    5: { cellWidth: 24, halign: 'right' },
-                    6: { cellWidth: 35, halign: 'right' },
-                    7: { cellWidth: 24, halign: 'right' },
-                    8: { cellWidth: 38 },
-                    9: { cellWidth: 28, halign: 'right' }
-                },
-                alternateRowStyles: {
-                    fillColor: [248, 250, 252]
-                },
-                didDrawPage: function(data) {
-                    // Footer
-                    const pageCount = doc.internal.getNumberOfPages();
-                    doc.setFontSize(7);
-                    doc.setTextColor(150);
-                    doc.text(`Halaman ${data.pageNumber} dari ${pageCount}`, data.settings.margin.left, doc.internal.pageSize.height - 8);
-                    doc.text(`Dicetak: ${new Date().toLocaleString('id-ID')}`, doc.internal.pageSize.width - data.settings.margin.right, doc.internal.pageSize.height - 8, { align: 'right' });
-                }
-            });
-
-            // Save
-            const fileName = `Jurnal_Kandang_${filterStartDate}_sd_${filterEndDate}.pdf`;
-            doc.save(fileName);
+            // Buka window baru dan print
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(printHtml);
+            printWindow.document.close();
+            printWindow.onload = function() {
+                printWindow.focus();
+                printWindow.print();
+            };
         }
  
         // Modal DO
