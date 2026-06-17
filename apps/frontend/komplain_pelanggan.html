@@ -262,7 +262,8 @@
     </main>
 
     <script type="module" src="data-layer.js"></script>
-    <script>
+    <script type="module">
+      import { supabase } from './supabaseClient.js';
       // Multi-Select logic
       function initMultiSelect(wrapperId, karyawanList, userFirst = false) {
         const wrapper = document.getElementById(wrapperId);
@@ -471,8 +472,8 @@
         
         try {
           // Fetch from Supabase
-          if(window.DataLayer.supabase) {
-             const { data, error } = await window.DataLayer.supabase
+          if(supabase) {
+             const { data, error } = await supabase
                .from('crm_komplain')
                .select('*')
                .order('created_at', { ascending: false });
@@ -557,27 +558,17 @@
         try {
           if (id) {
             dataToSave.updated_at = new Date().toISOString();
-            const { error } = await window.DataLayer.supabase
+            const { error } = await supabase
               .from('crm_komplain')
               .update(dataToSave)
               .eq('id', id);
             if (error) throw error;
-            
-            // Log Activity
-            if(window.DataLayer.addActivityLog) {
-              await window.DataLayer.addActivityLog('UPDATE_KOMPLAIN', 'crm_komplain', id, null, dataToSave);
-            }
           } else {
-            const { error, data } = await window.DataLayer.supabase
+            const { error, data } = await supabase
               .from('crm_komplain')
               .insert([dataToSave])
               .select();
             if (error) throw error;
-            
-            // Log Activity
-            if(window.DataLayer.addActivityLog && data && data.length) {
-              await window.DataLayer.addActivityLog('CREATE_KOMPLAIN', 'crm_komplain', data[0].id, null, data[0]);
-            }
           }
           
           resetForm();
@@ -615,23 +606,20 @@
       }
 
       window.hapusKomplain = async function(id) {
-        if(!confirm('Apakah Anda yakin ingin menghapus data komplain ini?')) return;
-        
-        try {
-          const { error } = await window.DataLayer.supabase
-            .from('crm_komplain')
-            .delete()
-            .eq('id', id);
-          
-          if(error) throw error;
-          
-          if(window.DataLayer.addActivityLog) {
-              await window.DataLayer.addActivityLog('DELETE_KOMPLAIN', 'crm_komplain', id);
+        if(confirm('Yakin ingin menghapus komplain ini?')) {
+          try {
+            const { error } = await supabase
+              .from('crm_komplain')
+              .delete()
+              .eq('id', id);
+              
+            if(error) throw error;
+            
+            await loadKomplainData();
+          } catch(err) {
+            console.error('Error delete:', err);
+            alert('Gagal menghapus komplain!');
           }
-          await loadKomplainData();
-        } catch (err) {
-          console.error("Gagal menghapus komplain:", err);
-          alert("Gagal menghapus data komplain.");
         }
       }
 
