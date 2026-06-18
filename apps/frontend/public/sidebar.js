@@ -23,33 +23,10 @@
   } else if (normalizedPath === 'setting.html' || normalizedPath === 'setting') {
     activeModule = 'setting';
     localStorage.setItem('active_module', 'setting');
+  } else if (normalizedPath === 'dasbort_crm.html' || normalizedPath === 'dasbort_crm' || normalizedPath === 'komplain_pelanggan.html' || normalizedPath === 'komplain_pelanggan' || normalizedPath === 'laporan_komplain.html' || normalizedPath === 'laporan_komplain') {
+    activeModule = 'crm';
+    localStorage.setItem('active_module', 'crm');
   }
-
-  // Fungsi cerdas untuk menyesuaikan tautan href secara dinamis dengan lingkungan (Vite vs Vercel Clean URLs)
-  const formatHref = (href) => {
-    if (!href || href === '#' || href === 'index.html') return href;
-    
-    let target = href;
-    
-    // 1. Deteksi apakah produksi menggunakan tanda hubung (-) untuk halaman dasbort
-    const isHyphenated = window.location.pathname.includes('dasbort-') || 
-                         window.location.pathname.includes('dashboard-');
-    
-    if (isHyphenated) {
-      target = target.replace(/dasbort_/g, 'dasbort-');
-    }
-    
-    // 2. Deteksi apakah produksi Vercel menggunakan rute bersih (Clean URLs / tanpa .html)
-    const isCleanUrl = !window.location.pathname.endsWith('.html') && 
-                       window.location.pathname !== '/' && 
-                       window.location.pathname !== '';
-    
-    if (isCleanUrl && target.endsWith('.html')) {
-      target = target.slice(0, -5);
-    }
-    
-    return target;
-  };
 
   const icons = {
     'Menu Utama': '<svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>',
@@ -65,7 +42,8 @@
     'Audit & KPI': '<svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>',
     'Pengaturan': '<svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>',
     'Histori Aktivitas': '<svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>',
-    'Stok Ayam': '<svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>'
+    'Stok Ayam': '<svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>',
+    'Komplain': '<svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>'
   };
 
   const operasionalMenu = [
@@ -114,6 +92,12 @@
     { title: 'Histori Aktivitas', href: 'histori.html', icon: 'Histori Aktivitas' }
   ];
 
+  const crmMenu = [
+    { title: 'Menu Utama', href: 'dasbort_menu.html', icon: 'Menu Utama' },
+    { title: 'Dashboard', href: 'laporan_komplain.html', icon: 'Dashboard' },
+    { title: 'Komplain', href: 'komplain_pelanggan.html', icon: 'Komplain' }
+  ];
+
   // Tentukan menu aktif berdasarkan modul yang terdeteksi secara case-insensitive & dash-tolerant
   let activeMenus = marketingMenu;
   if (activeModule === 'finance') {
@@ -124,6 +108,8 @@
     activeMenus = hrdMenu;
   } else if (activeModule === 'setting') {
     activeMenus = settingMenu;
+  } else if (activeModule === 'crm') {
+    activeMenus = crmMenu;
   }
 
   const renderSidebar = () => {
@@ -135,7 +121,12 @@
       // Pengecekan status aktif secara fleksibel (keduanya dinormalisasi tanda hubungnya)
       const pathPart = normalizedPath;
       const hrefPart = item.href.replace(/-/g, '_').toLowerCase();
-      const isActive = pathPart === hrefPart || pathPart + '.html' === hrefPart || hrefPart + '.html' === pathPart;
+      let isActive = pathPart === hrefPart || pathPart + '.html' === hrefPart || hrefPart + '.html' === pathPart;
+      
+      // Jika di dasbort_crm.html, highlight menu Dashboard (laporan_komplain.html)
+      if ((pathPart === 'dasbort_crm.html' || pathPart === 'dasbort_crm') && (hrefPart === 'laporan_komplain.html' || hrefPart === 'laporan_komplain')) {
+        isActive = true;
+      }
       
       let cssClass = '';
       if (item.title === 'Menu Utama') {
@@ -146,11 +137,8 @@
         cssClass = 'text-slate-400 hover:text-white hover:bg-slate-800';
       }
 
-      // Format target href dinamis agar cocok dengan lingkungan saat ini (Vercel Clean URLs vs Local HTML)
-      const targetHref = formatHref(item.href);
-
       html += `
-        <a href="${targetHref}" title="${item.title}" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 transition-colors ${cssClass}">
+        <a href="${item.href}" title="${item.title}" class="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-3 p-2 md:px-6 md:py-3 transition-colors ${cssClass}">
           ${icons[item.icon] || ''}
           <span class="text-[10px] md:text-sm font-medium sidebar-text whitespace-nowrap">${item.title}</span>
         </a>
