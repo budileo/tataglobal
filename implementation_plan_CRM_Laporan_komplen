@@ -1,0 +1,125 @@
+# Perbaikan Dashboard CRM + Halaman Laporan Komplain
+
+## Deskripsi
+Menghapus tulisan header "Modul CRM" dari halaman `dasbort_crm.html`, menambahkan card menu baru "Laporan Komplain", dan membuat halaman baru `laporan_komplain.html` yang berisi rekap, grafik, dan matrik keterlibatan karyawan dalam komplain.
+
+---
+
+## Perubahan yang Diusulkan
+
+### 1. Modifikasi Dashboard CRM
+
+#### [MODIFY] [dasbort_crm.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/dasbort_crm.html)
+
+**Hapus blok tulisan berikut** (baris 70–73):
+```html
+<div class="mb-8">
+  <h1 class="text-3xl font-black text-slate-900 tracking-tight">Modul CRM</h1>
+  <p class="text-slate-500 mt-1">Kelola data komplain dan hubungan pelanggan.</p>
+</div>
+```
+
+**Tambah card baru "Laporan Komplain"** di dalam grid (setelah card "Komplain Pelanggan"):
+- Icon: 📊 (grafik/laporan)  
+- Judul: **Laporan Komplain**
+- Deskripsi: "Lihat rekap, grafik, dan matrik keterlibatan karyawan dalam penyelesaian komplain."
+- Link ke: `laporan_komplain.html`
+- Warna aksen: **indigo/violet** (untuk membedakan dari card pink yang ada)
+
+---
+
+### 2. Halaman Baru: Laporan Komplain
+
+#### [NEW] [laporan_komplain.html](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/laporan_komplain.html)
+
+Halaman ini mengambil data dari tabel Supabase `crm_komplain` (sama seperti `komplain_pelanggan.html`) lalu menampilkan:
+
+#### A. Filter Periode
+- **3 pilihan** dalam bentuk tab/pill buttons:
+  1. **Bulan Ini** (aktif default pertama kali)
+  2. **Bulan Lalu**
+  3. **Range Tanggal** (muncul 2 input date: "Dari" dan "Sampai")
+- Filter ini mengubah semua data yang tampil di bawahnya
+
+#### B. Rekap Jumlah Komplain
+- **Box/Card** besar yang menampilkan total jumlah komplain untuk periode yang dipilih
+- Desain: angka besar dengan ikon dan warna yang mencolok
+
+#### C. Grafik Jenis Komplain
+- Menggunakan **Chart.js** (via CDN) untuk membuat grafik bar/donut
+- Menghitung jumlah per jenis komplain (Ayam Hilang, Ayam Mati, Layanan Marketing, dll)
+- Warna-warna yang menarik dan konsisten dengan tema
+
+#### D. Matrik Komplain (Tabel Keterlibatan Karyawan)
+Tabel ini mengagregasi data dari `petugas_operasional` dan `petugas_recovery` dari setiap record komplain.
+
+| Kolom | Penjelasan |
+|---|---|
+| No | Nomor urut |
+| Petugas Operasional | Nama karyawan yang terlibat dalam terjadinya komplain |
+| Tanggal | Tanggal komplain |
+| Jumlah Komplain | Berapa kali karyawan ini terlibat |
+| Detail Komplain | Jenis/ringkasan komplain |
+| Petugas Recovery | Siapa yang melakukan recovery |
+| Hasil Recovery | Hasil penyelesaian |
+
+> [!NOTE]
+> Data tabel ini di-flatten dari array `petugas_operasional` di setiap record komplain. Jadi jika 1 komplain melibatkan 3 petugas, maka akan muncul 3 baris.
+
+#### Struktur Halaman
+- Header, Sidebar, dan footer: **sama persis** dengan `komplain_pelanggan.html` (copy template)
+- Tombol kembali mengarah ke `dasbort_crm.html`
+- Script: `auth-guard.js`, `cloud-auth-guard.js`, `app.js`, `sidebar.js`
+- Data: `supabaseClient.js` untuk koneksi Supabase
+
+---
+
+### 3. Registrasi File Baru
+
+#### [MODIFY] [vite.config.js](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/vite.config.js)
+Tambahkan entry:
+```js
+'laporan-komplain': resolve(__dirname, 'laporan_komplain.html'),
+```
+
+#### [MODIFY] [auth-guard.js](file:///c:/Users/user/Documents/GLOBAL%20TERPADU/apps/frontend/auth-guard.js)
+Tambahkan mapping permission:
+```js
+'laporan_komplain.html': 'dashboard.view',
+```
+(Menggunakan permission yang sama dengan `dasbort_crm.html`)
+
+---
+
+## Teknologi yang Digunakan
+- **Chart.js** via CDN (`https://cdn.jsdelivr.net/npm/chart.js`) — untuk grafik jenis komplain
+- **Tailwind CSS** via CDN — konsisten dengan file-file lain
+- **Supabase** — mengambil data dari tabel `crm_komplain`
+- **jsPDF + AutoTable** — opsional, jika perlu download PDF
+
+---
+
+## Rencana Verifikasi
+
+### Manual
+- Buka `dasbort_crm.html` → pastikan tulisan "Modul CRM" sudah hilang
+- Pastikan card "Laporan Komplain" tampil di grid
+- Klik card → halaman `laporan_komplain.html` terbuka
+- Pastikan filter periode bekerja (Bulan Ini, Bulan Lalu, Range Tanggal)
+- Pastikan grafik jenis komplain tampil
+- Pastikan tabel matrik menampilkan data karyawan terlibat
+- Pastikan tidak ada file lain yang rusak
+
+### Build Test
+```bash
+npm run build
+```
+Pastikan Vite build sukses tanpa error.
+
+---
+
+## Hal yang TIDAK Diubah
+- ❌ `komplain_pelanggan.html` — tidak disentuh sama sekali
+- ❌ `sidebar.js` — tidak diubah
+- ❌ `data-layer.js` — tidak diubah
+- ❌ Logika lain di file manapun
