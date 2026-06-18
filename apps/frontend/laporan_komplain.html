@@ -8,6 +8,8 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script>tailwind.config={theme:{extend:{colors:{emerald:{600:'#059669',700:'#047857'},navy:{900:'#0f172a'}}}}}</script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -103,6 +105,12 @@
           </div>
         </div>
         <p id="period-label" class="text-sm text-slate-400 mt-3"></p>
+        <div class="flex justify-end mt-4 pt-3 border-t border-slate-100">
+          <button type="button" onclick="downloadPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 px-5 rounded-lg shadow-sm transition-colors text-sm flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Download PDF
+          </button>
+        </div>
       </div>
 
       <!-- ===== REKAP JUMLAH KOMPLAIN ===== -->
@@ -586,6 +594,236 @@
       }
 
       document.addEventListener('DOMContentLoaded', initData);
+
+      // ===== Download PDF =====
+      window.downloadPDF = function() {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+          showToast('Library PDF belum dimuat. Silakan tunggu sebentar.', 'error');
+          return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'pt', 'a4');
+        const pageW = doc.internal.pageSize.width;
+        const pageH = doc.internal.pageSize.height;
+        const marginL = 40;
+        const marginR = 40;
+        const contentW = pageW - marginL - marginR;
+
+        // --- Helper: draw footer ---
+        function drawFooter() {
+          doc.setFontSize(8);
+          doc.setTextColor(148, 163, 184);
+          doc.text('Halaman ' + doc.internal.getNumberOfPages(), marginL, pageH - 20);
+          doc.text('Dicetak: ' + new Date().toLocaleString('id-ID'), pageW - marginR, pageH - 20, { align: 'right' });
+        }
+
+        // ========== PAGE 1: Header + Rekap + Grafik ==========
+        // Header
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(22);
+        doc.setTextColor(15, 23, 42);
+        doc.text('TATA GLOBAL', marginL, 45);
+
+        doc.setFontSize(14);
+        doc.setTextColor(79, 70, 229);
+        doc.text('Laporan Komplain Pelanggan', marginL, 68);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139);
+        const periodText = document.getElementById('period-label')?.textContent || 'Semua Periode';
+        doc.text(periodText, marginL, 88);
+
+        // Separator
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(1.5);
+        doc.line(marginL, 98, pageW - marginR, 98);
+
+        // --- Rekap Boxes ---
+        let y = 115;
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(15, 23, 42);
+        doc.text('Rekap Komplain', marginL, y);
+        y += 18;
+
+        const totalKomplain = document.getElementById('total-komplain')?.textContent || '0';
+        const jenisTerbanyak = document.getElementById('jenis-terbanyak')?.textContent || '-';
+        const jenisTerbanyakCount = document.getElementById('jenis-terbanyak-count')?.textContent || '0';
+        const topRecovery = document.getElementById('top-recovery')?.textContent || '-';
+        const topRecoveryCount = document.getElementById('top-recovery-count')?.textContent || '0';
+
+        const boxW = (contentW - 30) / 3;
+        const boxH = 65;
+        const boxes = [
+          { title: 'Total Komplain', value: totalKomplain, sub: document.getElementById('total-label')?.textContent || '', bg: [79, 70, 229] },
+          { title: 'Jenis Terbanyak', value: jenisTerbanyak, sub: jenisTerbanyakCount, bg: [244, 63, 94] },
+          { title: 'Top Recovery', value: topRecovery, sub: topRecoveryCount, bg: [16, 185, 129] }
+        ];
+
+        boxes.forEach((box, i) => {
+          const bx = marginL + i * (boxW + 15);
+          // Background
+          doc.setFillColor(...box.bg);
+          doc.roundedRect(bx, y, boxW, boxH, 6, 6, 'F');
+          // Title
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
+          doc.setTextColor(255, 255, 255);
+          doc.text(box.title.toUpperCase(), bx + 12, y + 18);
+          // Value
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(20);
+          doc.text(String(box.value), bx + 12, y + 42);
+          // Sub
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(8);
+          doc.setTextColor(220, 220, 255);
+          doc.text(box.sub, bx + 12, y + 55);
+        });
+
+        y += boxH + 25;
+
+        // --- Grafik sebagai Gambar ---
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(15, 23, 42);
+        doc.text('Grafik Jenis Komplain', marginL, y);
+        y += 12;
+
+        try {
+          const canvasBar = document.getElementById('chart-bar');
+          const canvasDonut = document.getElementById('chart-donut');
+          const chartAreaW = (contentW - 20) / 2;
+          const chartH = 200;
+
+          if (canvasBar) {
+            const imgBar = canvasBar.toDataURL('image/png', 1.0);
+            doc.addImage(imgBar, 'PNG', marginL, y, chartAreaW, chartH);
+          }
+          if (canvasDonut) {
+            const imgDonut = canvasDonut.toDataURL('image/png', 1.0);
+            doc.addImage(imgDonut, 'PNG', marginL + chartAreaW + 20, y, chartAreaW, chartH);
+          }
+        } catch (e) {
+          console.warn('Gagal mengekspor grafik ke PDF:', e);
+          doc.setFont('helvetica', 'italic');
+          doc.setFontSize(10);
+          doc.setTextColor(148, 163, 184);
+          doc.text('(Grafik tidak dapat diekspor)', marginL, y + 20);
+        }
+
+        drawFooter();
+
+        // ========== PAGE 2+: Tabel Matrik Komplain ==========
+        doc.addPage();
+
+        // Header halaman 2
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.setTextColor(15, 23, 42);
+        doc.text('Matrik Komplain — Keterlibatan Karyawan', marginL, 40);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(100, 116, 139);
+        doc.text('Menampilkan seberapa banyak karyawan terlibat dalam terjadinya komplain atau melakukan recovery.', marginL, 55);
+
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(1);
+        doc.line(marginL, 62, pageW - marginR, 62);
+
+        // Build table data
+        const tableColumns = ['No', 'Petugas Operasional', 'Tanggal', 'Jml', 'Jenis & Detail', 'Petugas Recovery', 'Hasil Recovery'];
+        const tableRows = [];
+
+        // Re-process matrik data dari filteredData
+        const pdfRows = [];
+        filteredData.forEach(item => {
+          const petugasOps = item.petugas_operasional || [];
+          const recoveryNames = (item.petugas_recovery || []).map(p => p.nama).join(', ') || '-';
+          if (petugasOps.length === 0) {
+            pdfRows.push({ petugasOps: '-', tanggal: item.tgl_komplain || '-', jenis: item.jenis_komplain || '-', detail: item.detail_komplain || '-', recovery: recoveryNames, hasil: item.hasil_recovery || '-' });
+          } else {
+            petugasOps.forEach(p => {
+              pdfRows.push({ petugasOps: p.nama, tanggal: item.tgl_komplain || '-', jenis: item.jenis_komplain || '-', detail: item.detail_komplain || '-', recovery: recoveryNames, hasil: item.hasil_recovery || '-' });
+            });
+          }
+        });
+
+        // Aggregate per petugas
+        const pMap = {};
+        pdfRows.forEach(r => {
+          if (!pMap[r.petugasOps]) pMap[r.petugasOps] = { count: 0, details: [] };
+          pMap[r.petugasOps].count++;
+          pMap[r.petugasOps].details.push(r);
+        });
+        const pSorted = Object.entries(pMap).sort((a, b) => b[1].count - a[1].count);
+
+        let rowNo = 1;
+        pSorted.forEach(([nama, group]) => {
+          group.details.forEach((d, idx) => {
+            tableRows.push([
+              idx === 0 ? String(rowNo) : '',
+              idx === 0 ? nama : '',
+              d.tanggal,
+              idx === 0 ? String(group.count) : '',
+              d.jenis + '\n' + (d.detail.length > 80 ? d.detail.substring(0, 80) + '...' : d.detail),
+              d.recovery,
+              d.hasil.length > 60 ? d.hasil.substring(0, 60) + '...' : d.hasil
+            ]);
+          });
+          rowNo++;
+        });
+
+        doc.autoTable({
+          head: [tableColumns],
+          body: tableRows,
+          startY: 70,
+          theme: 'grid',
+          styles: {
+            font: 'helvetica',
+            fontSize: 8,
+            cellPadding: 5,
+            textColor: [51, 65, 85],
+            lineColor: [226, 232, 240],
+            lineWidth: 0.5,
+            overflow: 'linebreak'
+          },
+          headStyles: {
+            fillColor: [15, 23, 42],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            halign: 'center',
+            fontSize: 8
+          },
+          alternateRowStyles: {
+            fillColor: [248, 250, 252]
+          },
+          columnStyles: {
+            0: { cellWidth: 30, halign: 'center' },
+            1: { cellWidth: 100 },
+            2: { cellWidth: 65, halign: 'center' },
+            3: { cellWidth: 30, halign: 'center', fontStyle: 'bold' },
+            4: { cellWidth: 'auto' },
+            5: { cellWidth: 90 },
+            6: { cellWidth: 'auto' }
+          },
+          didDrawPage: function(data) {
+            // Footer on each page
+            doc.setFontSize(8);
+            doc.setTextColor(148, 163, 184);
+            doc.text('Halaman ' + doc.internal.getNumberOfPages(), marginL, pageH - 20);
+            doc.text('TATA GLOBAL — Laporan Komplain', pageW - marginR, pageH - 20, { align: 'right' });
+          }
+        });
+
+        // Save
+        const labels = { 'bulan-ini': 'BulanIni', 'bulan-lalu': 'BulanLalu', 'range': 'Range' };
+        const suffix = labels[activePeriod] || 'All';
+        doc.save(`Laporan_Komplain_${suffix}_${formatDate(new Date())}.pdf`);
+        showToast('PDF berhasil diunduh!');
+      };
     </script>
     <script src="auth-guard.js"></script>
     <script type="module" src="cloud-auth-guard.js"></script>
