@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laporan Komplain - CRM TATA GLOBAL</title>
+    <meta name="description" content="Laporan Rekap, Grafik, dan Matrik Komplain Pelanggan TATA GLOBAL" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>tailwind.config={theme:{extend:{colors:{emerald:{600:'#059669',700:'#047857'},navy:{900:'#0f172a'}}}}}</script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      .fade-in { animation: fadeIn 0.4s ease-out; }
+      @keyframes countUp { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+      .count-up { animation: countUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+      /* Period tabs */
+      .period-tab {
+        padding: 8px 20px; border-radius: 9999px; font-size: 0.8rem; font-weight: 600;
+        cursor: pointer; transition: all 0.25s; border: 1.5px solid #e2e8f0;
+        background: white; color: #64748b; user-select: none;
+      }
+      .period-tab:hover { border-color: #a5b4fc; color: #4f46e5; background: #eef2ff; }
+      .period-tab.active { background: #4f46e5; color: white; border-color: #4f46e5; box-shadow: 0 4px 14px -3px rgba(79,70,229,0.4); }
+
+      /* Smooth chart canvas */
+      .chart-container { position: relative; width: 100%; max-height: 340px; }
+    </style>
+    <script src="auth-guard.js"></script>
+  </head>
+  <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-3">
+        <a href="dasbort_crm.html" class="p-2 rounded-lg bg-slate-100 hover:bg-indigo-100 text-slate-500 hover:text-indigo-600 transition-all" title="Kembali ke Dashboard CRM">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        </a>
+        <h2 class="text-xl font-bold text-slate-900 hidden md:block">Laporan Komplain</h2>
+        <span class="text-lg font-bold text-slate-900 md:hidden">Laporan</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="header-role-badge" class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Role: -</span>
+        <div id="header-user-avatar" class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">-</div>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
+      <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
+          <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
+        </div>
+        <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+
+      <div id="sidebar-menu-container" class="flex md:flex-col md:w-full w-max md:space-y-1">
+        <!-- Sidebar links populated by sidebar.js -->
+      </div>
+
+      <!-- User Info & Logout -->
+      <div class="hidden md:block md:mt-auto w-full">
+        <div class="px-6 py-3 border-t border-slate-800">
+          <p id="sidebar-user-name" class="text-sm font-semibold text-white sidebar-text">-</p>
+          <p id="sidebar-user-email" class="text-[11px] text-slate-500 sidebar-text">-</p>
+        </div>
+        <a href="#" onclick="AuthGuard.logout(); return false;" title="Keluar" class="flex items-center gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013-3v1"></path></svg>
+          <span class="sidebar-text">Keluar</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="p-4 md:p-8 max-w-screen-2xl mx-auto">
+
+      <!-- ===== FILTER PERIODE ===== -->
+      <div class="fade-in bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          Pilihan Periode
+        </h3>
+        <div class="flex flex-wrap items-center gap-3">
+          <button class="period-tab active" data-period="bulan-ini" id="tab-bulan-ini">Bulan Ini</button>
+          <button class="period-tab" data-period="bulan-lalu" id="tab-bulan-lalu">Bulan Lalu</button>
+          <button class="period-tab" data-period="range" id="tab-range">Range Tanggal</button>
+
+          <div id="range-inputs" class="hidden flex items-center gap-2 ml-2 flex-wrap">
+            <label class="text-xs font-semibold text-slate-500">Dari:</label>
+            <input type="date" id="range-dari" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-indigo-500">
+            <label class="text-xs font-semibold text-slate-500">Sampai:</label>
+            <input type="date" id="range-sampai" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-indigo-500">
+            <button id="btn-apply-range" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition-colors shadow-sm">Terapkan</button>
+          </div>
+        </div>
+        <p id="period-label" class="text-sm text-slate-400 mt-3"></p>
+      </div>
+
+      <!-- ===== REKAP JUMLAH KOMPLAIN ===== -->
+      <div class="fade-in grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <!-- Total Komplain -->
+        <div class="bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl p-6 text-white shadow-lg shadow-indigo-500/20 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10"></div>
+          <div class="absolute bottom-0 left-0 w-20 h-20 bg-white/5 rounded-full -ml-6 -mb-6"></div>
+          <div class="relative z-10">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              <span class="text-sm font-semibold text-indigo-200 uppercase tracking-wide">Total Komplain</span>
+            </div>
+            <div id="total-komplain" class="text-5xl font-black count-up">0</div>
+            <p class="text-indigo-200 text-xs mt-1" id="total-label">Periode: Bulan Ini</p>
+          </div>
+        </div>
+
+        <!-- Jenis Terbanyak -->
+        <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Jenis Terbanyak</span>
+          </div>
+          <div id="jenis-terbanyak" class="text-xl font-bold text-slate-800 mt-1">-</div>
+          <p id="jenis-terbanyak-count" class="text-sm text-slate-400 mt-1">0 komplain</p>
+        </div>
+
+        <!-- Petugas Paling Aktif Recovery -->
+        <div class="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+          <div class="flex items-center gap-2 mb-2">
+            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Top Recovery</span>
+          </div>
+          <div id="top-recovery" class="text-xl font-bold text-slate-800 mt-1">-</div>
+          <p id="top-recovery-count" class="text-sm text-slate-400 mt-1">0 recovery</p>
+        </div>
+      </div>
+
+      <!-- ===== GRAFIK JENIS KOMPLAIN ===== -->
+      <div class="fade-in bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
+        <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+          Grafik Jenis Komplain
+        </h3>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="chart-container">
+            <canvas id="chart-bar"></canvas>
+          </div>
+          <div class="chart-container flex items-center justify-center">
+            <canvas id="chart-donut"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== MATRIK KOMPLAIN (Keterlibatan Karyawan) ===== -->
+      <div class="fade-in bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+        <h3 class="text-lg font-bold text-slate-800 mb-1 flex items-center gap-2">
+          <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          Matrik Komplain
+        </h3>
+        <p class="text-xs text-slate-400 mb-4">Menampilkan seberapa banyak karyawan terlibat dalam terjadinya komplain atau melakukan recovery.</p>
+
+        <div class="overflow-x-auto rounded-lg border border-slate-200">
+          <table class="w-full text-left text-sm border-collapse min-w-[900px]">
+            <thead class="bg-slate-100 text-slate-600 text-[11px] uppercase">
+              <tr>
+                <th class="px-4 py-3 font-semibold border-b border-slate-200 w-12 text-center">No</th>
+                <th class="px-4 py-3 font-semibold border-b border-slate-200">Petugas Operasional</th>
+                <th class="px-4 py-3 font-semibold border-b border-slate-200">Tanggal</th>
+                <th class="px-4 py-3 font-semibold border-b border-slate-200 text-center">Jumlah Komplain</th>
+                <th class="px-4 py-3 font-semibold border-b border-slate-200">Detail Komplain</th>
+                <th class="px-4 py-3 font-semibold border-b border-slate-200">Petugas Recovery</th>
+                <th class="px-4 py-3 font-semibold border-b border-slate-200">Hasil Recovery</th>
+              </tr>
+            </thead>
+            <tbody id="matrik-tbody" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="7" class="px-4 py-8 text-center text-slate-400">Loading data komplain...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Toast Container -->
+      <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    </main>
+
+    <script type="module" src="data-layer.js"></script>
+    <script type="module">
+      import { supabase } from './supabaseClient.js';
+
+      // ===== Toast =====
+      window.showToast = function(msg, type='success') {
+        const container = document.getElementById('toast-container');
+        if(!container) return;
+        const toast = document.createElement('div');
+        const bg = type === 'error' ? 'bg-rose-500' : 'bg-emerald-600';
+        toast.className = `${bg} text-white px-4 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-y-[-20px] opacity-0 flex items-center justify-between min-w-[250px]`;
+        toast.innerHTML = `<span class="font-medium text-sm">${msg}</span><button class="ml-4 text-white hover:text-gray-200" onclick="this.parentElement.remove()">&times;</button>`;
+        container.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.remove('translate-y-[-20px]', 'opacity-0'));
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-[-20px]');
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      };
+
+      // ===== State =====
+      let allKomplainData = [];
+      let filteredData = [];
+      let activePeriod = 'bulan-ini';
+      let chartBar = null;
+      let chartDonut = null;
+
+      // ===== Chart Colors =====
+      const chartColors = [
+        '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316',
+        '#eab308', '#22c55e', '#14b8a6', '#06b6d4', '#3b82f6',
+        '#a855f7', '#d946ef', '#64748b', '#0ea5e9', '#10b981'
+      ];
+
+      // ===== Date Helpers =====
+      function getMonthRange(offset = 0) {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = now.getMonth() + offset;
+        const first = new Date(y, m, 1);
+        const last = new Date(y, m + 1, 0);
+        return {
+          from: formatDate(first),
+          to: formatDate(last),
+          label: first.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+        };
+      }
+
+      function formatDate(d) {
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      }
+
+      // ===== Period Tabs =====
+      function initPeriodTabs() {
+        const tabs = document.querySelectorAll('.period-tab');
+        const rangeInputs = document.getElementById('range-inputs');
+
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            activePeriod = tab.dataset.period;
+
+            if (activePeriod === 'range') {
+              rangeInputs.classList.remove('hidden');
+              rangeInputs.classList.add('flex');
+            } else {
+              rangeInputs.classList.add('hidden');
+              rangeInputs.classList.remove('flex');
+              applyFilter();
+            }
+          });
+        });
+
+        document.getElementById('btn-apply-range').addEventListener('click', () => {
+          applyFilter();
+        });
+      }
+
+      function applyFilter() {
+        let from, to, label;
+
+        if (activePeriod === 'bulan-ini') {
+          const r = getMonthRange(0);
+          from = r.from; to = r.to; label = r.label;
+        } else if (activePeriod === 'bulan-lalu') {
+          const r = getMonthRange(-1);
+          from = r.from; to = r.to; label = r.label;
+        } else {
+          from = document.getElementById('range-dari').value;
+          to = document.getElementById('range-sampai').value;
+          if (!from || !to) {
+            showToast('Silakan isi tanggal Dari dan Sampai.', 'error');
+            return;
+          }
+          label = `${from} s/d ${to}`;
+        }
+
+        filteredData = allKomplainData.filter(item => {
+          if (!item.tgl_komplain) return false;
+          return item.tgl_komplain >= from && item.tgl_komplain <= to;
+        });
+
+        document.getElementById('period-label').textContent = `Menampilkan data: ${label}`;
+        renderAll();
+      }
+
+      // ===== Render All =====
+      function renderAll() {
+        renderRekap();
+        renderCharts();
+        renderMatrik();
+      }
+
+      // ===== Rekap =====
+      function renderRekap() {
+        const total = filteredData.length;
+        document.getElementById('total-komplain').textContent = total;
+
+        // Label
+        const labels = { 'bulan-ini': 'Bulan Ini', 'bulan-lalu': 'Bulan Lalu', 'range': 'Range Tanggal' };
+        document.getElementById('total-label').textContent = `Periode: ${labels[activePeriod] || 'Bulan Ini'}`;
+
+        // Jenis terbanyak
+        const jenisCount = {};
+        filteredData.forEach(item => {
+          const j = item.jenis_komplain || 'Lainnya';
+          jenisCount[j] = (jenisCount[j] || 0) + 1;
+        });
+        const sortedJenis = Object.entries(jenisCount).sort((a, b) => b[1] - a[1]);
+        if (sortedJenis.length > 0) {
+          document.getElementById('jenis-terbanyak').textContent = sortedJenis[0][0];
+          document.getElementById('jenis-terbanyak-count').textContent = `${sortedJenis[0][1]} komplain`;
+        } else {
+          document.getElementById('jenis-terbanyak').textContent = '-';
+          document.getElementById('jenis-terbanyak-count').textContent = '0 komplain';
+        }
+
+        // Top recovery
+        const recCount = {};
+        filteredData.forEach(item => {
+          (item.petugas_recovery || []).forEach(p => {
+            recCount[p.nama] = (recCount[p.nama] || 0) + 1;
+          });
+        });
+        const sortedRec = Object.entries(recCount).sort((a, b) => b[1] - a[1]);
+        if (sortedRec.length > 0) {
+          document.getElementById('top-recovery').textContent = sortedRec[0][0];
+          document.getElementById('top-recovery-count').textContent = `${sortedRec[0][1]} recovery`;
+        } else {
+          document.getElementById('top-recovery').textContent = '-';
+          document.getElementById('top-recovery-count').textContent = '0 recovery';
+        }
+      }
+
+      // ===== Charts =====
+      function renderCharts() {
+        const jenisCount = {};
+        filteredData.forEach(item => {
+          const j = item.jenis_komplain || 'Lainnya';
+          jenisCount[j] = (jenisCount[j] || 0) + 1;
+        });
+
+        const labels = Object.keys(jenisCount);
+        const data = Object.values(jenisCount);
+        const colors = labels.map((_, i) => chartColors[i % chartColors.length]);
+
+        // Destroy old charts
+        if (chartBar) chartBar.destroy();
+        if (chartDonut) chartDonut.destroy();
+
+        // Bar Chart
+        const ctxBar = document.getElementById('chart-bar').getContext('2d');
+        chartBar = new Chart(ctxBar, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Jumlah',
+              data: data,
+              backgroundColor: colors.map(c => c + 'cc'),
+              borderColor: colors,
+              borderWidth: 1.5,
+              borderRadius: 8,
+              borderSkipped: false
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: '#1e293b',
+                titleFont: { family: 'Inter', size: 13, weight: '600' },
+                bodyFont: { family: 'Inter', size: 12 },
+                cornerRadius: 8,
+                padding: 12
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  stepSize: 1,
+                  font: { family: 'Inter', size: 11 },
+                  color: '#94a3b8'
+                },
+                grid: { color: '#f1f5f9' }
+              },
+              x: {
+                ticks: {
+                  font: { family: 'Inter', size: 10 },
+                  color: '#64748b',
+                  maxRotation: 45,
+                  minRotation: 25
+                },
+                grid: { display: false }
+              }
+            }
+          }
+        });
+
+        // Donut Chart
+        const ctxDonut = document.getElementById('chart-donut').getContext('2d');
+        chartDonut = new Chart(ctxDonut, {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: data,
+              backgroundColor: colors,
+              borderWidth: 2,
+              borderColor: '#ffffff',
+              hoverBorderWidth: 3,
+              hoverOffset: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '55%',
+            plugins: {
+              legend: {
+                position: 'bottom',
+                labels: {
+                  padding: 14,
+                  usePointStyle: true,
+                  pointStyleWidth: 10,
+                  font: { family: 'Inter', size: 11 },
+                  color: '#475569'
+                }
+              },
+              tooltip: {
+                backgroundColor: '#1e293b',
+                titleFont: { family: 'Inter', size: 13, weight: '600' },
+                bodyFont: { family: 'Inter', size: 12 },
+                cornerRadius: 8,
+                padding: 12,
+                callbacks: {
+                  label: function(ctx) {
+                    const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                    const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : 0;
+                    return ` ${ctx.label}: ${ctx.raw} (${pct}%)`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // ===== Matrik Komplain =====
+      function renderMatrik() {
+        const tbody = document.getElementById('matrik-tbody');
+
+        if (filteredData.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-400">Belum ada data komplain untuk periode ini.</td></tr>';
+          return;
+        }
+
+        // Flatten: satu baris per petugas operasional per komplain
+        const rows = [];
+        filteredData.forEach(item => {
+          const petugasOps = item.petugas_operasional || [];
+          const recoveryNames = (item.petugas_recovery || []).map(p => p.nama).join(', ') || '-';
+          
+          if (petugasOps.length === 0) {
+            // Jika tidak ada petugas operasional, tetap tampilkan
+            rows.push({
+              petugasOps: '-',
+              tanggal: item.tgl_komplain || '-',
+              jenisKomplain: item.jenis_komplain || '-',
+              detailKomplain: item.detail_komplain || '-',
+              petugasRecovery: recoveryNames,
+              hasilRecovery: item.hasil_recovery || '-'
+            });
+          } else {
+            petugasOps.forEach(p => {
+              rows.push({
+                petugasOps: p.nama,
+                tanggal: item.tgl_komplain || '-',
+                jenisKomplain: item.jenis_komplain || '-',
+                detailKomplain: item.detail_komplain || '-',
+                petugasRecovery: recoveryNames,
+                hasilRecovery: item.hasil_recovery || '-'
+              });
+            });
+          }
+        });
+
+        // Aggregate: hitung jumlah komplain per petugas operasional
+        const petugasMap = {};
+        rows.forEach(row => {
+          const key = row.petugasOps;
+          if (!petugasMap[key]) {
+            petugasMap[key] = {
+              petugasOps: key,
+              count: 0,
+              details: []
+            };
+          }
+          petugasMap[key].count++;
+          petugasMap[key].details.push(row);
+        });
+
+        // Sort by jumlah komplain (desc)
+        const sorted = Object.values(petugasMap).sort((a, b) => b.count - a.count);
+
+        let html = '';
+        let no = 1;
+        sorted.forEach(group => {
+          // Tampilkan setiap detail sebagai baris terpisah
+          group.details.forEach((detail, idx) => {
+            const isFirst = idx === 0;
+            const rowspan = group.details.length;
+            
+            html += `<tr class="hover:bg-slate-50 transition-colors">`;
+            
+            if (isFirst) {
+              html += `<td class="px-4 py-3 text-center font-bold text-slate-500 border-r border-slate-100" rowspan="${rowspan}">${no}</td>`;
+              html += `<td class="px-4 py-3 border-r border-slate-100" rowspan="${rowspan}">
+                <span class="font-bold text-slate-800">${group.petugasOps}</span>
+              </td>`;
+            }
+            
+            html += `<td class="px-4 py-3 whitespace-nowrap text-slate-700">${detail.tanggal}</td>`;
+            
+            if (isFirst) {
+              html += `<td class="px-4 py-3 text-center border-l border-r border-slate-100" rowspan="${rowspan}">
+                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${group.count >= 5 ? 'bg-rose-100 text-rose-700' : group.count >= 3 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}">${group.count}</span>
+              </td>`;
+            }
+
+            html += `<td class="px-4 py-3">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-indigo-100 text-indigo-800 mb-1">${detail.jenisKomplain}</span>
+              <div class="text-xs text-slate-500 mt-0.5 line-clamp-2">${detail.detailKomplain}</div>
+            </td>`;
+
+            html += `<td class="px-4 py-3 text-sm text-slate-700">${detail.petugasRecovery}</td>`;
+            html += `<td class="px-4 py-3 text-xs text-slate-600">${detail.hasilRecovery}</td>`;
+            html += `</tr>`;
+          });
+          no++;
+        });
+
+        tbody.innerHTML = html;
+      }
+
+      // ===== Init =====
+      async function initData() {
+        try {
+          // Fetch all komplain data from Supabase
+          if (supabase) {
+            const { data, error } = await supabase
+              .from('crm_komplain')
+              .select('*')
+              .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            allKomplainData = data || [];
+          }
+
+          initPeriodTabs();
+          applyFilter(); // Default: bulan ini
+        } catch (err) {
+          console.error("Gagal memuat data komplain:", err);
+          showToast("Gagal memuat data komplain. Silakan refresh halaman.", "error");
+          document.getElementById('matrik-tbody').innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-rose-500">Gagal memuat data.</td></tr>';
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', initData);
+    </script>
+    <script src="auth-guard.js"></script>
+    <script type="module" src="cloud-auth-guard.js"></script>
+    <script src="app.js"></script>
+    <script src="sidebar.js"></script>
+  </body>
+</html>

@@ -28,7 +28,8 @@ export default defineConfig({
         'dasbort-hrd': resolve(__dirname, 'dasbort_hrd.html'),
         'dasbort-crm': resolve(__dirname, 'dasbort_crm.html'),
         'komplain-pelanggan': resolve(__dirname, 'komplain_pelanggan.html'),
-        'stok-ayam': resolve(__dirname, 'stok_ayam.html')
+        'stok-ayam': resolve(__dirname, 'stok_ayam.html'),
+        'laporan-komplain': resolve(__dirname, 'laporan_komplain.html')
       }
     }
   }
