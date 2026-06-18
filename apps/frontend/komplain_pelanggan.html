@@ -731,17 +731,45 @@
         const doc = new jsPDF('l', 'pt', 'a4');
         
         const filterBulan = document.getElementById('filter-bulan')?.value || '';
-        let title = 'Data Komplain Pelanggan';
-        if (filterBulan) {
-            title += ` - Bulan ${filterBulan}`;
-        }
-        
-        doc.setFontSize(14);
-        doc.text(title, 40, 40);
-        
         const filteredData = filterBulan ? komplainData.filter(item => item.tgl_komplain && item.tgl_komplain.startsWith(filterBulan)) : komplainData;
         
-        const tableColumn = ["Tanggal", "Customer", "No Bon", "Jenis Komplain", "Detail", "Recovery", "Petugas Ops", "Petugas Rec"];
+        // --- Header Section ---
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(22);
+        doc.setTextColor(15, 23, 42); // slate-900
+        doc.text("TATA GLOBAL", 40, 50);
+        
+        doc.setFontSize(14);
+        doc.setTextColor(236, 72, 153); // pink-500
+        doc.text("Laporan Komplain Pelanggan", 40, 70);
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139); // slate-500
+        
+        // Period & Date Details
+        const periodText = filterBulan ? `Periode: Bulan ${filterBulan}` : 'Periode: Semua Waktu';
+        doc.text(periodText, 40, 90);
+        doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 40, 105);
+        doc.text(`Total Data: ${filteredData.length} Komplain`, 40, 120);
+
+        // Draw a line separator
+        doc.setDrawColor(226, 232, 240); // slate-200
+        doc.setLineWidth(1.5);
+        doc.line(40, 130, doc.internal.pageSize.width - 40, 130);
+        
+        // --- Table Section ---
+        const tableColumn = [
+          "Tanggal", 
+          "Customer", 
+          "No Bon", 
+          "Jenis Komplain", 
+          "Detail", 
+          "Recovery", 
+          "Petugas Ops", 
+          "Petugas Rec"
+        ];
+        
         const tableRows = [];
         
         filteredData.forEach(item => {
@@ -763,12 +791,45 @@
         doc.autoTable({
             head: [tableColumn],
             body: tableRows,
-            startY: 60,
-            styles: { fontSize: 8, cellPadding: 4 },
-            headStyles: { fillColor: [236, 72, 153] },
+            startY: 145,
+            theme: 'grid',
+            styles: { 
+              font: 'helvetica',
+              fontSize: 9, 
+              cellPadding: 6,
+              textColor: [51, 65, 85], // slate-700
+              lineColor: [226, 232, 240], // slate-200
+              lineWidth: 0.5
+            },
+            headStyles: { 
+              fillColor: [15, 23, 42], // navy-900 (Company theme)
+              textColor: [255, 255, 255],
+              fontStyle: 'bold',
+              halign: 'center'
+            },
+            alternateRowStyles: {
+              fillColor: [248, 250, 252] // slate-50
+            },
             columnStyles: {
-                4: { cellWidth: 150 },
-                5: { cellWidth: 150 }
+                0: { cellWidth: 70, halign: 'center' }, // Tanggal
+                1: { cellWidth: 100 }, // Customer
+                2: { cellWidth: 70, halign: 'center' }, // No Bon
+                3: { cellWidth: 90 }, // Jenis Komplain
+                4: { cellWidth: 'auto' }, // Detail
+                5: { cellWidth: 'auto' }, // Recovery
+                6: { cellWidth: 80 }, // Petugas Ops
+                7: { cellWidth: 80 }  // Petugas Rec
+            },
+            didDrawPage: function (data) {
+                // Footer section with Page Number
+                const str = "Halaman " + doc.internal.getNumberOfPages();
+                doc.setFontSize(8);
+                doc.setTextColor(148, 163, 184); // slate-400
+                doc.text(
+                    str, 
+                    data.settings.margin.left, 
+                    doc.internal.pageSize.height - 20
+                );
             }
         });
         
