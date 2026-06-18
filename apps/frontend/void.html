@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -23,7 +23,7 @@
         <h2 id="page-title" class="text-xl font-bold text-slate-900">Void / Pembatalan</h2>
       </div>
       <div class="flex items-center gap-4">
-        <span class="text-sm font-semibold text-rose-600 bg-rose-50 px-3 py-1 rounded-full hidden sm:block">⚠ Area Sensitif</span>
+        <span class="text-sm font-semibold text-rose-600 bg-rose-50 px-3 py-1 rounded-full hidden sm:block">âš  Area Sensitif</span>
         <div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-700 font-bold">V</div>
       </div>
     </header>
@@ -158,7 +158,7 @@
             <textarea id="void-reason" rows="3" placeholder="Tuliskan alasan pembatalan..." class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-100 transition-all resize-none"></textarea>
           </div>
           <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 font-semibold">
-            ⚠️ Tindakan ini tidak dapat dibatalkan. Data yang sudah di-VOID akan tercatat di histori audit dan tidak akan muncul lagi di menu BON maupun Pembayaran.
+            âš ï¸ Tindakan ini tidak dapat dibatalkan. Data yang sudah di-VOID akan tercatat di histori audit dan tidak akan muncul lagi di menu BON maupun Pembayaran.
           </div>
         </div>
         <div class="flex gap-3 p-6 pt-0">
@@ -256,7 +256,7 @@
                   <span class="text-lg font-black text-slate-900">${b.id}</span>
                   <span class="px-2 py-0.5 rounded text-[10px] uppercase font-black ${statusCls}">${statusTxt}</span>
                 </div>
-                <p class="text-sm text-slate-500"><strong>${b.konsumen}</strong> • ${b.tanggal}</p>
+                <p class="text-sm text-slate-500"><strong>${b.konsumen}</strong> â€¢ ${b.tanggal}</p>
               </div>
               <div class="text-right">
                 <p class="text-xs text-slate-400 font-bold">Total Tagihan</p>
@@ -270,11 +270,11 @@
             </div>
             ${hasPayments
               ? `<div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 font-semibold mb-3">
-                  ⚠️ BON ini memiliki ${hist.filter(h=>!h.isVoid).length} transaksi pembayaran aktif. Semua pembayaran akan otomatis di-VOID bersamaan jika Anda me-void BON ini.
+                  âš ï¸ BON ini memiliki ${hist.filter(h=>!h.isVoid).length} transaksi pembayaran aktif. Semua pembayaran akan otomatis di-VOID bersamaan jika Anda me-void BON ini.
                 </div>`
               : ''}
             <button class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl transition-colors shadow-lg text-sm uppercase tracking-wider btn-void-bon" data-idx="${b._idx}">
-              🗑️ VOID BON INI
+              ðŸ—‘ï¸ VOID BON INI
             </button>
           </div>`;
         }).join('');
@@ -292,7 +292,7 @@
               <p><strong>Konsumen:</strong> ${bon.konsumen}</p>
               <p><strong>Total Tagihan:</strong> ${formatRp(bon.total)}</p>`;
             if (activePay.length > 0) {
-              detail += `<div class="mt-2 pt-2 border-t border-slate-200 text-rose-700 font-bold">⚠ ${activePay.length} pembayaran aktif juga akan di-VOID otomatis</div>`;
+              detail += `<div class="mt-2 pt-2 border-t border-slate-200 text-rose-700 font-bold">âš  ${activePay.length} pembayaran aktif juga akan di-VOID otomatis</div>`;
             }
             document.getElementById('modal-detail').innerHTML = detail;
             document.getElementById('void-reason').value = '';
@@ -308,7 +308,7 @@
           const hist = (b.historiBayar || []).filter(h => !h.isVoid);
           if (hist.length === 0) {
             html += `<div class="border border-slate-200 rounded-xl p-5 mb-3 text-center text-slate-400 text-sm">
-              <strong>${b.id}</strong> — Tidak ada pembayaran aktif untuk di-void.
+              <strong>${b.id}</strong> â€” Tidak ada pembayaran aktif untuk di-void.
             </div>`;
             return;
           }
@@ -323,8 +323,8 @@
                 const origIdx = (b.historiBayar||[]).indexOf(h);
                 return `<div class="px-5 py-3 flex flex-wrap items-center justify-between gap-3 hover:bg-rose-50 transition-colors">
                   <div>
-                    <p class="text-sm font-semibold text-slate-800">${h.tanggal} • <span class="text-slate-500">${h.waktu||'-'}</span></p>
-                    <p class="text-xs text-slate-500">Kolektor: ${h.kolektor} • ${h.caraBayar}</p>
+                    <p class="text-sm font-semibold text-slate-800">${h.tanggal} â€¢ <span class="text-slate-500">${h.waktu||'-'}</span></p>
+                    <p class="text-xs text-slate-500">Kolektor: ${h.kolektor} â€¢ ${h.caraBayar}</p>
                     ${(h.totalPotongan||0) > 0 ? `<p class="text-xs text-rose-500 font-bold mt-1">Potongan: ${formatRp(h.totalPotongan)}</p>` : ''}
                   </div>
                   <div class="flex items-center gap-4">
@@ -390,7 +390,7 @@
           bon.status = 'VOID';
           // Audit Trail
           if(typeof ActivityLogger!=='undefined') {
-              await ActivityLogger.log({action:'VOID',entityType:'BON',entityId:bon.id,oldData:{total:bon.total,konsumen:bon.konsumen,status:'PIUTANG'},newData:{status:'VOID'},isCritical:true,message:'VOID BON '+bon.id+' — Alasan: '+reason});
+              await ActivityLogger.log({action:'VOID',entityType:'BON',entityId:bon.id,oldData:{total:bon.total,konsumen:bon.konsumen,status:'PIUTANG'},newData:{status:'VOID'},isCritical:true,message:'VOID BON '+bon.id+' â€” Alasan: '+reason});
           }
 
           if (window.DataLayer) await window.DataLayer.saveBon(bon);
@@ -403,7 +403,7 @@
           pay.voidReason = reason;
           // Audit Trail
           if(typeof ActivityLogger!=='undefined') {
-             await ActivityLogger.log({action:'VOID',entityType:'PEMBAYARAN',entityId:bon.id,oldData:{nominal:pay.nominal,kolektor:pay.kolektor,tanggal:pay.tanggal},newData:{status:'VOID'},isCritical:true,message:'VOID Pembayaran '+bon.id+' Rp '+(pay.nominal||0).toLocaleString('id-ID')+' — Alasan: '+reason});
+             await ActivityLogger.log({action:'VOID',entityType:'PEMBAYARAN',entityId:bon.id,oldData:{nominal:pay.nominal,kolektor:pay.kolektor,tanggal:pay.tanggal},newData:{status:'VOID'},isCritical:true,message:'VOID Pembayaran '+bon.id+' Rp '+(pay.nominal||0).toLocaleString('id-ID')+' â€” Alasan: '+reason});
           }
 
           // Auto-sync BON status
@@ -424,7 +424,7 @@
         modal.classList.add('hidden'); modal.classList.remove('flex');
         pendingVoid = null;
 
-        alert('✅ VOID berhasil. Data telah dibatalkan dan dicatat ke histori audit.');
+        alert('âœ… VOID berhasil. Data telah dibatalkan dan dicatat ke histori audit.');
         // Re-search to refresh results
         doSearch();
         renderVoidHistory();
@@ -476,7 +476,7 @@
           const tipeCls = l.entityType === 'BON' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-800';
           const nominal = l.oldData ? (l.oldData.total || l.oldData.nominal || 0) : 0;
           const konsumen = l.oldData ? l.oldData.konsumen : '-';
-          const alasan = l.message ? l.message.split(' — Alasan: ').pop() : '-';
+          const alasan = l.message ? l.message.split(' â€” Alasan: ').pop() : '-';
 
           return `<tr class="border-b border-slate-100 hover:bg-slate-50 text-xs">
             <td class="px-3 py-2 text-center font-medium">${i+1}</td>
@@ -501,6 +501,7 @@
     <script src="activity-logger.js"></script>
     <script type="module" src="cloud-auth-guard.js"></script>
     <script src="app.js"></script>
-    <script src="sidebar.js"></script>
+    <script src="sidebar.js?v=178179648003768"></script>
   </body>
 </html>
+

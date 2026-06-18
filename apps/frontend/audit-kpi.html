@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -103,7 +103,7 @@
             </select>
             <div id="custom-date-inputs" class="hidden flex items-center gap-2 bg-slate-50 p-1.5 rounded-xl border border-slate-200">
                <input type="date" id="start-date" class="bg-transparent border-none rounded-lg px-2 py-0.5 text-xs font-bold outline-none">
-               <span class="text-slate-300 font-black">—</span>
+               <span class="text-slate-300 font-black">â€”</span>
                <input type="date" id="end-date" class="bg-transparent border-none rounded-lg px-2 py-0.5 text-xs font-bold outline-none">
             </div>
             <button id="apply-filter" class="bg-slate-900 hover:bg-emerald-600 text-white px-5 py-2 rounded-xl text-xs font-bold transition-all shadow active:scale-95">PROSES</button>
@@ -111,13 +111,13 @@
          
          <div class="flex items-center gap-2">
             <button onclick="copyAuditText()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5">
-               <span id="copy-btn-txt">📋 Salin Teks</span>
+               <span id="copy-btn-txt">ðŸ“‹ Salin Teks</span>
             </button>
             <button id="btn-print" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5">
-               <span>🖨️</span> Cetak
+               <span>ðŸ–¨ï¸</span> Cetak
             </button>
             <button id="btn-export" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5">
-               <span>📊</span> Excel
+               <span>ðŸ“Š</span> Excel
             </button>
          </div>
       </div>
@@ -135,7 +135,7 @@
     <script type="module" src="cloud-auth-guard.js"></script>
     <script type="module" src="data-layer.js"></script>
     <script src="app.js"></script>
-    <script src="sidebar.js"></script>
+    <script src="sidebar.js?v=178179648003768"></script>
     
     <script>
       let globalBons = [];
@@ -713,9 +713,9 @@
             mktRFMSortedKeys.forEach(mName => {
                const item = mktRFMMap[mName];
                porsiRfmMarketingStr += `     ${mName}\n`;
-               porsiRfmMarketingStr += `      • Top Customer (Loyal) : ${item.top} orang\n`;
-               porsiRfmMarketingStr += `      • Middle Customer      : ${item.mid} orang\n`;
-               porsiRfmMarketingStr += `      • Low Customer         : ${item.low} orang\n`;
+               porsiRfmMarketingStr += `      â€¢ Top Customer (Loyal) : ${item.top} orang\n`;
+               porsiRfmMarketingStr += `      â€¢ Middle Customer      : ${item.mid} orang\n`;
+               porsiRfmMarketingStr += `      â€¢ Low Customer         : ${item.low} orang\n`;
             });
             porsiRfmMarketingStr = porsiRfmMarketingStr.trimEnd();
          }
@@ -795,16 +795,16 @@ ${rekapBonPiutangStr}
 - Jumlah Total Potongan (Rp) = ${formatRp(totalPotonganRp)} (${potonganRpPct}% dari Total Penjualan)
 - Jumlah Pelanggan Piutang = ${uniqueCustomersWithPiutang.size} pelanggan
 - Target Penjualan         = Dari ${totalPeriodDays} hari aktif:
-                             • Terpenuhi (>=10 Ton) : ${targetMetDays} hari
-                             • Tidak Terpenuhi      : ${targetUnmetDays} hari
+                             â€¢ Terpenuhi (>=10 Ton) : ${targetMetDays} hari
+                             â€¢ Tidak Terpenuhi      : ${targetUnmetDays} hari
 - Retensi Pelanggan (RFM)  = Kontribusi omzet masing-masing segmen pelanggan:
-                             • Top Customer (Loyal) : ${topPct}%
-                             • Middle Customer      : ${midPct}%
-                             • Low Customer         : ${lowPct}%
+                             â€¢ Top Customer (Loyal) : ${topPct}%
+                             â€¢ Middle Customer      : ${midPct}%
+                             â€¢ Low Customer         : ${lowPct}%
 - Pertumbuhan Pelanggan    = Selisih konsumen aktif bulan lalu vs bulan ini:
-                             • Bulan Ini            : ${thisMonthCount} pelanggan
-                             • Bulan Lalu           : ${lastMonthCount} pelanggan
-                             • Hasil Pertumbuhan    : ${growthSymbol}${growthVal} pelanggan (${growthSymbol}${growthPct}%)
+                             â€¢ Bulan Ini            : ${thisMonthCount} pelanggan
+                             â€¢ Bulan Lalu           : ${lastMonthCount} pelanggan
+                             â€¢ Hasil Pertumbuhan    : ${growthSymbol}${growthVal} pelanggan (${growthSymbol}${growthPct}%)
 - Pelanggan bulan lalu yg tidak belanja bulan ini (Churn):
 ${churnListStr}
 
@@ -835,9 +835,9 @@ Laporan dibuat otomatis oleh sistem Tata Global - Tanggal cetak: ${new Date().to
         const text = document.getElementById('audit-text-block').textContent;
         navigator.clipboard.writeText(text).then(() => {
           const btn = document.getElementById('copy-btn-txt');
-          btn.textContent = '✅ Berhasil Disalin!';
+          btn.textContent = 'âœ… Berhasil Disalin!';
           setTimeout(() => {
-            btn.textContent = '📋 Salin Teks';
+            btn.textContent = 'ðŸ“‹ Salin Teks';
           }, 2000);
         });
       }
@@ -901,3 +901,4 @@ Laporan dibuat otomatis oleh sistem Tata Global - Tanggal cetak: ${new Date().to
     </script>
   </body>
 </html>
+

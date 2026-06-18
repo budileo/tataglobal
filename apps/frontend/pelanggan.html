@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -120,12 +120,12 @@
 
         <!-- Tabs -->
         <div class="flex gap-0 border-b border-slate-200 overflow-x-auto">
-          <button data-tab="profil" class="detail-tab tab-active text-xs font-bold px-5 py-3 border-b-2 border-emerald-600 text-emerald-600 whitespace-nowrap transition-all">👤 Profil</button>
-          <button data-tab="bon" class="detail-tab text-xs font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 whitespace-nowrap hover:text-slate-600 transition-all">📄 Bon</button>
-          <button data-tab="pembayaran" class="detail-tab text-xs font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 whitespace-nowrap hover:text-slate-600 transition-all">💳 Pembayaran</button>
-          <button data-tab="piutang" class="detail-tab text-xs font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 whitespace-nowrap hover:text-slate-600 transition-all">⚠️ Piutang</button>
-          <button data-tab="transaksi" class="detail-tab text-xs font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 whitespace-nowrap hover:text-slate-600 transition-all">📊 Transaksi</button>
-          <button data-tab="tonase" class="detail-tab text-xs font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 whitespace-nowrap hover:text-slate-600 transition-all">⚖️ Tonase</button>
+          <button data-tab="profil" class="detail-tab tab-active text-xs font-bold px-5 py-3 border-b-2 border-emerald-600 text-emerald-600 whitespace-nowrap transition-all">ðŸ‘¤ Profil</button>
+          <button data-tab="bon" class="detail-tab text-xs font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 whitespace-nowrap hover:text-slate-600 transition-all">ðŸ“„ Bon</button>
+          <button data-tab="pembayaran" class="detail-tab text-xs font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 whitespace-nowrap hover:text-slate-600 transition-all">ðŸ’³ Pembayaran</button>
+          <button data-tab="piutang" class="detail-tab text-xs font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 whitespace-nowrap hover:text-slate-600 transition-all">âš ï¸ Piutang</button>
+          <button data-tab="transaksi" class="detail-tab text-xs font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 whitespace-nowrap hover:text-slate-600 transition-all">ðŸ“Š Transaksi</button>
+          <button data-tab="tonase" class="detail-tab text-xs font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 whitespace-nowrap hover:text-slate-600 transition-all">âš–ï¸ Tonase</button>
         </div>
 
         <!-- Tab Content Area -->
@@ -465,7 +465,7 @@
         });
         const tbody=document.getElementById('tab-piutang-body');
         let grandTotal=0;
-        if(!piutangList.length){tbody.innerHTML='<tr><td colspan="7" class="px-3 py-6 text-center text-slate-400 font-bold text-emerald-600">✅ Tidak ada piutang aktif</td></tr>';document.getElementById('piutang-grand-total').textContent='Rp 0';return;}
+        if(!piutangList.length){tbody.innerHTML='<tr><td colspan="7" class="px-3 py-6 text-center text-slate-400 font-bold text-emerald-600">âœ… Tidak ada piutang aktif</td></tr>';document.getElementById('piutang-grand-total').textContent='Rp 0';return;}
         tbody.innerHTML=piutangList.map((b,i)=>{
           const hist=(b.historiBayar||[]).filter(h=>!h.isVoid);
           const paid=hist.reduce((s,h)=>s+(h.nominal||0),0);
@@ -657,6 +657,7 @@
     <script src="auth-guard.js"></script>
     <script type="module" src="cloud-auth-guard.js"></script>
     <script src="app.js"></script>
-    <script src="sidebar.js"></script>
+    <script src="sidebar.js?v=178179648003768"></script>
   </body>
 </html>
+

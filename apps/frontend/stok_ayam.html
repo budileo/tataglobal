@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -202,7 +202,7 @@
                        <th class="px-4 py-3 border-r border-slate-100 text-center">Waktu</th>
                        <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor</th>
                        <th class="px-4 py-3 border-r border-slate-100 text-right">Total Kg</th>
-                       <th class="px-4 py-3 border-r border-slate-100 text-right">Rata²</th>
+                       <th class="px-4 py-3 border-r border-slate-100 text-right">RataÂ²</th>
                        <th class="px-4 py-3 border-r border-slate-100 text-center">Ukuran</th>
                        <th class="px-4 py-3 border-r border-slate-100">Pelapor</th>
                        <th class="px-4 py-3 text-center">Aksi</th>
@@ -237,7 +237,7 @@
                          <th class="px-4 py-3 border-r border-slate-100 text-center">Penjualan</th>
                          <th class="px-4 py-3 border-r border-slate-100 text-right">Ekor Akhir</th>
                          <th class="px-4 py-3 border-r border-slate-100 text-right">Kg Akhir</th>
-                         <th class="px-4 py-3 text-right">Rata²</th>
+                         <th class="px-4 py-3 text-right">RataÂ²</th>
                     </tr>
                  </thead>
                  <tbody id="table-rekap" class="divide-y divide-slate-100"></tbody>
@@ -288,7 +288,7 @@
                  <div class="p-2 bg-teal-50 rounded-lg text-teal-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
                  </div>
-                 <h3 class="font-bold text-slate-800">Jurnal Kandang — Transaksi per Kandang</h3>
+                 <h3 class="font-bold text-slate-800">Jurnal Kandang â€” Transaksi per Kandang</h3>
               </div>
               <div class="flex items-center gap-2 w-full md:w-auto">
                  <button onclick="downloadJurnalPDF()" class="bg-teal-600 text-white px-4 py-1.5 rounded text-sm font-medium hover:bg-teal-700 shrink-0 shadow-lg shadow-teal-600/20 flex items-center gap-2">
@@ -1755,7 +1755,7 @@
 <div class="header">
   <h1>JURNAL KANDANG</h1>
   <p>Periode: ${fmtDate(filterStartDate)} s/d ${fmtDate(filterEndDate)}</p>
-  <div class="sub">TATA GLOBAL — Transaksi per Kandang</div>
+  <div class="sub">TATA GLOBAL â€” Transaksi per Kandang</div>
 </div>
 <table>
   <thead>
@@ -1969,6 +1969,7 @@
     <script src="auth-guard.js"></script>
     <script type="module" src="cloud-auth-guard.js"></script>
     <script src="app.js"></script>
-    <script src="sidebar.js"></script>
+    <script src="sidebar.js?v=178179648003768"></script>
   </body>
 </html>
+
