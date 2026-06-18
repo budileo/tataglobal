@@ -613,6 +613,7 @@
        </div>
     </div>
 
+    <script src="activity-logger.js"></script>
     <script type="module" src="data-layer.js"></script>
     <script>
        // State
@@ -876,6 +877,18 @@
             
             if(window.DataLayer && window.DataLayer.saveStokAyam) {
                 await window.DataLayer.saveStokAyam(payload, false);
+                
+                if (typeof ActivityLogger !== 'undefined') {
+                    await ActivityLogger.log({
+                        action: 'CREATE',
+                        entityType: 'STOK_AYAM',
+                        entityId: payload.id,
+                        newData: payload,
+                        message: `Menambah laporan ${document.getElementById('mati-jenis-laporan').value}`,
+                        userName: (typeof AuthGuard !== 'undefined' && AuthGuard.getUser) ? (AuthGuard.getUser()?.nama || AuthGuard.getUser()?.username) : 'System'
+                    });
+                }
+                
                 fetchData();
                 renderData();
             }
@@ -1846,6 +1859,18 @@
             
             if(window.DataLayer && window.DataLayer.saveStokAyam) {
                 await window.DataLayer.saveStokAyam(payload, false);
+                
+                if (typeof ActivityLogger !== 'undefined') {
+                    await ActivityLogger.log({
+                        action: 'CREATE',
+                        entityType: 'STOK_AYAM',
+                        entityId: payload.id,
+                        newData: payload,
+                        message: 'Menambah data DO Masuk Stok Ayam',
+                        userName: (typeof AuthGuard !== 'undefined' && AuthGuard.getUser) ? (AuthGuard.getUser()?.nama || AuthGuard.getUser()?.username) : 'System'
+                    });
+                }
+                
                 fetchData();
                 renderData();
             }
@@ -1895,6 +1920,18 @@
            
            if(window.DataLayer && window.DataLayer.saveStokAyam) {
                await window.DataLayer.saveStokAyam(payload, false);
+               
+               if (typeof ActivityLogger !== 'undefined') {
+                   await ActivityLogger.log({
+                       action: 'CREATE',
+                       entityType: 'STOK_AYAM',
+                       entityId: payload.id,
+                       newData: payload,
+                       message: 'Menambah data Stok Kemarin',
+                       userName: (typeof AuthGuard !== 'undefined' && AuthGuard.getUser) ? (AuthGuard.getUser()?.nama || AuthGuard.getUser()?.username) : 'System'
+                   });
+               }
+               
                fetchData();
                renderData();
            }
@@ -1904,8 +1941,24 @@
        window.deleteData = async function(id) {
            if(!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
            if(typeof AuthGuard !== 'undefined' && !(await AuthGuard.consumeToken('delete', 'Hapus Data Stok'))) return;
+           
+           let oldData = null;
+           if(dbStok) oldData = (dbStok instanceof Promise ? [] : dbStok).find(d => d.id === id);
+
            if(window.DataLayer && window.DataLayer.saveStokAyam) {
                await window.DataLayer.saveStokAyam({id: id}, true);
+               
+               if (typeof ActivityLogger !== 'undefined') {
+                   await ActivityLogger.log({
+                       action: 'DELETE',
+                       entityType: 'STOK_AYAM',
+                       entityId: id,
+                       oldData: oldData,
+                       message: 'Menghapus data Stok Ayam',
+                       userName: (typeof AuthGuard !== 'undefined' && AuthGuard.getUser) ? (AuthGuard.getUser()?.nama || AuthGuard.getUser()?.username) : 'System'
+                   });
+               }
+               
                fetchData();
                renderData();
            }
