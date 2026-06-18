@@ -664,8 +664,8 @@
             if (data && data.length > 0) savedData = data[0];
           }
           
-          if (window.ActivityLogger && savedData) {
-            await window.ActivityLogger.log({
+          if (typeof ActivityLogger !== 'undefined' && savedData) {
+            await ActivityLogger.log({
               action: actionName,
               entityType: 'KOMPLAIN',
               entityId: savedData.id,
@@ -721,8 +721,8 @@
               
             if(error) throw error;
             
-            if (window.ActivityLogger && oldData) {
-              await window.ActivityLogger.log({
+            if (typeof ActivityLogger !== 'undefined' && oldData) {
+              await ActivityLogger.log({
                 action: 'DELETE',
                 entityType: 'KOMPLAIN',
                 entityId: id,
