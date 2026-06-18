@@ -7,6 +7,8 @@
     <meta name="description" content="Manajemen Komplain Pelanggan TATA GLOBAL" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script>tailwind.config={theme:{extend:{colors:{emerald:{600:'#059669',700:'#047857'},navy:{900:'#0f172a'}}}}}</script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -237,7 +239,16 @@
       </div>
 
       <div class="fade-in bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-        <h3 class="text-md font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">Data Riwayat Komplain</h3>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4 border-b border-slate-100 pb-2">
+          <h3 class="text-md font-bold text-slate-800">Data Riwayat Komplain</h3>
+          <div class="flex items-center gap-2">
+            <input type="month" id="filter-bulan" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-pink-500" title="Filter Bulan">
+            <button type="button" onclick="downloadPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors text-sm flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              Download PDF
+            </button>
+          </div>
+        </div>
         <div class="overflow-x-auto rounded-lg border border-slate-200">
           <table class="w-full text-left text-sm border-collapse min-w-[1000px]">
              <thead class="bg-slate-100 text-slate-600 text-[11px] uppercase">
@@ -506,6 +517,7 @@
 
           // Load dropdown data
           const pelangganList = window.DataLayer.getMaster('konsumen') || [];
+          pelangganList.sort((a, b) => a.nama.localeCompare(b.nama));
           const selPelanggan = document.getElementById('nama_customer');
           selPelanggan.innerHTML = '<option value="">-- Pilih Customer --</option>' + 
             pelangganList.map(p => `<option value="${p.nama}">${p.nama}</option>`).join('');
@@ -515,6 +527,14 @@
           initMultiSelect('ms-petugas-recovery', karyawanList, true); // User first
 
           document.getElementById('tgl_komplain').value = getLocalDateString();
+
+          const d = new Date();
+          const currentMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+          const filterBulan = document.getElementById('filter-bulan');
+          if (filterBulan) {
+            filterBulan.value = currentMonth;
+            filterBulan.addEventListener('change', renderKomplainTable);
+          }
 
           await loadKomplainData();
         } catch (err) {
@@ -548,13 +568,20 @@
 
       function renderKomplainTable() {
         const tbody = document.getElementById('riwayat-komplain');
-        if (komplainData.length === 0) {
+        
+        const filterBulan = document.getElementById('filter-bulan')?.value;
+        let filteredData = komplainData;
+        if (filterBulan) {
+           filteredData = komplainData.filter(item => item.tgl_komplain && item.tgl_komplain.startsWith(filterBulan));
+        }
+
+        if (filteredData.length === 0) {
           tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">Belum ada data komplain.</td></tr>';
           return;
         }
 
         let html = '';
-        komplainData.forEach(item => {
+        filteredData.forEach(item => {
           const operasionalNames = (item.petugas_operasional || []).map(p => p.nama).join(', ');
           const recoveryNames = (item.petugas_recovery || []).map(p => p.nama).join(', ');
           
@@ -692,6 +719,60 @@
 
         document.getElementById('btn-save-komplain').innerText = 'Simpan Komplain';
         document.getElementById('btn-cancel-komplain').classList.add('hidden');
+      }
+
+      window.downloadPDF = function() {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            showToast('Library PDF belum dimuat. Silakan tunggu sebentar.', 'error');
+            return;
+        }
+        
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'pt', 'a4');
+        
+        const filterBulan = document.getElementById('filter-bulan')?.value || '';
+        let title = 'Data Komplain Pelanggan';
+        if (filterBulan) {
+            title += ` - Bulan ${filterBulan}`;
+        }
+        
+        doc.setFontSize(14);
+        doc.text(title, 40, 40);
+        
+        const filteredData = filterBulan ? komplainData.filter(item => item.tgl_komplain && item.tgl_komplain.startsWith(filterBulan)) : komplainData;
+        
+        const tableColumn = ["Tanggal", "Customer", "No Bon", "Jenis Komplain", "Detail", "Recovery", "Petugas Ops", "Petugas Rec"];
+        const tableRows = [];
+        
+        filteredData.forEach(item => {
+            const opsNames = (item.petugas_operasional || []).map(p => p.nama).join(', ');
+            const recNames = (item.petugas_recovery || []).map(p => p.nama).join(', ');
+            const rowData = [
+                item.tgl_komplain || '-',
+                item.nama_customer || '-',
+                item.no_bon || '-',
+                item.jenis_komplain || '-',
+                item.detail_komplain || '-',
+                item.hasil_recovery || '-',
+                opsNames || '-',
+                recNames || '-'
+            ];
+            tableRows.push(rowData);
+        });
+        
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 60,
+            styles: { fontSize: 8, cellPadding: 4 },
+            headStyles: { fillColor: [236, 72, 153] },
+            columnStyles: {
+                4: { cellWidth: 150 },
+                5: { cellWidth: 150 }
+            }
+        });
+        
+        doc.save(`Komplain_Pelanggan_${filterBulan || 'All'}.pdf`);
       }
 
       // Initialize
