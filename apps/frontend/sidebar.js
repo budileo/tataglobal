@@ -94,7 +94,7 @@
 
   const crmMenu = [
     { title: 'Menu Utama', href: 'dasbort_menu.html', icon: 'Menu Utama' },
-    { title: 'Dashboard', href: 'laporan_komplain.html', icon: 'Laporan' },
+    { title: 'Dashboard', href: 'laporan_komplain.html', icon: 'Dashboard' },
     { title: 'Komplain', href: 'komplain_pelanggan.html', icon: 'Komplain' }
   ];
 
@@ -121,7 +121,12 @@
       // Pengecekan status aktif secara fleksibel (keduanya dinormalisasi tanda hubungnya)
       const pathPart = normalizedPath;
       const hrefPart = item.href.replace(/-/g, '_').toLowerCase();
-      const isActive = pathPart === hrefPart || pathPart + '.html' === hrefPart || hrefPart + '.html' === pathPart;
+      let isActive = pathPart === hrefPart || pathPart + '.html' === hrefPart || hrefPart + '.html' === pathPart;
+      
+      // Jika di dasbort_crm.html, highlight menu Dashboard (laporan_komplain.html)
+      if ((pathPart === 'dasbort_crm.html' || pathPart === 'dasbort_crm') && (hrefPart === 'laporan_komplain.html' || hrefPart === 'laporan_komplain')) {
+        isActive = true;
+      }
       
       let cssClass = '';
       if (item.title === 'Menu Utama') {
