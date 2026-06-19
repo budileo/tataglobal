@@ -30,7 +30,10 @@ export default defineConfig({
         'komplain-pelanggan': resolve(__dirname, 'komplain_pelanggan.html'),
         'stok-ayam': resolve(__dirname, 'stok_ayam.html'),
         'laporan-komplain': resolve(__dirname, 'laporan_komplain.html'),
-        'rekruitmen': resolve(__dirname, 'rekruitmen.html')
+        'rekruitmen': resolve(__dirname, 'rekruitmen.html'),
+        'lowongan': resolve(__dirname, 'lowongan.html'),
+        'pelamar': resolve(__dirname, 'pelamar.html'),
+        'form-lamaran': resolve(__dirname, 'form_lamaran.html')
       }
     }
   }

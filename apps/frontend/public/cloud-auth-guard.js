@@ -10,7 +10,7 @@ import { supabase } from './supabaseClient.js';
   const paths = window.location.pathname.split('/').filter(Boolean);
   const rawPage = paths[paths.length - 1] || '';
   const page = rawPage.replace(/-/g, '_').toLowerCase();
-  if (['index.html', 'index', 'join.html', 'join', ''].includes(page)) return;
+  if (['index.html', 'index', 'join.html', 'join', 'form_lamaran.html', 'form_lamaran', ''].includes(page)) return;
 
   try {
     const { data: { session } } = await supabase.auth.getSession();

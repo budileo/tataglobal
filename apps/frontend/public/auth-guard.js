@@ -171,7 +171,7 @@ const AuthGuard = (function() {
     const paths = window.location.pathname.split('/').filter(Boolean);
     const rawPage = paths[paths.length - 1] || '';
     const page = rawPage.replace(/-/g, '_').toLowerCase();
-    const publicPages = ['index.html', 'index', 'join.html', 'join', 'dasbort_menu.html', 'dasbort_menu', ''];
+    const publicPages = ['index.html', 'index', 'join.html', 'join', 'dasbort_menu.html', 'dasbort_menu', 'form_lamaran.html', 'form_lamaran', ''];
     if (publicPages.includes(page)) return true;
     if (!user) { window.location.href = 'index.html'; return false; }
     if (user.status !== 'active') { window.location.href = 'index.html'; return false; }

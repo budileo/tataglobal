@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manajemen Lowongan - TATA GLOBAL</title>
+    <meta name="description" content="Manajemen Lowongan Kerja TATA GLOBAL" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={theme:{extend:{colors:{emerald:{600:'#059669',700:'#047857'},navy:{900:'#0f172a'}}}}}</script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+      .fade-in { animation: fadeIn 0.4s ease-out; }
+    </style>
+    <script src="auth-guard.js"></script>
+  </head>
+  <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-3">
+        <a href="rekruitmen.html" class="p-2 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-500 hover:text-emerald-600 transition-all" title="Kembali ke Rekruitmen">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        </a>
+        <h2 class="text-xl font-bold text-slate-900 hidden md:block">Box Lowongan</h2>
+        <span class="text-lg font-bold text-slate-900 md:hidden">Lowongan</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="header-role-badge" class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Role: -</span>
+        <div id="header-user-avatar" class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">-</div>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
+      <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
+          <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
+        </div>
+        <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+
+      <div id="sidebar-menu-container" class="flex md:flex-col md:w-full w-max md:space-y-1">
+        <!-- Menu di-generate oleh sidebar.js -->
+      </div>
+
+      <!-- User Info & Logout -->
+      <div class="hidden md:block md:mt-auto w-full">
+        <div class="px-6 py-3 border-t border-slate-800">
+          <p id="sidebar-user-name" class="text-sm font-semibold text-white sidebar-text">-</p>
+          <p id="sidebar-user-email" class="text-[11px] text-slate-500 sidebar-text">-</p>
+        </div>
+        <a href="#" onclick="AuthGuard.logout(); return false;" title="Keluar" class="flex items-center gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013-3v1"></path></svg>
+          <span class="sidebar-text">Keluar</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="p-4 md:p-8 max-w-screen-2xl mx-auto fade-in">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Form Buat Lowongan Baru -->
+        <div class="lg:col-span-1">
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm sticky top-24">
+            <h3 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+              <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+              Buat Lowongan Baru
+            </h3>
+            <form id="form-lowongan" class="space-y-4">
+              <input type="hidden" id="lowongan-id" />
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1" for="nama-lowongan">Nama Lowongan</label>
+                <input type="text" id="nama-lowongan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-emerald-500 focus:bg-white transition-all" placeholder="Contoh: Staff HRD, Operator Kandang" required />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1" for="posisi-lowongan">Posisi Lowongan</label>
+                <input type="text" id="posisi-lowongan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-emerald-500 focus:bg-white transition-all" placeholder="Contoh: HR Officer, Farm Worker" required />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1" for="tanggal-buka">Tanggal Buka</label>
+                <input type="date" id="tanggal-buka" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-emerald-500 focus:bg-white transition-all" required />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1" for="deskripsi-lowongan">Deskripsi Pekerjaan</label>
+                <textarea id="deskripsi-lowongan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-emerald-500 focus:bg-white transition-all h-32 resize-none" placeholder="Tuliskan detail pekerjaan dan kualifikasi yang dicari..." required></textarea>
+              </div>
+              <div class="pt-2 flex gap-3">
+                <button type="submit" id="btn-submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg shadow-emerald-600/20 transition-all duration-300">
+                  Simpan Lowongan
+                </button>
+                <button type="button" id="btn-cancel" class="hidden bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-4 rounded-xl transition-all duration-300">
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Tabel / Daftar Lowongan Aktif -->
+        <div class="lg:col-span-2">
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center justify-between">
+              <span>Daftar Lowongan Aktif</span>
+              <span id="lowongan-count" class="text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">0 Lowongan</span>
+            </h3>
+            
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+              <table class="w-full text-left text-sm border-collapse min-w-[600px]">
+                <thead class="bg-slate-50 text-slate-600 text-[11px] uppercase tracking-wider">
+                  <tr>
+                    <th class="px-5 py-3.5 font-semibold">Nama & Posisi</th>
+                    <th class="px-5 py-3.5 font-semibold">Tanggal Buka</th>
+                    <th class="px-5 py-3.5 font-semibold">Deskripsi</th>
+                    <th class="px-5 py-3.5 font-semibold text-center w-48">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="lowongan-tbody" class="divide-y divide-slate-100 text-slate-700 bg-white">
+                  <tr>
+                    <td colspan="4" class="px-5 py-8 text-center text-slate-400">Memuat data lowongan...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="delete-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+      <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl transform scale-95 transition-all duration-300">
+        <div class="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 mb-4">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </div>
+        <h4 class="text-lg font-bold text-slate-900 mb-2">Hapus Lowongan?</h4>
+        <p class="text-sm text-slate-500 mb-6 leading-relaxed">Apakah Anda yakin ingin menghapus lowongan ini? Semua data pendaftar yang melamar pada posisi ini juga akan dihapus secara permanen.</p>
+        <div class="flex gap-3">
+          <button id="confirm-delete-btn" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-xl transition-all duration-300">Hapus</button>
+          <button id="cancel-delete-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl transition-all duration-300">Batal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="auth-guard.js"></script>
+    <script type="module" src="cloud-auth-guard.js"></script>
+    <script src="app.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="toast.js"></script>
+
+    <script type="module">
+      import { supabase } from './supabaseClient.js';
+
+      let activeLowonganList = [];
+      let pendingDeleteId = null;
+
+      // Set input tanggal buka ke hari ini secara default
+      const inputTanggalBuka = document.getElementById('tanggal-buka');
+      const today = new Date().toISOString().split('T')[0];
+      inputTanggalBuka.value = today;
+
+      // Load Lowongan from Database
+      async function loadLowongan() {
+        try {
+          const { data, error } = await supabase
+            .from('hrd_lowongan')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (error) throw error;
+
+          activeLowonganList = data || [];
+          renderLowonganTable();
+        } catch (e) {
+          console.error(e);
+          showToast('Gagal memuat lowongan: ' + e.message, 'error');
+        }
+      }
+
+      // Render Lowongan Table
+      function renderLowonganTable() {
+        const tbody = document.getElementById('lowongan-tbody');
+        const countBadge = document.getElementById('lowongan-count');
+        
+        countBadge.textContent = `${activeLowonganList.length} Lowongan`;
+
+        if (activeLowonganList.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="4" class="px-5 py-12 text-center text-slate-400 bg-white">
+                <div class="flex flex-col items-center justify-center gap-2">
+                  <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0V9a2 2 0 00-2-2H6a2 2 0 00-2 2v2m16 4h-3.88l-.512-2H8.392l-.512 2H4"></path></svg>
+                  <span>Belum ada lowongan pekerjaan aktif.</span>
+                </div>
+              </td>
+            </tr>`;
+          return;
+        }
+
+        tbody.innerHTML = activeLowonganList.map(item => {
+          // Buat deskripsi lebih ringkas di tabel
+          const shortDesc = item.deskripsi.length > 80 
+            ? item.deskripsi.substring(0, 80) + '...' 
+            : item.deskripsi;
+
+          return `
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-5 py-4">
+                <div class="font-bold text-slate-800">${escapeHTML(item.nama_lowongan)}</div>
+                <div class="text-xs text-slate-500">${escapeHTML(item.posisi_lowongan)}</div>
+              </td>
+              <td class="px-5 py-4 text-xs font-semibold text-slate-500 whitespace-nowrap">
+                ${formatTanggal(item.tanggal_buka)}
+              </td>
+              <td class="px-5 py-4 text-xs text-slate-600 max-w-xs break-words">
+                ${escapeHTML(shortDesc)}
+              </td>
+              <td class="px-5 py-4 text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <button onclick="copyShareLink('${item.id}')" class="bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1" title="Bagikan Link Pendaftaran">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8.684 10.742l4.636-2.318m0 7.152l-4.636-2.318M21 12a3 3 0 11-6 0 3 3 0 016 0zm-6-8a3 3 0 11-6 0 3 3 0 016 0zm-6 16a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Link
+                  </button>
+                  <button onclick="editLowongan('${item.id}')" class="bg-amber-50 hover:bg-amber-500 text-amber-600 hover:text-white px-2 py-1.5 rounded-lg text-xs font-bold transition-all" title="Edit Lowongan">
+                    Edit
+                  </button>
+                  <button onclick="openDeleteModal('${item.id}')" class="bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white px-2 py-1.5 rounded-lg text-xs font-bold transition-all" title="Hapus Lowongan">
+                    Hapus
+                  </button>
+                </div>
+              </td>
+            </tr>`;
+        }).join('');
+      }
+
+      // Escape HTML to prevent XSS
+      function escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/[&<>'"]/g, 
+          tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+        );
+      }
+
+      // Format date to local Indonesian display
+      function formatTanggal(dateStr) {
+        if (!dateStr) return '-';
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+          return `${parseInt(parts[2])} ${months[parseInt(parts[1]) - 1]} ${parts[0]}`;
+        }
+        return dateStr;
+      }
+
+      // Submit Form Handler (Insert / Update)
+      document.getElementById('form-lowongan').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const id = document.getElementById('lowongan-id').value;
+        const nama = document.getElementById('nama-lowongan').value.trim();
+        const posisi = document.getElementById('posisi-lowongan').value.trim();
+        const tglBuka = document.getElementById('tanggal-buka').value;
+        const deskripsi = document.getElementById('deskripsi-lowongan').value.trim();
+
+        if (!nama || !posisi || !tglBuka || !deskripsi) {
+          showToast('Harap lengkapi semua bidang!', 'warning');
+          return;
+        }
+
+        const user = AuthGuard.getCurrentUser();
+        const userId = user ? user.id : null;
+
+        const payload = {
+          nama_lowongan: nama,
+          posisi_lowongan: posisi,
+          tanggal_buka: tglBuka,
+          deskripsi: deskripsi,
+          user_id: userId
+        };
+
+        try {
+          let error = null;
+          if (id) {
+            // Update
+            const res = await supabase
+              .from('hrd_lowongan')
+              .update(payload)
+              .eq('id', id);
+            error = res.error;
+          } else {
+            // Insert
+            const res = await supabase
+              .from('hrd_lowongan')
+              .insert([payload]);
+            error = res.error;
+          }
+
+          if (error) throw error;
+
+          showToast(id ? 'Lowongan berhasil diperbarui!' : 'Lowongan baru berhasil ditambahkan!', 'success');
+          resetForm();
+          await loadLowongan();
+        } catch (err) {
+          console.error(err);
+          showToast('Gagal menyimpan data: ' + err.message, 'error');
+        }
+      });
+
+      // Edit Lowongan
+      window.editLowongan = function(id) {
+        const item = activeLowonganList.find(x => x.id === id);
+        if (!item) return;
+
+        document.getElementById('lowongan-id').value = item.id;
+        document.getElementById('nama-lowongan').value = item.nama_lowongan;
+        document.getElementById('posisi-lowongan').value = item.posisi_lowongan;
+        document.getElementById('tanggal-buka').value = item.tanggal_buka;
+        document.getElementById('deskripsi-lowongan').value = item.deskripsi;
+
+        const submitBtn = document.getElementById('btn-submit');
+        submitBtn.textContent = 'Perbarui Lowongan';
+        submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+        submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+
+        document.getElementById('btn-cancel').classList.remove('hidden');
+        document.getElementById('nama-lowongan').focus();
+      };
+
+      // Reset Form
+      function resetForm() {
+        document.getElementById('lowongan-id').value = '';
+        document.getElementById('nama-lowongan').value = '';
+        document.getElementById('posisi-lowongan').value = '';
+        document.getElementById('tanggal-buka').value = today;
+        document.getElementById('deskripsi-lowongan').value = '';
+
+        const submitBtn = document.getElementById('btn-submit');
+        submitBtn.textContent = 'Simpan Lowongan';
+        submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+
+        document.getElementById('btn-cancel').classList.add('hidden');
+      }
+
+      document.getElementById('btn-cancel').addEventListener('click', resetForm);
+
+      // Copy Shareable Application Link
+      window.copyShareLink = function(id) {
+        // Tautan dibagikan mengarah ke form_lamaran.html
+        const shareLink = `${window.location.origin}/form_lamaran.html?id=${id}`;
+        
+        navigator.clipboard.writeText(shareLink).then(() => {
+          showToast('Tautan lamaran disalin ke clipboard!', 'success');
+        }).catch(err => {
+          console.error(err);
+          // Fallback input copy
+          const tempInput = document.createElement('input');
+          tempInput.value = shareLink;
+          document.body.appendChild(tempInput);
+          tempInput.select();
+          document.execCommand('copy');
+          document.body.removeChild(tempInput);
+          showToast('Tautan lamaran disalin ke clipboard (fallback)!', 'success');
+        });
+      };
+
+      // Modal Delete Handlers
+      const modal = document.getElementById('delete-modal');
+      const innerModal = modal.querySelector('div');
+
+      window.openDeleteModal = function(id) {
+        pendingDeleteId = id;
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        innerModal.classList.remove('scale-95');
+        innerModal.classList.add('scale-100');
+      };
+
+      function closeDeleteModal() {
+        pendingDeleteId = null;
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        innerModal.classList.remove('scale-100');
+        innerModal.classList.add('scale-95');
+      }
+
+      document.getElementById('cancel-delete-btn').addEventListener('click', closeDeleteModal);
+      
+      document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+        if (!pendingDeleteId) return;
+
+        try {
+          const { error } = await supabase
+            .from('hrd_lowongan')
+            .delete()
+            .eq('id', pendingDeleteId);
+
+          if (error) throw error;
+
+          showToast('Lowongan berhasil dihapus!', 'success');
+          closeDeleteModal();
+          await loadLowongan();
+        } catch (err) {
+          console.error(err);
+          showToast('Gagal menghapus lowongan: ' + err.message, 'error');
+          closeDeleteModal();
+        }
+      });
+
+      // Initial Load
+      document.addEventListener('DOMContentLoaded', loadLowongan);
+    </script>
+  </body>
+</html>

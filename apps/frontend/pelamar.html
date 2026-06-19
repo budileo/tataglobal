@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Pendaftar - TATA GLOBAL</title>
+    <meta name="description" content="Manajemen Data Pelamar Kerja TATA GLOBAL" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={theme:{extend:{colors:{emerald:{600:'#059669',700:'#047857'},navy:{900:'#0f172a'}}}}}</script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+      body { font-family: 'Inter', sans-serif; }
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+      .fade-in { animation: fadeIn 0.4s ease-out; }
+    </style>
+    <script src="auth-guard.js"></script>
+  </head>
+  <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-3">
+        <a href="rekruitmen.html" class="p-2 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-500 hover:text-emerald-600 transition-all" title="Kembali ke Rekruitmen">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        </a>
+        <h2 class="text-xl font-bold text-slate-900 hidden md:block">Box Data Pendaftar</h2>
+        <span class="text-lg font-bold text-slate-900 md:hidden">Pendaftar</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="header-role-badge" class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Role: -</span>
+        <div id="header-user-avatar" class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">-</div>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300">
+      <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
+          <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
+        </div>
+        <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+
+      <div id="sidebar-menu-container" class="flex md:flex-col md:w-full w-max md:space-y-1">
+        <!-- Menu di-generate oleh sidebar.js -->
+      </div>
+
+      <!-- User Info & Logout -->
+      <div class="hidden md:block md:mt-auto w-full">
+        <div class="px-6 py-3 border-t border-slate-800">
+          <p id="sidebar-user-name" class="text-sm font-semibold text-white sidebar-text">-</p>
+          <p id="sidebar-user-email" class="text-[11px] text-slate-500 sidebar-text">-</p>
+        </div>
+        <a href="#" onclick="AuthGuard.logout(); return false;" title="Keluar" class="flex items-center gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013-3v1"></path></svg>
+          <span class="sidebar-text">Keluar</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="p-4 md:p-8 max-w-screen-2xl mx-auto fade-in">
+      
+      <!-- Filter and Stats Bar -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex-1 w-full">
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Saring Berdasarkan Lowongan</label>
+          <select id="filter-lowongan" class="w-full max-w-md bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-emerald-500 focus:bg-white transition-all">
+            <option value="ALL">Semua Lowongan</option>
+          </select>
+        </div>
+        <div class="text-center md:text-right shrink-0">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Pelamar Terdaftar</span>
+          <h4 id="pelamar-total" class="text-3xl font-black text-emerald-600 mt-0.5">0 Pelamar</h4>
+        </div>
+      </div>
+
+      <!-- Applicants List -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-left text-sm border-collapse min-w-[900px]">
+            <thead class="bg-slate-50 text-slate-600 text-[11px] uppercase tracking-wider">
+              <tr>
+                <th class="px-5 py-3.5 font-semibold">Tgl Daftar</th>
+                <th class="px-5 py-3.5 font-semibold">Nama Pelamar</th>
+                <th class="px-5 py-3.5 font-semibold">Lowongan Dilamar</th>
+                <th class="px-5 py-3.5 font-semibold text-center">Umur</th>
+                <th class="px-5 py-3.5 font-semibold text-center">Pendidikan</th>
+                <th class="px-5 py-3.5 font-semibold">Nomor Telp</th>
+                <th class="px-5 py-3.5 font-semibold text-right">Gaji Diminta</th>
+                <th class="px-5 py-3.5 font-semibold text-center w-36">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="pelamar-tbody" class="divide-y divide-slate-100 text-slate-700 bg-white">
+              <tr>
+                <td colspan="8" class="px-5 py-8 text-center text-slate-400">Memuat data pelamar...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Modal Detail Pelamar -->
+    <div id="detail-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+      <div class="bg-white rounded-3xl max-w-xl w-full overflow-hidden shadow-2xl transform scale-95 transition-all duration-300 flex flex-col max-h-[85vh]">
+        
+        <!-- Modal Header -->
+        <div class="bg-slate-900 text-white px-6 py-5 flex items-center justify-between shrink-0">
+          <div>
+            <h3 id="modal-nama" class="text-xl font-bold">Nama Pelamar</h3>
+            <p id="modal-lowongan" class="text-xs text-slate-400 font-semibold mt-0.5">Lowongan</p>
+          </div>
+          <button onclick="closeDetailModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <!-- Modal Body (Scrollable) -->
+        <div class="p-6 overflow-y-auto space-y-6 text-sm">
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-slate-50 p-3 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Nomor KTP</span>
+              <span id="modal-ktp" class="font-bold text-slate-800 mt-0.5 block">-</span>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Nomor SIM</span>
+              <span id="modal-sim" class="font-bold text-slate-800 mt-0.5 block">-</span>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Umur</span>
+              <span id="modal-umur" class="font-bold text-slate-800 mt-0.5 block">-</span>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Status Pernikahan</span>
+              <span id="modal-nikah" class="font-bold text-slate-800 mt-0.5 block">-</span>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Pendidikan</span>
+              <span id="modal-pendidikan" class="font-bold text-slate-800 mt-0.5 block">-</span>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Gaji yang Diminta</span>
+              <span id="modal-gaji" class="font-bold text-emerald-600 mt-0.5 block">-</span>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div class="bg-slate-50 p-4 rounded-xl flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase block">Nomor Telepon</span>
+                <span id="modal-telp" class="font-bold text-slate-800 mt-0.5 block">-</span>
+              </div>
+              <a id="modal-wa-btn" href="#" target="_blank" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-colors">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.333 4.982L2 22l5.233-1.371a9.994 9.994 0 0 0 4.779 1.205h.004c5.505 0 9.988-4.478 9.989-9.984a9.983 9.983 0 0 0-9.993-9.85zm5.783 14.156c-.247.694-1.21 1.272-1.658 1.352-.395.071-.912.115-2.735-.64-2.33-.966-3.83-3.336-3.946-3.492-.117-.156-.95-1.262-.95-2.41 0-1.148.6-1.71.813-1.938.214-.227.467-.284.623-.284.156 0 .311.001.447.007.142.006.331-.054.519.395.195.467.662 1.616.72 1.734.059.117.098.254.019.41-.078.156-.117.254-.234.39-.117.137-.245.305-.35.41-.117.118-.24.246-.104.479.137.234.607.999 1.3 1.616.892.795 1.642 1.042 1.876 1.159.234.117.37.101.507-.059.137-.156.59-.688.747-.921.156-.233.312-.195.526-.117.214.078 1.363.642 1.597.759.234.117.39.176.448.273.059.097.059.559-.188 1.253z"/></svg>
+                WhatsApp
+              </a>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Kontak Keluarga Darurat</span>
+              <span id="modal-darurat" class="font-bold text-slate-800 mt-0.5 block">-</span>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 uppercase block">Catatan Lain</span>
+              <p id="modal-catatan" class="text-slate-600 mt-1 leading-relaxed whitespace-pre-wrap font-medium">-</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bg-slate-50 px-6 py-4 flex justify-end shrink-0 border-t border-slate-100">
+          <button onclick="closeDetailModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-2.5 rounded-xl transition-colors">Tutup</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="delete-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+      <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl transform scale-95 transition-all duration-300">
+        <div class="w-12 h-12 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600 mb-4">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </div>
+        <h4 class="text-lg font-bold text-slate-900 mb-2">Hapus Lamaran?</h4>
+        <p class="text-sm text-slate-500 mb-6 leading-relaxed">Apakah Anda yakin ingin menghapus data lamaran kerja pelamar ini secara permanen?</p>
+        <div class="flex gap-3">
+          <button id="confirm-delete-btn" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2.5 rounded-xl transition-all duration-300">Hapus</button>
+          <button id="cancel-delete-btn" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 rounded-xl transition-all duration-300">Batal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="auth-guard.js"></script>
+    <script type="module" src="cloud-auth-guard.js"></script>
+    <script src="app.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="toast.js"></script>
+
+    <script type="module">
+      import { supabase } from './supabaseClient.js';
+
+      let allPelamarList = [];
+      let lowonganList = [];
+      let pendingDeleteId = null;
+
+      // Load lowongan options & pelamar list
+      async function initializePage() {
+        try {
+          // 1. Fetch lowongan list for dropdown filtering
+          const { data: lData, error: lErr } = await supabase
+            .from('hrd_lowongan')
+            .select('id, nama_lowongan, posisi_lowongan');
+          
+          if (lErr) throw lErr;
+          lowonganList = lData || [];
+          populateFilterDropdown();
+
+          // 2. Fetch all pelamar
+          await loadPelamar();
+        } catch (e) {
+          console.error(e);
+          showToast('Inisialisasi data gagal: ' + e.message, 'error');
+        }
+      }
+
+      // Populate filter select
+      function populateFilterDropdown() {
+        const filter = document.getElementById('filter-lowongan');
+        lowonganList.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.id;
+          opt.textContent = `${item.nama_lowongan} (${item.posisi_lowongan})`;
+          filter.appendChild(opt);
+        });
+
+        // Set change listener
+        filter.addEventListener('change', renderPelamarTable);
+      }
+
+      // Load Pelamar from Database
+      async function loadPelamar() {
+        try {
+          const { data, error } = await supabase
+            .from('hrd_pelamar')
+            .select(`
+              *,
+              hrd_lowongan (
+                nama_lowongan,
+                posisi_lowongan
+              )
+            `)
+            .order('created_at', { ascending: false });
+
+          if (error) throw error;
+          allPelamarList = data || [];
+          renderPelamarTable();
+        } catch (e) {
+          console.error(e);
+          showToast('Gagal memuat data pelamar: ' + e.message, 'error');
+        }
+      }
+
+      // Render Table based on filter
+      function renderPelamarTable() {
+        const tbody = document.getElementById('pelamar-tbody');
+        const totalSpan = document.getElementById('pelamar-total');
+        const selectedFilter = document.getElementById('filter-lowongan').value;
+
+        // Filter list
+        const filteredList = selectedFilter === 'ALL'
+          ? allPelamarList
+          : allPelamarList.filter(x => x.lowongan_id === selectedFilter);
+
+        totalSpan.textContent = `${filteredList.length} Pelamar`;
+
+        if (filteredList.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="8" class="px-5 py-12 text-center text-slate-400 bg-white">
+                <div class="flex flex-col items-center justify-center gap-2">
+                  <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                  <span>Belum ada pelamar kerja terdaftar.</span>
+                </div>
+              </td>
+            </tr>`;
+          return;
+        }
+
+        tbody.innerHTML = filteredList.map(item => {
+          // Relational data check
+          const lowonganName = item.hrd_lowongan 
+            ? `${item.hrd_lowongan.nama_lowongan} (${item.hrd_lowongan.posisi_lowongan})`
+            : 'Lowongan Telah Dihapus';
+
+          return `
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="px-5 py-4 whitespace-nowrap text-xs font-semibold text-slate-500">
+                ${formatTanggal(item.tanggal_daftar)}
+              </td>
+              <td class="px-5 py-4 font-bold text-slate-800">
+                ${escapeHTML(item.nama_pelamar)}
+              </td>
+              <td class="px-5 py-4 text-xs font-medium text-slate-600">
+                ${escapeHTML(lowonganName)}
+              </td>
+              <td class="px-5 py-4 text-center text-xs font-bold text-slate-600">
+                ${item.umur || '-'} Thn
+              </td>
+              <td class="px-5 py-4 text-center">
+                <span class="text-xs font-black uppercase tracking-wider bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full border border-slate-200">${item.pendidikan || '-'}</span>
+              </td>
+              <td class="px-5 py-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
+                ${escapeHTML(item.nomor_telp)}
+              </td>
+              <td class="px-5 py-4 text-right font-black text-xs text-emerald-600 whitespace-nowrap">
+                Rp ${formatUang(item.gaji_diminta)}
+              </td>
+              <td class="px-5 py-4 text-center">
+                <div class="flex items-center justify-center gap-2">
+                  <button onclick="openDetailModal('${item.id}')" class="bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all" title="Lihat Detail Lamaran">
+                    Detail
+                  </button>
+                  <button onclick="openDeleteModal('${item.id}')" class="bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white px-2 py-1.5 rounded-lg text-xs font-bold transition-all" title="Hapus Lamaran">
+                    Hapus
+                  </button>
+                </div>
+              </td>
+            </tr>`;
+        }).join('');
+      }
+
+      // Format Uang (Rupiah)
+      function formatUang(value) {
+        if (!value) return '0';
+        return Number(value).toLocaleString('id-ID');
+      }
+
+      // Format date to local Indonesian display
+      function formatTanggal(dateStr) {
+        if (!dateStr) return '-';
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+          return `${parseInt(parts[2])} ${months[parseInt(parts[1]) - 1]} ${parts[0]}`;
+        }
+        return dateStr;
+      }
+
+      // Escape HTML to prevent XSS
+      function escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/[&<>'"]/g, 
+          tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+        );
+      }
+
+      // Modal Detail Handlers
+      const dModal = document.getElementById('detail-modal');
+      const dInner = dModal.querySelector('div');
+
+      window.openDetailModal = function(id) {
+        const item = allPelamarList.find(x => x.id === id);
+        if (!item) return;
+
+        const lowonganName = item.hrd_lowongan 
+          ? `${item.hrd_lowongan.nama_lowongan} (${item.hrd_lowongan.posisi_lowongan})`
+          : 'Lowongan Telah Dihapus';
+
+        document.getElementById('modal-nama').textContent = item.nama_pelamar;
+        document.getElementById('modal-lowongan').textContent = `Melamar: ${lowonganName}`;
+        document.getElementById('modal-ktp').textContent = item.no_ktp;
+        document.getElementById('modal-sim').textContent = item.no_sim || 'Tidak Ada / -';
+        document.getElementById('modal-umur').textContent = `${item.umur} Tahun`;
+        document.getElementById('modal-nikah').textContent = item.status_nikah || '-';
+        document.getElementById('modal-pendidikan').textContent = item.pendidikan || '-';
+        document.getElementById('modal-gaji').textContent = `Rp ${formatUang(item.gaji_diminta)}`;
+        document.getElementById('modal-telp').textContent = item.nomor_telp;
+        document.getElementById('modal-darurat').textContent = item.nomor_kontak_keluarga || '-';
+        document.getElementById('modal-catatan').textContent = item.catatan_lain || 'Tidak ada catatan tambahan.';
+
+        // Setup WhatsApp link
+        let cleanWa = item.nomor_telp.replace(/[^0-9]/g, '');
+        if (cleanWa.startsWith('0')) {
+          cleanWa = '62' + cleanWa.substring(1);
+        }
+        const waMsg = encodeURIComponent(`Halo ${item.nama_pelamar}, kami dari tim HRD TATA GLOBAL ingin mengonfirmasi lamaran Anda untuk posisi ${item.hrd_lowongan?.posisi_lowongan || ''}.`);
+        document.getElementById('modal-wa-btn').href = `https://wa.me/${cleanWa}?text=${waMsg}`;
+
+        // Show modal
+        dModal.classList.remove('opacity-0', 'pointer-events-none');
+        dInner.classList.remove('scale-95');
+        dInner.classList.add('scale-100');
+      };
+
+      window.closeDetailModal = function() {
+        dModal.classList.add('opacity-0', 'pointer-events-none');
+        dInner.classList.remove('scale-100');
+        dInner.classList.add('scale-95');
+      };
+
+      // Modal Delete Handlers
+      const delModal = document.getElementById('delete-modal');
+      const delInner = delModal.querySelector('div');
+
+      window.openDeleteModal = function(id) {
+        pendingDeleteId = id;
+        delModal.classList.remove('opacity-0', 'pointer-events-none');
+        delInner.classList.remove('scale-95');
+        delInner.classList.add('scale-100');
+      };
+
+      function closeDeleteModal() {
+        pendingDeleteId = null;
+        delModal.classList.add('opacity-0', 'pointer-events-none');
+        delInner.classList.remove('scale-100');
+        delInner.classList.add('scale-95');
+      }
+
+      document.getElementById('cancel-delete-btn').addEventListener('click', closeDeleteModal);
+      
+      document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+        if (!pendingDeleteId) return;
+
+        try {
+          const { error } = await supabase
+            .from('hrd_pelamar')
+            .delete()
+            .eq('id', pendingDeleteId);
+
+          if (error) throw error;
+
+          showToast('Data lamaran pelamar berhasil dihapus!', 'success');
+          closeDeleteModal();
+          await loadPelamar();
+        } catch (err) {
+          console.error(err);
+          showToast('Gagal menghapus lamaran: ' + err.message, 'error');
+          closeDeleteModal();
+        }
+      });
+
+      // Initial Load
+      document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+  </body>
+</html>
