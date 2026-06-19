@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -1311,22 +1311,22 @@
                                </td>` 
                             : '';
                             
-                        let susutDOText = '0';
-                        if (agg.matiEkor > 0 || agg.susutMatiKg > 0) {
-                            const matiStr = agg.matiEkor > 0 ? `${agg.matiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
-                            const susutStr = agg.susutMatiKg > 0 ? `${Number(agg.susutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                        let susutDOText = '<span class="text-slate-500">0 Ekor / 0 Kg</span>';
+                        if (agg.matiEkor !== 0 || agg.susutMatiKg !== 0) {
+                            const matiStr = agg.matiEkor !== 0 ? `${agg.matiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                            const susutStr = agg.susutMatiKg !== 0 ? `${Number(agg.susutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
                             susutDOText = `<span class="text-rose-600 font-semibold">${matiStr} / ${susutStr}</span>`;
                         }
 
                         let susutJualText = '0';
-                        if (agg.susutJual > 0) {
+                        if (agg.susutJual !== 0) {
                              susutJualText = `<span class="text-rose-600 font-semibold">${Number(agg.susutJual.toFixed(2)).toLocaleString('id-ID')} Kg</span>`;
                         }
 
                         let matiGudangText = '0';
-                        if (agg.matiGudangEkor > 0 || agg.matiGudangKg > 0) {
-                            const eStr = agg.matiGudangEkor > 0 ? `${agg.matiGudangEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
-                            const kStr = agg.matiGudangKg > 0 ? `${Number(agg.matiGudangKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                        if (agg.matiGudangEkor !== 0 || agg.matiGudangKg !== 0) {
+                            const eStr = agg.matiGudangEkor !== 0 ? `${agg.matiGudangEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                            const kStr = agg.matiGudangKg !== 0 ? `${Number(agg.matiGudangKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
                             matiGudangText = `<span class="text-rose-600 font-semibold">${eStr} / ${kStr}</span>`;
                         }
 
