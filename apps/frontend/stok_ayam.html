@@ -1356,30 +1356,30 @@
                         `;
 
                         // Render Rekap Penyusutan individual row
-                        let rowSusutDOText = '0';
-                        if (agg.matiEkor > 0 || agg.susutMatiKg > 0) {
-                            const matiStr = agg.matiEkor > 0 ? `${agg.matiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
-                            const susutStr = agg.susutMatiKg > 0 ? `${Number(agg.susutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                        let rowSusutDOText = '<span class="text-slate-500">0 Ekor / 0 Kg</span>';
+                        if (agg.matiEkor !== 0 || agg.susutMatiKg !== 0) {
+                            const matiStr = agg.matiEkor !== 0 ? `${agg.matiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                            const susutStr = agg.susutMatiKg !== 0 ? `${Number(agg.susutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
                             rowSusutDOText = `<span class="text-rose-600 font-semibold">${matiStr} / ${susutStr}</span>`;
                         }
 
-                        const rowMatiJualText = agg.matiJualKg > 0 ? `<span class="text-rose-600 font-semibold">${Number(agg.matiJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '0 Kg';
-                        const rowSusutJualTextVal = agg.susutJualKg > 0 ? `<span class="text-rose-600 font-semibold">${Number(agg.susutJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '0 Kg';
-                        const rowPulangJualText = agg.pulangJualKg > 0 ? `<span class="text-rose-600 font-semibold">${Number(agg.pulangJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '0 Kg';
+                        const rowMatiJualText = agg.matiJualKg !== 0 ? `<span class="text-rose-600 font-semibold">${Number(agg.matiJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '<span class="text-slate-400">0 Kg</span>';
+                        const rowSusutJualTextVal = agg.susutJualKg !== 0 ? `<span class="text-rose-600 font-semibold">${Number(agg.susutJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '<span class="text-slate-400">0 Kg</span>';
+                        const rowPulangJualText = agg.pulangJualKg !== 0 ? `<span class="text-rose-600 font-semibold">${Number(agg.pulangJualKg.toFixed(2)).toLocaleString('id-ID')} Kg</span>` : '<span class="text-slate-400">0 Kg</span>';
 
-                        let rowMatiGudangText = '0';
-                        if (agg.matiGudangEkor > 0 || agg.matiGudangKg > 0) {
-                            const eStr = agg.matiGudangEkor > 0 ? `${agg.matiGudangEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
-                            const kStr = agg.matiGudangKg > 0 ? `${Number(agg.matiGudangKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                        let rowMatiGudangText = '<span class="text-slate-500">0 Ekor / 0 Kg</span>';
+                        if (agg.matiGudangEkor !== 0 || agg.matiGudangKg !== 0) {
+                            const eStr = agg.matiGudangEkor !== 0 ? `${agg.matiGudangEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                            const kStr = agg.matiGudangKg !== 0 ? `${Number(agg.matiGudangKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
                             rowMatiGudangText = `<span class="text-rose-600 font-semibold">${eStr} / ${kStr}</span>`;
                         }
 
                         const totalLossEkor = agg.matiEkor + agg.matiGudangEkor;
                         const totalLossKg = agg.susutMatiKg + agg.susutJual + agg.matiGudangKg;
-                        let rowTotalLossText = '0';
-                        if (totalLossEkor > 0 || totalLossKg > 0) {
-                            const eLossStr = totalLossEkor > 0 ? `${totalLossEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
-                            const kLossStr = totalLossKg > 0 ? `${Number(totalLossKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                        let rowTotalLossText = '<span class="text-slate-500">0 Ekor / 0 Kg</span>';
+                        if (totalLossEkor !== 0 || totalLossKg !== 0) {
+                            const eLossStr = totalLossEkor !== 0 ? `${totalLossEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                            const kLossStr = totalLossKg !== 0 ? `${Number(totalLossKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
                             rowTotalLossText = `<span class="text-rose-600 font-bold">${eLossStr} / ${kLossStr}</span>`;
                         }
 
@@ -1406,15 +1406,15 @@
                     // Render TOTAL Row for this date
                     const totalRata = dateTotalEkorAkhir !== 0 ? Math.abs(dateTotalKgAkhir / dateTotalEkorAkhir) : 0;
                     
-                    let totalSusutText = '0';
-                    if (dateTotalMatiEkor > 0 || dateTotalSusutMatiKg > 0) {
-                        const totalMatiStr = dateTotalMatiEkor > 0 ? `${dateTotalMatiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
-                        const totalSusutStr = dateTotalSusutMatiKg > 0 ? `${Number(dateTotalSusutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
+                    let totalSusutText = '<span class="text-slate-500 font-bold">0 Ekor / 0 Kg</span>';
+                    if (dateTotalMatiEkor !== 0 || dateTotalSusutMatiKg !== 0) {
+                        const totalMatiStr = dateTotalMatiEkor !== 0 ? `${dateTotalMatiEkor.toLocaleString('id-ID')} Ekor` : '0 Ekor';
+                        const totalSusutStr = dateTotalSusutMatiKg !== 0 ? `${Number(dateTotalSusutMatiKg.toFixed(2)).toLocaleString('id-ID')} Kg` : '0 Kg';
                         totalSusutText = `<span class="text-rose-600 font-bold">${totalMatiStr} / ${totalSusutStr}</span>`;
                     }
 
-                    let totalSusutJualText = '0';
-                    if (dateTotalSusutJual > 0) {
+                    let totalSusutJualText = '<span class="text-slate-500 font-bold">0 Kg</span>';
+                    if (dateTotalSusutJual !== 0) {
                          totalSusutJualText = `<span class="text-rose-600 font-bold">${Number(dateTotalSusutJual.toFixed(2)).toLocaleString('id-ID')} Kg</span>`;
                     }
 
