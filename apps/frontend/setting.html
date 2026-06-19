@@ -23,7 +23,7 @@
         <h2 class="text-xl font-bold text-slate-900">Pengaturan Sistem</h2>
       </div>
       <div class="flex items-center gap-3">
-        <span id="dept-token-badge" class="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full">ðŸª™ 0 Token</span>
+        <span id="dept-token-badge" class="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full">🪙 0 Token</span>
       </div>
     </header>
 
@@ -46,10 +46,10 @@
     <main class="p-4 md:p-8 max-w-6xl mx-auto space-y-5">
       <!-- Tabs -->
       <div class="flex flex-wrap gap-1 border-b border-slate-200">
-        <button data-tab="users" class="tab-btn active text-sm font-bold px-5 py-3 border-b-2 border-transparent transition-all">ðŸ‘¤ Data Pengguna</button>
-        <button data-tab="perms" class="tab-btn text-sm font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 transition-all">ðŸ” Manajemen Menu</button>
-        <button data-tab="topup" class="tab-btn text-sm font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 transition-all">ðŸª™ Isi Token</button>
-        <button data-tab="tarif" class="tab-btn text-sm font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 transition-all">ðŸ’° Tarif Token</button>
+        <button data-tab="users" class="tab-btn active text-sm font-bold px-5 py-3 border-b-2 border-transparent transition-all">👤 Data Pengguna</button>
+        <button data-tab="perms" class="tab-btn text-sm font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 transition-all">🔐 Manajemen Menu</button>
+        <button data-tab="topup" class="tab-btn text-sm font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 transition-all">🪙 Isi Token</button>
+        <button data-tab="tarif" class="tab-btn text-sm font-bold px-5 py-3 border-b-2 border-transparent text-slate-400 transition-all">💰 Tarif Token</button>
       </div>
 
       <!-- ===================== TAB 1: DATA PENGGUNA ===================== -->
@@ -61,7 +61,7 @@
           </div>
           <div class="flex gap-2 items-center">
             <input id="invite-link-input" type="text" readonly class="flex-1 bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-emerald-700 select-all">
-            <button id="btn-copy-invite" class="bg-slate-900 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors shrink-0">ðŸ“‹ Copy</button>
+            <button id="btn-copy-invite" class="bg-slate-900 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors shrink-0">📋 Copy</button>
           </div>
         </div>
 
@@ -97,7 +97,7 @@
             <div class="space-y-2">
               <div><label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Jumlah Token</label><input id="topup-amount" type="number" min="1" value="100" class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2 text-sm font-bold focus:outline-none focus:border-emerald-400"></div>
               <div><label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Catatan (opsional)</label><input id="topup-note" type="text" placeholder="Alasan top-up..." class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-400"></div>
-              <button id="btn-topup" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition-colors shadow-lg text-sm uppercase tracking-wider">ðŸª™ ISI TOKEN</button>
+              <button id="btn-topup" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl transition-colors shadow-lg text-sm uppercase tracking-wider">🪙 ISI TOKEN</button>
             </div>
           </div>
           <!-- Kanan: Rekap Harian Bulan Ini -->
@@ -150,7 +150,7 @@
       // Update token badge (cloud-first)
       async function updateTokenBadge(){
         const balance = await AuthGuard.getDeptTokenBalance();
-        document.getElementById('dept-token-badge').textContent = 'ðŸª™ ' + balance.toLocaleString('id-ID') + ' Token';
+        document.getElementById('dept-token-badge').textContent = '🪙 ' + balance.toLocaleString('id-ID') + ' Token';
       }
       updateTokenBadge();
       
@@ -251,7 +251,7 @@
           const users=AuthGuard.getUsers();const u=users.find(x=>x.id===sel.dataset.id);if(!u)return;
           const oldRole=u.role;u.role=sel.value;AuthGuard.saveUsers(users);
           AuthGuard.resetUserPermissions(u.id);
-          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'USER',entityId:u.id,oldData:{role:oldRole},newData:{role:sel.value},isCritical:true,message:'Role '+u.name+' diubah dari '+oldRole+' â†’ '+sel.value});
+          if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'USER',entityId:u.id,oldData:{role:oldRole},newData:{role:sel.value},isCritical:true,message:'Role '+u.name+' diubah dari '+oldRole+' → '+sel.value});
           renderUsers();
         })});
       }
@@ -260,7 +260,7 @@
       document.getElementById('btn-copy-invite').addEventListener('click',()=>{
         const inp=document.getElementById('invite-link-input');inp.select();
         navigator.clipboard.writeText(inp.value).then(()=>{
-          const btn=document.getElementById('btn-copy-invite');btn.textContent='âœ… Copied!';setTimeout(()=>btn.textContent='ðŸ“‹ Copy',2000);
+          const btn=document.getElementById('btn-copy-invite');btn.textContent='✅ Copied!';setTimeout(()=>btn.textContent='📋 Copy',2000);
         });
       });
 
@@ -367,9 +367,9 @@
             const isTopup = h.type==='topup';
             const time = new Date(h.createdAt).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'});
             return `<div class="flex items-center gap-2 px-2 py-1.5 bg-slate-50 rounded-lg border border-slate-100 text-[11px]">
-              <span class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${isTopup?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'} font-black text-[10px]">${isTopup?'+':'âˆ’'}</span>
+              <span class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${isTopup?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'} font-black text-[10px]">${isTopup?'+':'−'}</span>
               <span class="flex-1 min-w-0 truncate font-medium text-slate-700">${h.description}</span>
-              <span class="text-[10px] text-slate-400 shrink-0">${h.userName} â€¢ ${time}</span>
+              <span class="text-[10px] text-slate-400 shrink-0">${h.userName} • ${time}</span>
               <span class="font-black shrink-0 ${isTopup?'text-emerald-600':'text-rose-500'}">${isTopup?'+':''}${h.amount}</span>
             </div>`;
           }).join('');
@@ -386,7 +386,7 @@
         if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'CREATE',entityType:'TOKEN',entityId:dept.id,newData:{amount,note,balanceAfter:newBalance},isCritical:true,message:'Top-up '+amount+' token ke '+dept.name});
         document.getElementById('topup-amount').value='100';document.getElementById('topup-note').value='';
         await renderTopup();
-        alert('âœ… Berhasil menambahkan '+amount+' token!');
+        alert('✅ Berhasil menambahkan '+amount+' token!');
       });
 
       // ========== TAB 4: TARIF TOKEN (CLOUD-FIRST) ==========
@@ -408,8 +408,8 @@
           const tarifs=await AuthGuard.getTokenTarif();
           const t=tarifs.find(x=>x.code===code);
           if(t){const old=t.cost;t.cost=newCost;await AuthGuard.saveTokenTarif(tarifs);
-            if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'TOKEN_TARIF',entityId:code,oldData:{cost:old},newData:{cost:newCost},isCritical:true,message:'Tarif '+code+' diubah dari '+old+' â†’ '+newCost});
-            alert('âœ… Tarif '+code+' disimpan: '+newCost+' token');
+            if(typeof ActivityLogger!=='undefined') ActivityLogger.log({action:'UPDATE',entityType:'TOKEN_TARIF',entityId:code,oldData:{cost:old},newData:{cost:newCost},isCritical:true,message:'Tarif '+code+' diubah dari '+old+' → '+newCost});
+            alert('✅ Tarif '+code+' disimpan: '+newCost+' token');
           }
         })});
       }
@@ -427,7 +427,6 @@
     <script src="sidebar.js"></script>
   </body>
 </html>
-
 
 
 

@@ -193,7 +193,7 @@
               <div class="multi-select-wrapper" id="ms-petugas-operasional">
                 <div class="multi-select-trigger" tabindex="0">
                   <span class="placeholder">-- Pilih Petugas Operasional --</span>
-                  <span class="arrow">â–¼</span>
+                  <span class="arrow">▼</span>
                 </div>
                 <div class="multi-select-dropdown">
                   <input type="text" class="multi-select-search" placeholder="Cari nama petugas...">
@@ -211,7 +211,7 @@
               <div class="multi-select-wrapper" id="ms-petugas-recovery">
                 <div class="multi-select-trigger" tabindex="0">
                   <span class="placeholder">-- Pilih Petugas Recovery --</span>
-                  <span class="arrow">â–¼</span>
+                  <span class="arrow">▼</span>
                 </div>
                 <div class="multi-select-dropdown">
                   <input type="text" class="multi-select-search" placeholder="Cari nama petugas...">
@@ -452,14 +452,14 @@
 
         // Update trigger text
         if (selected.length === 0) {
-          trigger.innerHTML = `<span class="placeholder">-- Pilih Karyawan --</span><span class="arrow">â–¼</span>`;
+          trigger.innerHTML = `<span class="placeholder">-- Pilih Karyawan --</span><span class="arrow">▼</span>`;
         } else if (selected.length <= 2) {
           let tagsHtml = selected.map(s => `<span class="selected-tag">${s.nama}</span>`).join('');
-          trigger.innerHTML = `<div class="selected-tags">${tagsHtml}</div><span class="arrow">â–¼</span>`;
+          trigger.innerHTML = `<div class="selected-tags">${tagsHtml}</div><span class="arrow">▼</span>`;
         } else {
           let tagsHtml = selected.slice(0, 2).map(s => `<span class="selected-tag">${s.nama}</span>`).join('');
           tagsHtml += `<span class="selected-count">+${selected.length - 2}</span>`;
-          trigger.innerHTML = `<div class="selected-tags">${tagsHtml}</div><span class="arrow">â–¼</span>`;
+          trigger.innerHTML = `<div class="selected-tags">${tagsHtml}</div><span class="arrow">▼</span>`;
         }
       }
 
@@ -873,7 +873,6 @@
 
     </script>
     <script src="app.js"></script>
-    <script src="sidebar.js"></script>
+    <script src="sidebar.js?v=2"></script>
   </body>
 </html>
-
