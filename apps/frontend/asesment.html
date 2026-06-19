@@ -38,6 +38,8 @@
     }
   </style>
   <script src="auth-guard.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
 
@@ -85,10 +87,16 @@
     <div class="space-y-6">
       
       <!-- Welcome Header -->
-      <div class="bg-navy-900 text-white p-6 md:p-8 rounded-3xl shadow-sm relative overflow-hidden no-print">
+      <div class="bg-navy-900 text-white p-6 md:p-8 rounded-3xl shadow-sm relative overflow-hidden no-print flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="relative z-10">
           <h1 class="text-2xl md:text-3xl font-black tracking-tight">Evaluasi POSMATCH Pelamar</h1>
           <p class="text-slate-300 mt-2 text-sm md:text-base font-medium">Uji Mindset, Attitude, & Kecocokan Posisi pendaftar kerja</p>
+        </div>
+        <div class="relative z-10 self-start md:self-center">
+          <button type="button" onclick="downloadManualFormPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg shadow-rose-600/20 transition-all duration-300 flex items-center gap-2 text-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Download PDF Manual
+          </button>
         </div>
         <div class="absolute -right-6 -top-6 w-32 h-32 bg-emerald-600/20 rounded-full blur-2xl"></div>
       </div>
@@ -1239,6 +1247,167 @@
         tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
       );
     }
+
+    // ===== Download PDF Manual Form (Fits 1 page of A4 Portrait) =====
+    window.downloadManualFormPDF = function() {
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        showToast('Library PDF sedang dimuat. Silakan tunggu.', 'warning');
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('p', 'pt', 'a4');
+
+      const pageW = doc.internal.pageSize.width;
+      const pageH = doc.internal.pageSize.height;
+      const margin = 40;
+
+      // 1. Header
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(15);
+      doc.setTextColor(15, 23, 42); // Navy 900
+      doc.text('LEMBAR ASESMEN MANUSIA (POSMATCH)', pageW / 2, 45, { align: 'center' });
+
+      doc.setFontSize(8);
+      doc.setTextColor(5, 150, 105); // Emerald 600
+      doc.text('TATA GLOBAL — REKRUITMEN & HRD (MANUAL FIELD SHEET)', pageW / 2, 58, { align: 'center' });
+
+      // Divider
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(1);
+      doc.line(margin, 68, pageW - margin, 68);
+
+      // 2. Candidate Info Section
+      const kandidatVal = document.getElementById('pm-kandidat').value || '';
+      const posisiVal = document.getElementById('pm-posisi').value || '';
+      const asesorVal = document.getElementById('pm-asesor').value || '';
+      const todayStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8);
+      doc.setTextColor(71, 85, 105); // Slate 600
+      
+      // Left column info
+      doc.text('Nama Kandidat :', margin, 85);
+      doc.setFont('helvetica', 'normal');
+      doc.text(kandidatVal || '..........................................................', margin + 85, 85);
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Posisi Dilamar :', margin, 100);
+      doc.setFont('helvetica', 'normal');
+      doc.text(posisiVal || '..........................................................', margin + 85, 100);
+
+      // Right column info
+      doc.setFont('helvetica', 'bold');
+      doc.text('Nama Asesor :', pageW / 2 + 10, 85);
+      doc.setFont('helvetica', 'normal');
+      doc.text(asesorVal || '..........................................................', pageW / 2 + 85, 85);
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('Tanggal Asesmen :', pageW / 2 + 10, 100);
+      doc.setFont('helvetica', 'normal');
+      doc.text(todayStr, pageW / 2 + 85, 100);
+
+      // Table Headers & Rows
+      const tableCols = [
+        { title: 'No', dataKey: 'no' },
+        { title: 'Variabel POSMATCH', dataKey: 'var' },
+        { title: 'Panduan Penilaian / Pertanyaan Acuan', dataKey: 'desc' },
+        { title: 'Skor (Beri Tanda)', dataKey: 'skor' },
+        { title: 'Catatan Observasi Lapangan', dataKey: 'notes' }
+      ];
+
+      const tableRows = [
+        { no: 'M1', var: 'Growth Mindset', desc: 'Reaksi kegagalan, keyakinan bakat/kemampuan berkembang', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'M2', var: 'Ownership', desc: 'Tanggung jawab penuh, berani mengakui kesalahan', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'M3', var: 'Resilience', desc: 'Ketahanan mental, bangkit dari tekanan & kesulitan', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'M4', var: 'Orientasi Belajar', desc: 'Proaktif belajar hal baru, evaluasi & umpan balik', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'A1', var: 'Inisiatif', desc: 'Tindakan proaktif tanpa menunggu instruksi', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'A2', var: 'Kolaborasi', desc: 'Kerjasama tim, empati, & penyelesaian konflik', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'A3', var: 'Adaptabilitas', desc: 'Kecepatan adaptasi perubahan sistem & lingkungan', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'A4', var: 'Integritas', desc: 'Kejujuran, kepatuhan etika & moral kerja', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'A5', var: 'Ketelitian', desc: 'Akurasi, minimalisir ceroboh saat bekerja', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'A6', var: 'Ekspektasi Gaji', desc: 'Realisme ekspektasi kompensasi & kepantasan', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'A7', var: 'Ekspektasi Karir', desc: 'Realisme harapan pengembangan karir & loyalitas', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'P1', var: 'Interaksi Sosial', desc: 'Gaya komunikasi sosial, keramahan & keramahan', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'P2', var: 'Kemandirian', desc: 'Kemampuan kerja otonom tanpa pengawasan ketat', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'P3', var: 'Toleransi Tekanan', desc: 'Kondisi kerja sibuk, deadline padat & stresor', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' },
+        { no: 'P4', var: 'Rutinitas', desc: 'Tingkat kenyamanan pada tugas berulang/repetitif', skor: '[  ] 1    [  ] 2    [  ] 3    [  ] 4    [  ] 5', notes: '' }
+      ];
+
+      doc.autoTable({
+        columns: tableCols,
+        body: tableRows,
+        startY: 115,
+        theme: 'grid',
+        styles: {
+          font: 'helvetica',
+          fontSize: 7.5,
+          cellPadding: 5,
+          lineColor: [226, 232, 240],
+          lineWidth: 0.5,
+          textColor: [15, 23, 42]
+        },
+        headStyles: {
+          fillColor: [15, 23, 42],
+          textColor: [255, 255, 255],
+          fontStyle: 'bold',
+          halign: 'center',
+          fontSize: 8
+        },
+        columnStyles: {
+          no: { cellWidth: 22, halign: 'center', fontStyle: 'bold' },
+          var: { cellWidth: 95, fontStyle: 'bold' },
+          desc: { cellWidth: 165 },
+          skor: { cellWidth: 110, halign: 'center', fontStyle: 'bold' },
+          notes: { cellWidth: 123 }
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252]
+        }
+      });
+
+      const finalY = doc.lastAutoTable.finalY + 12;
+
+      // 4. Manual Summary / Notes Section
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(15, 23, 42);
+      doc.text('CATATAN KESIMPULAN / HASIL OBSERVASI ASESOR:', margin, finalY);
+
+      // Draw a nice empty memo box for manual writing
+      doc.setDrawColor(203, 213, 225); // border gray
+      doc.setFillColor(255, 255, 255);
+      doc.rect(margin, finalY + 5, pageW - (margin * 2), 65, 'DF');
+
+      // Add dotted helper lines inside the box
+      doc.setDrawColor(241, 245, 249);
+      doc.setLineWidth(0.5);
+      doc.line(margin + 10, finalY + 22, pageW - margin - 10, finalY + 22);
+      doc.line(margin + 10, finalY + 39, pageW - margin - 10, finalY + 39);
+      doc.line(margin + 10, finalY + 56, pageW - margin - 10, finalY + 56);
+
+      // 5. Signature Section
+      const sigY = finalY + 85;
+      
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.setTextColor(71, 85, 105);
+      doc.text('Paraf Asesor,', pageW - margin - 120, sigY, { align: 'center' });
+
+      doc.setFont('helvetica', 'normal');
+      doc.text('( ______________________ )', pageW - margin - 120, sigY + 45, { align: 'center' });
+      
+      if (asesorVal) {
+        doc.setFontSize(7.5);
+        doc.text(asesorVal, pageW - margin - 120, sigY + 55, { align: 'center' });
+      }
+
+      // Save PDF
+      const filename = `Form_Asesmen_Manual_${kandidatVal ? kandidatVal.replace(/\s+/g, '_') : 'POSMATCH'}.pdf`;
+      doc.save(filename);
+      showToast('PDF Formulir Manual berhasil diunduh!', 'success');
+    };
 
     // Load initial data
     document.addEventListener('DOMContentLoaded', loadApplicants);
