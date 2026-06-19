@@ -34,7 +34,8 @@ export default defineConfig({
         'lowongan': resolve(__dirname, 'lowongan.html'),
         'pelamar': resolve(__dirname, 'pelamar.html'),
         'form-lamaran': resolve(__dirname, 'form_lamaran.html'),
-        'asesment': resolve(__dirname, 'asesment.html')
+        'asesment': resolve(__dirname, 'asesment.html'),
+        'riwayat-asesmen': resolve(__dirname, 'riwayat_asesmen.html')
       }
     }
   }

@@ -17,7 +17,7 @@
   } else if (normalizedPath === 'dashboard.html' || normalizedPath === 'dashboard') {
     activeModule = 'operasional';
     localStorage.setItem('active_module', 'operasional');
-  } else if (normalizedPath === 'dasbort_hrd.html' || normalizedPath === 'dasbort_hrd' || normalizedPath === 'rekruitmen.html' || normalizedPath === 'rekruitmen' || normalizedPath === 'lowongan.html' || normalizedPath === 'lowongan' || normalizedPath === 'pelamar.html' || normalizedPath === 'pelamar' || normalizedPath === 'asesment.html' || normalizedPath === 'asesment') {
+  } else if (normalizedPath === 'dasbort_hrd.html' || normalizedPath === 'dasbort_hrd' || normalizedPath === 'rekruitmen.html' || normalizedPath === 'rekruitmen' || normalizedPath === 'lowongan.html' || normalizedPath === 'lowongan' || normalizedPath === 'pelamar.html' || normalizedPath === 'pelamar' || normalizedPath === 'asesment.html' || normalizedPath === 'asesment' || normalizedPath === 'riwayat_asesmen.html' || normalizedPath === 'riwayat_asesmen') {
     activeModule = 'hrd';
     localStorage.setItem('active_module', 'hrd');
   } else if (normalizedPath === 'setting.html' || normalizedPath === 'setting') {
