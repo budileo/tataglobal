@@ -16,8 +16,24 @@
       ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
       @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
       .fade-in { animation: fadeIn 0.4s ease-out; }
+      .period-tab {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        background: #f1f5f9;
+        color: #475569;
+        transition: all 0.2s;
+      }
+      .period-tab.active {
+        background: #059669;
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.2);
+      }
     </style>
     <script src="auth-guard.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   </head>
   <body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
 
@@ -69,16 +85,46 @@
     <main class="p-4 md:p-8 max-w-screen-2xl mx-auto fade-in">
       
       <!-- Filter and Stats Bar -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div class="flex-1 w-full">
-          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Saring Berdasarkan Lowongan</label>
-          <select id="filter-lowongan" class="w-full max-w-md bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-emerald-500 focus:bg-white transition-all">
-            <option value="ALL">Semua Lowongan</option>
-          </select>
-        </div>
-        <div class="text-center md:text-right shrink-0">
-          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Pelamar Terdaftar</span>
-          <h4 id="pelamar-total" class="text-3xl font-black text-emerald-600 mt-0.5">0 Pelamar</h4>
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm mb-6 space-y-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="flex-1 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Saring Berdasarkan Lowongan</label>
+                <select id="filter-lowongan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-emerald-500 focus:bg-white transition-all">
+                  <option value="ALL">Semua Lowongan</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Pilihan Periode</label>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button class="period-tab active" data-period="all" id="tab-all">Semua</button>
+                  <button class="period-tab" data-period="bulan-ini" id="tab-bulan-ini">Bulan Ini</button>
+                  <button class="period-tab" data-period="range" id="tab-range">Range Tanggal</button>
+                </div>
+              </div>
+            </div>
+            
+            <div id="range-inputs" class="hidden items-center gap-2 flex-wrap bg-slate-50 p-3 rounded-xl border border-slate-100">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pilih Range:</span>
+              <label class="text-xs font-semibold text-slate-500">Dari:</label>
+              <input type="date" id="range-dari" class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-emerald-500">
+              <label class="text-xs font-semibold text-slate-500">Sampai:</label>
+              <input type="date" id="range-sampai" class="bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-emerald-500">
+              <button id="btn-apply-range" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-1.5 px-4 rounded-lg text-sm transition-colors shadow-sm">Terapkan</button>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center gap-6 self-end lg:self-center shrink-0">
+            <div class="text-center sm:text-right">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Pelamar Terdaftar</span>
+              <h4 id="pelamar-total" class="text-3xl font-black text-emerald-600 mt-0.5">0 Pelamar</h4>
+            </div>
+            <button type="button" id="btn-download-pdf" onclick="downloadPDF()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg shadow-rose-600/20 transition-all duration-300 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              Download PDF
+            </button>
+          </div>
         </div>
       </div>
 
@@ -215,6 +261,7 @@
       let allPelamarList = [];
       let lowonganList = [];
       let pendingDeleteId = null;
+      let activePeriod = 'all';
 
       // Load lowongan options & pelamar list
       async function initializePage() {
@@ -227,6 +274,7 @@
           if (lErr) throw lErr;
           lowonganList = lData || [];
           populateFilterDropdown();
+          initPeriodTabs();
 
           // 2. Fetch all pelamar
           await loadPelamar();
@@ -234,6 +282,33 @@
           console.error(e);
           showToast('Inisialisasi data gagal: ' + e.message, 'error');
         }
+      }
+
+      // Initialize Period Tabs Click Actions
+      function initPeriodTabs() {
+        const tabs = document.querySelectorAll('.period-tab');
+        const rangeInputs = document.getElementById('range-inputs');
+
+        tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            activePeriod = tab.dataset.period;
+
+            if (activePeriod === 'range') {
+              rangeInputs.classList.remove('hidden');
+              rangeInputs.classList.add('flex');
+            } else {
+              rangeInputs.classList.add('hidden');
+              rangeInputs.classList.remove('flex');
+              renderPelamarTable();
+            }
+          });
+        });
+
+        document.getElementById('btn-apply-range').addEventListener('click', () => {
+          renderPelamarTable();
+        });
       }
 
       // Populate filter select
@@ -279,14 +354,28 @@
         const totalSpan = document.getElementById('pelamar-total');
         const selectedFilter = document.getElementById('filter-lowongan').value;
 
-        // Filter list
-        const filteredList = selectedFilter === 'ALL'
+        // 1. Filter by Lowongan
+        let list = selectedFilter === 'ALL'
           ? allPelamarList
           : allPelamarList.filter(x => x.lowongan_id === selectedFilter);
 
-        totalSpan.textContent = `${filteredList.length} Pelamar`;
+        // 2. Filter by Period
+        if (activePeriod === 'bulan-ini') {
+          const now = new Date();
+          const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+          const end = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+          list = list.filter(x => x.tanggal_daftar >= start && x.tanggal_daftar <= end);
+        } else if (activePeriod === 'range') {
+          const from = document.getElementById('range-dari').value;
+          const to = document.getElementById('range-sampai').value;
+          if (from && to) {
+            list = list.filter(x => x.tanggal_daftar >= from && x.tanggal_daftar <= to);
+          }
+        }
 
-        if (filteredList.length === 0) {
+        totalSpan.textContent = `${list.length} Pelamar`;
+
+        if (list.length === 0) {
           tbody.innerHTML = `
             <tr>
               <td colspan="8" class="px-5 py-12 text-center text-slate-400 bg-white">
@@ -299,7 +388,7 @@
           return;
         }
 
-        tbody.innerHTML = filteredList.map(item => {
+        tbody.innerHTML = list.map(item => {
           // Relational data check
           const lowonganName = item.hrd_lowongan 
             ? `${item.hrd_lowongan.nama_lowongan} (${item.hrd_lowongan.posisi_lowongan})`
@@ -310,20 +399,25 @@
               <td class="px-5 py-4 whitespace-nowrap text-xs font-semibold text-slate-500">
                 ${formatTanggal(item.tanggal_daftar)}
               </td>
-              <td class="px-5 py-4 font-bold text-slate-800">
-                ${escapeHTML(item.nama_pelamar)}
+              <td class="px-5 py-4 text-xs font-semibold text-slate-700">
+                <div class="font-bold text-slate-800 text-sm">${escapeHTML(item.nama_pelamar)}</div>
+                <div class="text-[11px] font-normal text-slate-400 mt-1">KTP: ${escapeHTML(item.no_ktp)}</div>
+                <div class="text-[11px] font-normal text-slate-400 mt-0.5">SIM: ${escapeHTML(item.no_sim || '-')}</div>
               </td>
               <td class="px-5 py-4 text-xs font-medium text-slate-600">
-                ${escapeHTML(lowonganName)}
+                <div class="font-semibold text-slate-800">${escapeHTML(lowonganName)}</div>
+                ${item.catatan_lain ? `<div class="text-[11px] font-normal text-slate-400 mt-1 italic max-w-xs truncate animate-pulse" title="${escapeHTML(item.catatan_lain)}">Ket: ${escapeHTML(item.catatan_lain)}</div>` : ''}
               </td>
-              <td class="px-5 py-4 text-center text-xs font-bold text-slate-600">
-                ${item.umur || '-'} Thn
+              <td class="px-5 py-4 text-center text-xs font-bold text-slate-600 whitespace-nowrap">
+                <div>${item.umur || '-'} Thn</div>
+                <div class="text-[10px] font-normal text-slate-400 mt-0.5">${escapeHTML(item.status_nikah || '-')}</div>
               </td>
               <td class="px-5 py-4 text-center">
                 <span class="text-xs font-black uppercase tracking-wider bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full border border-slate-200">${item.pendidikan || '-'}</span>
               </td>
               <td class="px-5 py-4 text-xs font-semibold text-slate-600 whitespace-nowrap">
-                ${escapeHTML(item.nomor_telp)}
+                <div>${escapeHTML(item.nomor_telp)}</div>
+                <div class="text-[11px] font-normal text-slate-400 mt-0.5">Kel: ${escapeHTML(item.nomor_kontak_keluarga || '-')}</div>
               </td>
               <td class="px-5 py-4 text-right font-black text-xs text-emerald-600 whitespace-nowrap">
                 Rp ${formatUang(item.gaji_diminta)}
@@ -451,6 +545,140 @@
           closeDeleteModal();
         }
       });
+
+      // ===== Download PDF =====
+      window.downloadPDF = function() {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+          showToast('Library PDF belum dimuat. Silakan tunggu sebentar.', 'error');
+          return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('l', 'pt', 'a4');
+        const pageW = doc.internal.pageSize.width;
+        const pageH = doc.internal.pageSize.height;
+        const marginL = 40;
+        const marginR = 40;
+        
+        // Header
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(22);
+        doc.setTextColor(15, 23, 42);
+        doc.text('TATA GLOBAL', marginL, 45);
+
+        doc.setFontSize(14);
+        doc.setTextColor(5, 150, 105); // emerald color
+        doc.text('Laporan Data Pendaftar (HRD Rekruitmen)', marginL, 68);
+
+        // Filter info text
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139);
+        
+        const filterVal = document.getElementById('filter-lowongan');
+        const filterText = filterVal.options[filterVal.selectedIndex].text;
+        
+        const periodText = document.getElementById('tab-all').classList.contains('active') ? 'Semua Periode' :
+                           document.getElementById('tab-bulan-ini').classList.contains('active') ? 'Periode: Bulan Ini' :
+                           `Periode: ${document.getElementById('range-dari').value} s/d ${document.getElementById('range-sampai').value}`;
+        
+        doc.text(`Kategori Lowongan: ${filterText}   |   ${periodText}`, marginL, 88);
+
+        // Separator Line
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(1.5);
+        doc.line(marginL, 98, pageW - marginR, 98);
+
+        // Filter data for PDF
+        const selectedFilter = document.getElementById('filter-lowongan').value;
+        let list = selectedFilter === 'ALL'
+          ? allPelamarList
+          : allPelamarList.filter(x => x.lowongan_id === selectedFilter);
+
+        if (activePeriod === 'bulan-ini') {
+          const now = new Date();
+          const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+          const end = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+          list = list.filter(x => x.tanggal_daftar >= start && x.tanggal_daftar <= end);
+        } else if (activePeriod === 'range') {
+          const from = document.getElementById('range-dari').value;
+          const to = document.getElementById('range-sampai').value;
+          if (from && to) {
+            list = list.filter(x => x.tanggal_daftar >= from && x.tanggal_daftar <= to);
+          }
+        }
+
+        const tableColumns = ['No', 'Tgl Daftar', 'Nama Pelamar & Identitas', 'Lowongan & Catatan', 'Umur & Status', 'No Telp & Keluarga', 'Pendidikan', 'Gaji Diminta'];
+        const tableRows = [];
+
+        list.forEach((item, index) => {
+          const lowonganName = item.hrd_lowongan 
+            ? `${item.hrd_lowongan.nama_lowongan} (${item.hrd_lowongan.posisi_lowongan})`
+            : 'Lowongan Telah Dihapus';
+
+          const nameCol = `${item.nama_pelamar}\nKTP: ${item.no_ktp}\nSIM: ${item.no_sim || '-'}`;
+          const ageCol = `${item.umur || '-'} Thn\n${item.status_nikah || '-'}`;
+          const telCol = `${item.nomor_telp}\nKel: ${item.nomor_kontak_keluarga || '-'}`;
+          const lowonganCol = `${lowonganName}${item.catatan_lain ? `\nKet: ${item.catatan_lain}` : ''}`;
+
+          tableRows.push([
+            String(index + 1),
+            formatTanggal(item.tanggal_daftar),
+            nameCol,
+            lowonganCol,
+            ageCol,
+            telCol,
+            item.pendidikan || '-',
+            `Rp ${formatUang(item.gaji_diminta)}`
+          ]);
+        });
+
+        doc.autoTable({
+          head: [tableColumns],
+          body: tableRows,
+          startY: 110,
+          theme: 'grid',
+          styles: {
+            font: 'helvetica',
+            fontSize: 8,
+            cellPadding: 6,
+            textColor: [51, 65, 85],
+            lineColor: [226, 232, 240],
+            lineWidth: 0.5,
+            overflow: 'linebreak'
+          },
+          headStyles: {
+            fillColor: [15, 23, 42],
+            textColor: [255, 255, 255],
+            fontStyle: 'bold',
+            halign: 'center',
+            fontSize: 8
+          },
+          alternateRowStyles: {
+            fillColor: [248, 250, 252]
+          },
+          columnStyles: {
+            0: { cellWidth: 25, halign: 'center' },
+            1: { cellWidth: 60, halign: 'center' },
+            2: { cellWidth: 120 },
+            3: { cellWidth: 160 },
+            4: { cellWidth: 80, halign: 'center' },
+            5: { cellWidth: 100 },
+            6: { cellWidth: 60, halign: 'center' },
+            7: { cellWidth: 85, halign: 'right', fontStyle: 'bold' }
+          },
+          didDrawPage: function(data) {
+            // Footer
+            doc.setFontSize(8);
+            doc.setTextColor(148, 163, 184);
+            doc.text('Halaman ' + doc.internal.getNumberOfPages(), marginL, pageH - 20);
+            doc.text('TATA GLOBAL — Laporan Rekruitmen Pelamar', pageW - marginR, pageH - 20, { align: 'right' });
+          }
+        });
+
+        doc.save(`Laporan_Pelamar_${new Date().toISOString().split('T')[0]}.pdf`);
+        showToast('PDF Pelamar berhasil diunduh!');
+      };
 
       // Initial Load
       document.addEventListener('DOMContentLoaded', initializePage);
