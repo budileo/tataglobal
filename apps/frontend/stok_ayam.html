@@ -1577,7 +1577,7 @@
                             : '';
                         
                         const matiDisplay = matiEkor > 0 ? `<span class="text-rose-600 font-semibold">${matiEkor} ekor (${matiKg.toFixed(2)} kg)</span>` : '<span class="text-slate-400">0</span>';
-                        const susutDisplay = susutKg > 0 ? `<span class="text-rose-600 font-semibold">${susutKg.toFixed(2)} kg</span>` : '<span class="text-slate-400">0</span>';
+                        const susutDisplay = susutKg !== 0 ? `<span class="text-rose-600 font-semibold">${susutKg.toFixed(2)} kg</span>` : '<span class="text-slate-400">0</span>';
                         
                         // Total = Netto - Susut - Mati Kg (bersih masuk stok)
                         const totalBersih = nettoKg - susutKg - matiKg;
@@ -1600,7 +1600,7 @@
                     // Baris Total per Kandang
                     const totalBersihKandang = totalNettoKandang - totalSusutKgKandang - totalMatiKgKandang;
                     const totalMatiDisplay = totalMatiEkorKandang > 0 ? `${totalMatiEkorKandang.toLocaleString('id-ID')} ekor (${totalMatiKgKandang.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kg)` : '0';
-                    const totalSusutDisplay = totalSusutKgKandang > 0 ? `${totalSusutKgKandang.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kg` : '0';
+                    const totalSusutDisplay = totalSusutKgKandang !== 0 ? `${totalSusutKgKandang.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kg` : '0';
                     
                     jurnalHtml += `
                     <tr class="bg-teal-50/50 hover:bg-teal-100/50 font-bold border-b-2 border-slate-300">
@@ -1688,7 +1688,7 @@
                     const noCell = idx === 0 ? `<td rowspan="${rowspan}" class="no-cell">${no}</td>` : '';
                     const nameCell = idx === 0 ? `<td rowspan="${rowspan}" class="kandang-cell">${kandangName}<br><small>${items.length} transaksi</small></td>` : '';
                     const matiText = matiEkor > 0 ? `${matiEkor} ekor (${fmtNum(matiKg)} kg)` : '0';
-                    const susutText = susutKg > 0 ? `${fmtNum(susutKg)} kg` : '0';
+                    const susutText = susutKg !== 0 ? `${fmtNum(susutKg)} kg` : '0';
 
                     rowsHtml += `<tr>
                         ${noCell}${nameCell}
@@ -1706,7 +1706,7 @@
                 // Total per kandang
                 const totalBersihKandang = tNetto - tSusut - tMatiKg;
                 const totalMatiText = tMatiE > 0 ? `${tMatiE.toLocaleString('id-ID')} ekor (${fmtNum(tMatiKg)} kg)` : '0';
-                const totalSusutText = tSusut > 0 ? `${fmtNum(tSusut)} kg` : '0';
+                const totalSusutText = tSusut !== 0 ? `${fmtNum(tSusut)} kg` : '0';
 
                 rowsHtml += `<tr class="total-row">
                     <td class="bold">TOTAL</td>
