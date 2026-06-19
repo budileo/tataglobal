@@ -33,7 +33,8 @@ export default defineConfig({
         'rekruitmen': resolve(__dirname, 'rekruitmen.html'),
         'lowongan': resolve(__dirname, 'lowongan.html'),
         'pelamar': resolve(__dirname, 'pelamar.html'),
-        'form-lamaran': resolve(__dirname, 'form_lamaran.html')
+        'form-lamaran': resolve(__dirname, 'form_lamaran.html'),
+        'asesment': resolve(__dirname, 'asesment.html')
       }
     }
   }

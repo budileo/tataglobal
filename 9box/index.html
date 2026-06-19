@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HRD 9-Box Assessment</title>
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <!-- Feather Icons for UI -->
+  <script src="https://unpkg.com/feather-icons"></script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans flex antialiased print:bg-white print:text-black">
+  <div id="sidebar-container"></div>
+  
+  <div class="flex-1 flex flex-col min-w-0 transition-all duration-300 lg:ml-64 w-full" id="main-content-wrapper">
+    <!-- Header with Toggle -->
+    <header class="bg-white border-b border-slate-200 h-16 flex items-center px-4 md:px-8 z-10 sticky top-0 print:hidden shadow-sm">
+      <button id="sidebar-toggle" class="text-slate-600 hover:text-blue-600 focus:outline-none p-2 rounded-md hover:bg-slate-100 transition-colors mr-4">
+        <i data-feather="menu"></i>
+      </button>
+      <div class="text-lg font-bold text-slate-800 tracking-tight hidden sm:block">Sistem Penilaian Kinerja 9-Box</div>
+      
+      <!-- Right Header Actions (Optional) -->
+      <div class="ml-auto flex items-center">
+        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm shadow-sm">
+          HR
+        </div>
+      </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="flex-1 p-4 sm:p-8 print:p-0 overflow-x-hidden">
+      <div id="app-container" class="max-w-6xl mx-auto">
+        <!-- Views will be injected here -->
+      </div>
+    </main>
+  </div>
+  
+  <script src="js/sidebar.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

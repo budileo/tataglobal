@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Print Styles */
+@media print {
+  @page {
+    margin: 1cm;
+  }
+  body, html {
+    background: transparent !important;
+  }
+  /* Hide UI elements */
+  .no-print, button, nav, aside {
+    display: none !important;
+  }
+  
+  main {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Expand print contents */
+  #app-container {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  
+  /* Prevent breaks */
+  .avoid-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  /* Print select/input styling override by showing span instead */
+  .print-select-value {
+    display: inline-block !important;
+    font-weight: 600;
+  }
+  select {
+    display: none !important;
+  }
+}
+
+/* Active Nav State */
+.nav-link.active {
+  background-color: #1e293b;
+  color: #60a5fa;
+  border-left: 4px solid #60a5fa;
+}
+
+/* Glassmorphism helpers */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}

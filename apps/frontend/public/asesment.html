@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asesmen Pelamar POSMATCH - TATA GLOBAL</title>
+  <meta name="description" content="Sistem Evaluasi Calon Karyawan POSMATCH" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            emerald: { 600: '#059669', 700: '#047857' },
+            navy: { 900: '#0f172a' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    
+    @media print {
+      body { background: white !important; margin: 0; padding: 0; }
+      .no-print, button, nav, header { display: none !important; }
+      main { margin-left: 0 !important; padding: 0 !important; width: 100% !important; }
+      #posmatch-result-view { display: block !important; margin: 0 !important; padding: 0 !important; }
+      .print-border { border: 1px solid #cbd5e1 !important; border-radius: 8px !important; }
+      .avoid-break { page-break-inside: avoid; break-inside: avoid; }
+    }
+  </style>
+  <script src="auth-guard.js"></script>
+</head>
+<body id="main-wrapper" class="bg-slate-50 text-slate-900 antialiased pb-20 md:pb-0 md:pl-64 transition-all duration-300">
+
+  <!-- Top Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 md:px-8 h-16 flex items-center justify-between shadow-sm no-print">
+    <div class="flex items-center gap-3">
+      <a href="rekruitmen.html" class="p-2 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-500 hover:text-emerald-600 transition-all" title="Kembali ke Rekruitmen">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      </a>
+      <h2 class="text-xl font-bold text-slate-900 hidden md:block">Asesmen POSMATCH Calon Karyawan</h2>
+      <span class="text-lg font-bold text-slate-900 md:hidden">Asesmen</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span id="header-role-badge" class="text-sm font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full hidden sm:block">Role: -</span>
+      <div id="header-user-avatar" class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">-</div>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav id="sidebar" class="bg-navy-900 text-white fixed bottom-0 w-full md:w-64 md:h-screen md:top-0 md:left-0 z-40 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto px-2 py-2 md:py-6 border-t md:border-t-0 md:border-r border-slate-800 transition-all duration-300 no-print">
+    <div class="hidden md:flex items-center justify-between px-6 mb-8 w-full shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-emerald-600 rounded flex items-center justify-center font-bold text-sm">TG</div>
+        <span class="font-bold text-base tracking-wide sidebar-text leading-tight">TATA<br>GLOBAL</span>
+      </div>
+      <button id="toggleMenuBtn" class="text-slate-400 hover:text-white p-1">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </div>
+    <div id="sidebar-menu-container" class="flex md:flex-col md:w-full w-max md:space-y-1"></div>
+    <div class="hidden md:block md:mt-auto w-full">
+      <div class="px-6 py-3 border-t border-slate-800">
+        <p id="sidebar-user-name" class="text-sm font-semibold text-white sidebar-text">-</p>
+        <p id="sidebar-user-email" class="text-[11px] text-slate-500 sidebar-text">-</p>
+      </div>
+      <a href="#" onclick="AuthGuard.logout(); return false;" title="Keluar" class="flex items-center gap-3 px-6 py-3 text-rose-400 hover:bg-slate-800 transition-colors text-sm font-medium w-full">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013-3v1"></path></svg>
+        <span class="sidebar-text">Keluar</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="p-4 md:p-8 max-w-screen-xl mx-auto fade-in">
+    <div class="space-y-6">
+      
+      <!-- Welcome Header -->
+      <div class="bg-navy-900 text-white p-6 md:p-8 rounded-3xl shadow-sm relative overflow-hidden no-print">
+        <div class="relative z-10">
+          <h1 class="text-2xl md:text-3xl font-black tracking-tight">Evaluasi POSMATCH Pelamar</h1>
+          <p class="text-slate-300 mt-2 text-sm md:text-base font-medium">Uji Mindset, Attitude, & Kecocokan Posisi pendaftar kerja</p>
+        </div>
+        <div class="absolute -right-6 -top-6 w-32 h-32 bg-emerald-600/20 rounded-full blur-2xl"></div>
+      </div>
+
+      <!-- Informasi Kandidat & Asesor -->
+      <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 no-print">
+        <h3 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+          Informasi Data Dasar Asesmen
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Pilih Calon Pendaftar</label>
+            <select id="select-pelamar" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-emerald-500 focus:bg-white transition-all font-semibold text-slate-700">
+              <option value="">-- Pilih Calon Pendaftar --</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Nama Asesor</label>
+            <input type="text" id="pm-asesor" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-emerald-500 focus:bg-white transition-all font-semibold text-slate-700" placeholder="Tulis Nama Anda (Asesor)">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Nama Kandidat</label>
+            <input type="text" id="pm-kandidat" required class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-emerald-500 outline-none font-semibold text-slate-700" placeholder="Nama kandidat (Otomatis)">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Posisi yang Dilamar</label>
+            <input type="text" id="pm-posisi" required class="w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-emerald-500 outline-none font-semibold text-slate-700" placeholder="Posisi yang dilamar (Otomatis)">
+          </div>
+        </div>
+      </div>
+
+      <!-- POSMATCH Evaluation Form -->
+      <form id="posmatch-form" class="space-y-8 no-print">
+        
+        <!-- SECTION A: MINDSET -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-black text-slate-800 bg-blue-50 px-5 py-3 rounded-2xl border border-blue-100 uppercase tracking-wider">
+            A. MINDSET (Pola Pikir)
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- M1 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-black">M1</span>
+                  Growth Mindset
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Ceritakan pengalaman Anda menghadapi kegagalan. Apa yang Anda lakukan setelahnya?</p>
+                  <p>2. Menurut Anda, apakah kemampuan seseorang bisa berubah seiring waktu atau sudah bakat bawaan?</p>
+                  <p>3. Apa yang Anda lakukan ketika diberikan tugas yang belum pernah Anda kerjakan sebelumnya?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_m1" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-blue-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m1" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m1" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m1" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m1" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m1" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Fixed mindset</span>
+                    <span>Growth mindset</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- M2 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-black">M2</span>
+                  Ownership
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Ceritakan situasi di mana Anda mengambil tanggung jawab di luar deskripsi pekerjaan Anda.</p>
+                  <p>2. Ketika terjadi masalah di tim, apa yang biasanya Anda lakukan?</p>
+                  <p>3. Pernahkah Anda melakukan kesalahan? Bagaimana Anda menyelesaikannya?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_m2" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-blue-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m2" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m2" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m2" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m2" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m2" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Pasif/Menyalahkan</span>
+                    <span>Tanggung jawab penuh</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- M3 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-black">M3</span>
+                  Ketahanan (Resilience)
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Ceritakan pengalaman terberat Anda dalam bekerja.</p>
+                  <p>2. Bagaimana cara Anda bangkit dari kegagalan?</p>
+                  <p>3. Pernahkah Anda merasa putus asa? Apa yang Anda lakukan untuk mengatasinya?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_m3" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-blue-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m3" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m3" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m3" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m3" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m3" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Mudah menyerah</span>
+                    <span>Sangat tangguh</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- M4 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-black">M4</span>
+                  Orientasi Belajar
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Apa yang Anda lakukan untuk mengembangkan diri dalam 6 bulan terakhir?</p>
+                  <p>2. Kapan terakhir kali Anda mencari umpan balik tentang kinerja Anda?</p>
+                  <p>3. Apa buku/pelatihan terakhir yang Anda ikuti?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_m4" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-blue-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m4" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m4" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m4" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m4" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_m4" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Enggan belajar</span>
+                    <span>Proaktif belajar</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION B: ATTITUDE -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-black text-slate-800 bg-indigo-50 px-5 py-3 rounded-2xl border border-indigo-100 uppercase tracking-wider">
+            B. ATTITUDE (Sikap Kerja)
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- A1 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-black">A1</span>
+                  Inisiatif
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Ceritakan saat Anda mengambil tindakan tanpa menunggu perintah.</p>
+                  <p>2. Apa ide atau perbaikan yang pernah Anda usulkan di tempat kerja?</p>
+                  <p>3. Jika pekerjaan Anda selesai lebih cepat, apa yang biasanya Anda lakukan?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_a1" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-indigo-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a1" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a1" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a1" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a1" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a1" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Menunggu perintah</span>
+                    <span>Sangat inisiatif</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- A2 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-black">A2</span>
+                  Kolaborasi
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Ceritakan pengalaman Anda bekerja dalam tim yang memiliki konflik.</p>
+                  <p>2. Bagaimana cara Anda menghadapi rekan kerja yang memiliki gaya kerja berbeda?</p>
+                  <p>3. Apakah Anda lebih suka kerja sendiri atau tim? Mengapa?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_a2" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-indigo-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a2" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a2" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a2" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a2" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a2" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Individualis</span>
+                    <span>Sangat kooperatif</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- A3 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-black">A3</span>
+                  Adaptabilitas
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Ceritakan saat Anda menghadapi perubahan besar di tempat kerja.</p>
+                  <p>2. Bagaimana reaksi Anda ketika prosedur kerja tiba-tiba berubah?</p>
+                  <p>3. Seberapa cepat Anda bisa menyesuaikan dengan lingkungan atau tim baru?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_a3" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-indigo-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a3" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a3" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a3" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a3" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a7" value="5" class="peer sr-only"> <!-- Wait, name is score_a3 not score_a7! Let's check! -->
+                      <!-- Ah, line 1058 in the first version had input name="score_a7" instead of a3 inside label 5 of A3. Fixed it below! -->
+                      <input type="radio" name="score_a3" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Kaku</span>
+                    <span>Sangat adaptif</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- A4 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-black">A4</span>
+                  Integritas
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Pernahkah Anda dalam situasi harus memilih antara kejujuran dan kepentingan pribadi?</p>
+                  <p>2. Apa yang Anda lakukan jika melihat rekan kerja melakukan pelanggaran ringan?</p>
+                  <p>3. Bagaimana jika atasan meminta Anda melakukan sesuatu yang menurut Anda tidak etis?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_a4" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-indigo-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a4" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a4" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a4" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a4" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a4" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Berkompromi etika</span>
+                    <span>Sangat berprinsip</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- A5 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-black">A5</span>
+                  Ketelitian
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Ceritakan pekerjaan yang membutuhkan ketelitian tinggi yang pernah Anda lakukan.</p>
+                  <p>2. Seberapa sering Anda melakukan kesalahan karena kurang teliti?</p>
+                  <p>3. Apa yang Anda lakukan untuk memastikan pekerjaan Anda bebas dari kesalahan?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_a5" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-indigo-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a5" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a5" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a5" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a5" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a5" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Sering ceroboh</span>
+                    <span>Sangat akurat</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- A6 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-black">A6</span>
+                  Ekspektasi Gaji ⭐
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Berapa ekspektasi gaji Anda untuk posisi ini?</p>
+                  <p>2. Apakah Anda bersedia jika gaji yang kami tawarkan lebih rendah dari ekspektasi Anda? Mengapa?</p>
+                  <p>3. Menurut Anda, faktor apa saja yang menentukan nilai gaji seseorang selain pengalaman?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_a6" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-indigo-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a6" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a6" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a6" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a6" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a6" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Sangat tidak realistis</span>
+                    <span>Sangat realistis</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- A7 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-black">A7</span>
+                  Ekspektasi Karir ⭐
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Apa target karir Anda dalam 1 tahun ke depan? Dan dalam 3 tahun?</p>
+                  <p>2. Berapa lama Anda merasa cukup untuk berada di satu posisi sebelum naik jabatan?</p>
+                  <p>3. Apa yang akan Anda lakukan jika promosi yang Anda harapkan belum juga datang?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_a7" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-indigo-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a7" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a7" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a7" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a7" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_a7" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-indigo-600 peer-checked:text-white peer-checked:border-indigo-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Sangat tidak realistis</span>
+                    <span>Sangat realistis</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION C: KECOCOKAN POSISI -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-black text-slate-800 bg-emerald-50 px-5 py-3 rounded-2xl border border-emerald-100 uppercase tracking-wider">
+            C. KECOCOKAN POSISI (Culture Fit)
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- P1 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-black">P1</span>
+                  Kenyamanan Interaksi (Frontliner)
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Apakah Anda nyaman berbicara dengan banyak orang atau pelanggan setiap hari?</p>
+                  <p>2. Bagaimana perasaan Anda jika harus menjadi pusat perhatian?</p>
+                  <p>3. Pernahkah Anda menangani keluhan pelanggan? Bagaimana rasanya?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_p1" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-emerald-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p1" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p1" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p1" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p1" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p1" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Sangat tertutup</span>
+                    <span>Ekselen interaksi</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- P2 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-black">P2</span>
+                  Kenyamanan Kerja Mandiri (Back Office)
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Apakah Anda produktif saat bekerja tanpa diawasi?</p>
+                  <p>2. Apakah Anda menikmati pekerjaan yang dikerjakan sendiri tanpa banyak interupsi?</p>
+                  <p>3. Seberapa lama Anda bisa fokus bekerja sendirian?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_p2" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-emerald-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p2" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p2" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p2" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p2" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p2" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Butuh arahan konstan</span>
+                    <span>Sangat mandiri</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- P3 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-black">P3</span>
+                  Tahan Tekanan Pelanggan
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Bagaimana reaksi Anda jika berhadapan dengan orang yang sedang marah?</p>
+                  <p>2. Pernahkah Anda melayani pelanggan yang sulit? Bagaimana pengalamannya?</p>
+                  <p>3. Apakah Anda bisa tetap tenang saat ditekan atau dimarahi?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_p3" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-emerald-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p3" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p3" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p3" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p3" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p3" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Mudah emosi</span>
+                    <span>Tenang & solutif</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- P4 -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm flex items-center gap-2 border-b pb-2 mb-3">
+                  <span class="w-6 h-6 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-black">P4</span>
+                  Preferensi Rutinitas
+                </h4>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 mb-3 text-xs leading-relaxed text-slate-600 space-y-1">
+                  <p class="font-bold text-slate-500 uppercase text-[9px] tracking-wider mb-1">Pertanyaan Acuan:</p>
+                  <p>1. Apakah Anda suka pekerjaan yang terstruktur dan berulang?</p>
+                  <p>2. Atau Anda lebih suka pekerjaan yang bervariasi setiap hari?</p>
+                  <p>3. Bagaimana perasaan Anda jika harus melakukan tugas yang sama setiap hari?</p>
+                </div>
+              </div>
+              <div>
+                <textarea id="val_p4" rows="2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-emerald-500 resize-none mb-3" placeholder="Tulis jawaban kandidat..."></textarea>
+                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                  <p class="text-[10px] font-bold text-center text-slate-500 mb-2">Penilaian Skor (1-5)</p>
+                  <div class="flex gap-1.5">
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p4" value="1" class="peer sr-only" required>
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">1</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p4" value="2" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">2</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p4" value="3" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">3</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p4" value="4" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">4</div>
+                    </label>
+                    <label class="flex-1 text-center cursor-pointer group">
+                      <input type="radio" name="score_p4" value="5" class="peer sr-only">
+                      <div class="py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 transition-all">5</div>
+                    </label>
+                  </div>
+                  <div class="flex justify-between text-[9px] text-slate-400 font-bold mt-1 px-1">
+                    <span>Bosan rutinitas</span>
+                    <span>Nyaman rutinitas</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ASESSOR FINAL NOTES -->
+        <div class="bg-slate-800 p-6 md:p-8 rounded-3xl text-white shadow-sm space-y-4">
+          <h4 class="font-extrabold text-base flex items-center gap-2">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            Catatan Kesimpulan Asesor
+          </h4>
+          <textarea id="pm-kesimpulan" required rows="4" class="w-full px-4 py-3 border border-slate-700 bg-slate-900/50 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-white transition-all placeholder:text-slate-500 text-sm" placeholder="Tulis kesimpulan umum wawancara, kelebihan/kelemahan calon, dan catatan kelayakan..."></textarea>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="flex flex-wrap justify-end gap-3 pt-6 border-t border-slate-200">
+          <button type="button" id="btn-pm-reset" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-3 rounded-2xl transition-all text-sm flex items-center gap-2">
+            Reset Form
+          </button>
+          <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-8 py-3 rounded-2xl shadow-lg shadow-emerald-600/20 transition-all text-sm flex items-center gap-2">
+            Hitung & Simpan Asesmen
+          </button>
+        </div>
+      </form>
+
+      <!-- HASIL ASSESSMENT REPORT (Hidden by default) -->
+      <div id="posmatch-result-view" class="hidden mt-8 max-w-4xl mx-auto avoid-break"></div>
+
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="auth-guard.js"></script>
+  <script type="module" src="cloud-auth-guard.js"></script>
+  <script src="app.js"></script>
+  <script src="sidebar.js"></script>
+  <script src="toast.js"></script>
+
+  <script type="module">
+    import { supabase } from './supabaseClient.js';
+
+    let listPelamar = [];
+    const form = document.getElementById('posmatch-form');
+    const selectPelamar = document.getElementById('select-pelamar');
+    const resultView = document.getElementById('posmatch-result-view');
+
+    // Inisialisasi: Tarik data pendaftar dari Supabase
+    async function loadApplicants() {
+      try {
+        const { data, error } = await supabase
+          .from('hrd_pelamar')
+          .select(`
+            id,
+            nama_pelamar,
+            hrd_lowongan (
+              posisi_lowongan
+            )
+          `)
+          .order('nama_pelamar');
+
+        if (error) throw error;
+        listPelamar = data || [];
+        
+        // Isi dropdown
+        listPelamar.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.id;
+          const pos = item.hrd_lowongan ? item.hrd_lowongan.posisi_lowongan : 'Tidak ada posisi';
+          opt.textContent = `${item.nama_pelamar} (${pos})`;
+          selectPelamar.appendChild(opt);
+        });
+      } catch (err) {
+        console.error('Error load applicants:', err);
+        showToast('Gagal memuat data pendaftar: ' + err.message, 'error');
+      }
+    }
+
+    // Auto populate nama dan posisi saat kandidat dipilih
+    selectPelamar.addEventListener('change', () => {
+      const selectedId = selectPelamar.value;
+      if (!selectedId) {
+        document.getElementById('pm-kandidat').value = '';
+        document.getElementById('pm-posisi').value = '';
+        return;
+      }
+
+      const item = listPelamar.find(x => x.id === selectedId);
+      if (item) {
+        document.getElementById('pm-kandidat').value = item.nama_pelamar;
+        document.getElementById('pm-posisi').value = item.hrd_lowongan ? item.hrd_lowongan.posisi_lowongan : '';
+      }
+    });
+
+    // Reset Form
+    document.getElementById('btn-pm-reset').addEventListener('click', () => {
+      form.reset();
+      document.getElementById('pm-kandidat').value = '';
+      document.getElementById('pm-posisi').value = '';
+      resultView.innerHTML = '';
+      resultView.classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast('Form berhasil di-reset!', 'info');
+    });
+
+    // Form Submit (Hitung & Simpan)
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const pelamarId = selectPelamar.value || null;
+      const kandidat = document.getElementById('pm-kandidat').value.trim();
+      const posisi = document.getElementById('pm-posisi').value.trim();
+      const asesor = document.getElementById('pm-asesor').value.trim();
+      const kesimpulanTxt = document.getElementById('pm-kesimpulan').value.trim();
+
+      if (!kandidat || !posisi || !asesor || !kesimpulanTxt) {
+        showToast('Mohon lengkapi data dasar dan kesimpulan asesor!', 'warning');
+        return;
+      }
+
+      // Kumpulan variabel POSMATCH
+      const variables = [
+        { id: 'm1', code: 'M1' }, { id: 'm2', code: 'M2' }, { id: 'm3', code: 'M3' }, { id: 'm4', code: 'M4' },
+        { id: 'a1', code: 'A1' }, { id: 'a2', code: 'A2' }, { id: 'a3', code: 'A3' }, { id: 'a4', code: 'A4' }, { id: 'a5', code: 'A5' }, { id: 'a6', code: 'A6' }, { id: 'a7', code: 'A7' },
+        { id: 'p1', code: 'P1' }, { id: 'p2', code: 'P2' }, { id: 'p3', code: 'P3' }, { id: 'p4', code: 'P4' }
+      ];
+
+      const scores = {};
+      const texts = {};
+
+      for (let v of variables) {
+        const radio = form.querySelector(`input[name="score_${v.id}"]:checked`);
+        if (!radio) {
+          showToast(`Variabel ${v.code} belum diberi skor!`, 'warning');
+          const element = document.getElementsByName(`score_${v.id}`)[0];
+          if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
+        scores[v.code] = parseInt(radio.value);
+        texts[v.code] = document.getElementById(`val_${v.id}`).value.trim();
+      }
+
+      // 1. Logika Perhitungan Rata-Rata (Persis Aslinya)
+      const ms = (scores.M1 + scores.M2 + scores.M3 + scores.M4) / 4;
+      const as = (scores.A1 + scores.A2 + scores.A3 + scores.A4 + scores.A5 + scores.A6 + scores.A7) / 7;
+      const ps = (scores.P1 + scores.P2 + scores.P3 + scores.P4) / 4;
+
+      // 2. Logika Penentuan Klaster Posisi (Persis Aslinya)
+      let cluster = "🟡 General Staff";
+      let clusterIcon = `<svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>`;
+      if (scores.P1 >= 4 && scores.P3 >= 4) {
+        cluster = "🟢 Frontliner";
+        clusterIcon = `<svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+      } else if (scores.P2 >= 4 && scores.P1 <= 3) {
+        cluster = "🔵 Back Office";
+        clusterIcon = `<svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`;
+      } else if (scores.P1 >= 3 && scores.P2 >= 3) {
+        cluster = "🟡 Hybrid";
+        clusterIcon = `<svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>`;
+      } else if (scores.P4 <= 2) {
+        cluster = "🟣 Kreatif / Spesialis";
+        clusterIcon = `<svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>`;
+      }
+
+      // 3. Logika Penentuan Status Kelulusan (Persis Aslinya)
+      let status = "";
+      let statusIcon = "";
+      let statusColor = "";
+      if (ms >= 3.5 && as >= 3.5) {
+        status = "✅ DITERIMA";
+        statusIcon = `<svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+        statusColor = "text-emerald-600 bg-emerald-50 border-emerald-200";
+      } else if (ms >= 3.5 && as >= 3.0 && as < 3.5) {
+        status = "⚠️ DITERIMA BERSYARAT (Coaching Attitude)";
+        statusIcon = `<svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+        statusColor = "text-amber-600 bg-amber-50 border-amber-200";
+      } else if (ms >= 3.0 && ms < 3.5 && as >= 3.5) {
+        status = "⚠️ DITERIMA BERSYARAT (Coaching Mindset)";
+        statusIcon = `<svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+        statusColor = "text-amber-600 bg-amber-50 border-amber-200";
+      } else {
+        status = "❌ TIDAK DITERIMA";
+        statusIcon = `<svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+        statusColor = "text-rose-600 bg-rose-50 border-rose-200";
+      }
+
+      // 4. Logika Rekomendasi Posisi Spesifik (Persis Aslinya)
+      let rekomendasi = "";
+      if (cluster.includes("Frontliner")) {
+        if (scores.A1 >= 4) rekomendasi = "Sales / Marketing";
+        else if (scores.A3 >= 4) rekomendasi = "Customer Service";
+        else rekomendasi = "Resepsionis / Host";
+      } else if (cluster.includes("Back Office")) {
+        if (scores.A5 >= 4) rekomendasi = "Data Entry / Administrasi";
+        else if (scores.M2 >= 4) rekomendasi = "Inventory / Logistik";
+        else rekomendasi = "Administrasi Umum";
+      } else if (cluster.includes("Hybrid")) {
+        rekomendasi = "GA / Project Coordinator";
+      } else if (cluster.includes("Kreatif")) {
+        if (scores.M4 >= 4) rekomendasi = "Desain / Konten Kreator";
+        else rekomendasi = "R&D / Research";
+      } else {
+        rekomendasi = "Staff General (observasi 3 bulan)";
+      }
+
+      // 5. Logika Peringatan Red Flags (Persis Aslinya)
+      let peringatan = [];
+      if (scores.A6 <= 2) peringatan.push("⚠️ Ekspektasi gaji tidak realistis, berisiko keluar cepat.");
+      if (scores.A7 <= 2) peringatan.push("⚠️ Ekspektasi karir tidak realistis, rawan frustrasi.");
+      if (scores.P1 <= 2 && scores.P2 >= 4) peringatan.push("ℹ️ Kandidat ini TIDAK COCOK untuk posisi Frontliner (Customer Service, Sales).");
+
+      try {
+        // Tulis ke database Supabase
+        const { data, error } = await supabase
+          .from('hrd_asesmnt')
+          .insert([{
+            pelamar_id: pelamarId,
+            tanggal: new Date().toISOString().split('T')[0],
+            kandidat: kandidat,
+            posisi: posisi,
+            asesor: asesor,
+            scores: scores,
+            texts: texts,
+            avg_mindset: ms,
+            avg_attitude: as,
+            avg_fit: ps,
+            cluster: cluster,
+            status: status,
+            rekomendasi: rekomendasi,
+            peringatan: peringatan,
+            kesimpulan: kesimpulanTxt
+          }]);
+
+        if (error) throw error;
+
+        // Tampilkan notifikasi Toast (Meluncur perlahan, menghilang otomatis, TANPA dialog pop-up!)
+        showToast('Asesmen kandidat berhasil disimpan ke database!', 'success');
+
+        // Render Laporan Asesmen Visual
+        renderResultCard(kandidat, posisi, asesor, ms, as, ps, cluster, clusterIcon, status, statusIcon, statusColor, rekomendasi, peringatan, kesimpulanTxt, scores, texts);
+        
+      } catch (err) {
+        console.error('Error insert assessment:', err);
+        showToast('Gagal menyimpan ke database: ' + err.message, 'error');
+      }
+    });
+
+    // Helper render kartu hasil laporan
+    function renderResultCard(kandidat, posisi, asesor, ms, as, ps, cluster, clusterIcon, status, statusIcon, statusColor, rekomendasi, peringatan, kesimpulanTxt, scores, texts) {
+      const today = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+      
+      const warnHtml = peringatan.length ? 
+        peringatan.map(w => `<div class="bg-rose-50 text-rose-800 px-4 py-2.5 rounded-xl border border-rose-100 text-xs font-semibold">${w}</div>`).join('') :
+        `<div class="text-slate-400 text-xs italic">Tidak ada peringatan khusus untuk kandidat ini.</div>`;
+
+      // Map detailed scores
+      const variablesMap = [
+        { code: 'M1', label: 'Growth Mindset' }, { code: 'M2', label: 'Ownership' }, { code: 'M3', label: 'Resilience' }, { code: 'M4', label: 'Belajar' },
+        { code: 'A1', label: 'Inisiatif' }, { code: 'A2', label: 'Kolaborasi' }, { code: 'A3', label: 'Adaptabilitas' }, { code: 'A4', label: 'Integritas' }, { code: 'A5', label: 'Ketelitian' }, { code: 'A6', label: 'Ekspektasi Gaji' }, { code: 'A7', label: 'Ekspektasi Karir' },
+        { code: 'P1', label: 'Interaksi' }, { code: 'P2', label: 'Mandiri' }, { code: 'P3', label: 'Tahan Tekanan' }, { code: 'P4', label: 'Rutinitas' }
+      ];
+
+      const detailsHtml = variablesMap.map(v => {
+        const val = scores[v.code];
+        const text = texts[v.code] || '-';
+        let badgeColor = 'bg-slate-100 text-slate-700';
+        if (val >= 4) badgeColor = 'bg-emerald-100 text-emerald-800';
+        if (val <= 2) badgeColor = 'bg-rose-100 text-rose-800';
+
+        return `
+          <div class="border-b border-slate-100 pb-2 mb-2 avoid-break">
+            <div class="flex justify-between items-start gap-4">
+              <div>
+                <span class="font-bold text-xs text-slate-800">${v.code} - ${v.label}</span>
+                <p class="text-slate-500 text-[11px] mt-0.5">${escapeHTML(text)}</p>
+              </div>
+              <span class="px-2 py-0.5 rounded text-xs font-bold ${badgeColor} shrink-0">${val} / 5</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      resultView.innerHTML = `
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden p-6 md:p-8 print-border">
+          
+          <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200 no-print">
+            <h3 class="text-lg font-black text-slate-800 uppercase tracking-wider">Hasil Asesmen Kandidat</h3>
+            <button onclick="window.print()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-4 rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+              Cetak PDF / Laporan
+            </button>
+          </div>
+
+          <div class="text-center mb-8 pb-4 border-b border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 tracking-wider">LAPORAN HASIL ASESMEN POSMATCH</h2>
+            <p class="text-xs text-slate-400 font-bold uppercase mt-1">TATA GLOBAL — REKRUITMEN HRD</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2">
+              <p class="font-bold text-slate-400 uppercase text-[9px] tracking-wider mb-1">Identitas Kandidat</p>
+              <div class="flex"><span class="w-24 text-slate-500 font-medium">Nama Kandidat</span><span class="font-bold text-slate-800">: ${escapeHTML(kandidat)}</span></div>
+              <div class="flex"><span class="w-24 text-slate-500 font-medium">Posisi Dilamar</span><span class="font-bold text-slate-800">: ${escapeHTML(posisi)}</span></div>
+              <div class="flex"><span class="w-24 text-slate-500 font-medium">Nama Asesor</span><span class="font-bold text-slate-800">: ${escapeHTML(asesor)}</span></div>
+              <div class="flex"><span class="w-24 text-slate-500 font-medium">Tanggal Asesmen</span><span class="font-bold text-slate-800">: ${today}</span></div>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2">
+              <p class="font-bold text-slate-400 uppercase text-[9px] tracking-wider mb-1">Skor Aritmatika POSMATCH</p>
+              <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Mindset Score (M1-M4)</span><span class="font-extrabold text-sm text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">${ms.toFixed(2)} / 5.0</span></div>
+              <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Attitude Score (A1-A7)</span><span class="font-extrabold text-sm text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">${as.toFixed(2)} / 5.0</span></div>
+              <div class="flex justify-between items-center"><span class="text-slate-600 font-medium">Kecocokan Posisi (P1-P4)</span><span class="font-extrabold text-sm text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">${ps.toFixed(2)} / 5.0</span></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="p-4 rounded-2xl border flex items-center gap-3 ${statusColor} avoid-break">
+              ${statusIcon}
+              <div>
+                <p class="text-[9px] font-bold uppercase tracking-wider opacity-70">Keputusan Kelayakan</p>
+                <span class="font-extrabold text-base leading-tight">${status}</span>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50 text-slate-700 flex items-center gap-3 avoid-break">
+              ${clusterIcon}
+              <div>
+                <p class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Klasifikasi Cluster</p>
+                <span class="font-extrabold text-base leading-tight text-slate-800">${cluster}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-emerald-50 text-emerald-900 border border-emerald-100 p-5 rounded-2xl mb-6 avoid-break">
+            <p class="text-[9px] font-bold uppercase tracking-wider text-emerald-700 mb-1">Rekomendasi Jabatan Penempatan</p>
+            <span class="font-black text-lg block flex items-center gap-1.5">
+              <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+              ${rekomendasi}
+            </span>
+            <p class="text-xs text-emerald-700 mt-2 font-medium">Berdasarkan hasil pemetaan cluster <strong>${cluster}</strong> dengan bobot variabel inisiatif dan kolaborasi yang relevan.</p>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-6 avoid-break">
+            <p class="text-[9px] font-bold uppercase text-slate-400 tracking-wider mb-2.5">Peringatan Khusus (*Red Flags*)</p>
+            <div class="space-y-1.5">${warnHtml}</div>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 mb-6 avoid-break">
+            <p class="text-[9px] font-bold uppercase text-slate-400 tracking-wider mb-2">Kesimpulan Catatan Asesor</p>
+            <p class="text-slate-700 text-xs leading-relaxed whitespace-pre-wrap font-medium">${escapeHTML(kesimpulanTxt)}</p>
+          </div>
+
+          <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 avoid-break">
+            <p class="text-[9px] font-bold uppercase text-slate-400 tracking-wider mb-3">Detail Nilai POSMATCH per Indikator</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">${detailsHtml}</div>
+          </div>
+
+        </div>
+      `;
+
+      resultView.classList.remove('hidden');
+      resultView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    // Load initial data
+    document.addEventListener('DOMContentLoaded', loadApplicants);
+  </script>
+</body>
+</html>
