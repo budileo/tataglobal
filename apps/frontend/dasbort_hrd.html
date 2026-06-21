@@ -198,15 +198,25 @@
 
         </div>
 
-        <!-- Tabel Ringkasan Harian Bulan Ini -->
+        <!-- Tabel Laporan Harian -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mt-6">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 border-b border-slate-100 pb-3">
             <div>
-              <h3 class="text-lg font-bold text-slate-800">Laporan Harian Bulan Ini</h3>
+              <h3 class="text-lg font-bold text-slate-800" id="ringkasan-harian-title">Laporan Harian Bulan Ini</h3>
               <p class="text-xs text-slate-500 mt-1" id="ringkasan-periode-text">Periode: -</p>
             </div>
-            <div class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg" id="ringkasan-total-summary">
-              Memuat ringkasan bulan ini...
+            <div class="flex flex-wrap items-center gap-3">
+              <select id="ringkasan-filter-periode" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 focus:outline-emerald-500 cursor-pointer shadow-sm" onchange="renderRingkasan()">
+                <option value="ini">Bulan Ini</option>
+                <option value="lalu">Bulan Lalu</option>
+              </select>
+              <div class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg" id="ringkasan-total-summary">
+                Memuat ringkasan...
+              </div>
+              <button onclick="downloadRingkasanPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-md shadow-emerald-600/10">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Cetak PDF
+              </button>
             </div>
           </div>
           <div class="overflow-x-auto rounded-xl border border-slate-200">
@@ -957,38 +967,59 @@
         const elPengCount = document.getElementById('widget-pengembangan-count');
         if (elPengCount) elPengCount.innerText = pengThisMonth.length;
 
-        // --- RENDERING TABEL RINGKASAN HARIAN BULAN INI ---
-        const currentYear = todayObj.getFullYear();
-        const currentMonth = todayObj.getMonth();
+        // --- RENDERING TABEL RINGKASAN HARIAN ---
+        const filterVal = document.getElementById('ringkasan-filter-periode')?.value || 'ini';
+        let targetMonthObj = new Date(todayObj.getFullYear(), todayObj.getMonth(), 1);
+        if (filterVal === 'lalu') {
+          targetMonthObj.setMonth(targetMonthObj.getMonth() - 1);
+        }
+        const targetMonthStr = getLocalDateString(targetMonthObj).substring(0, 7); // YYYY-MM
+
+        const elHarianTitle = document.getElementById('ringkasan-harian-title');
+        if (elHarianTitle) {
+          elHarianTitle.innerText = filterVal === 'ini' ? 'Laporan Harian Bulan Ini' : 'Laporan Harian Bulan Lalu';
+        }
+
+        const currentYear = targetMonthObj.getFullYear();
+        const currentMonth = targetMonthObj.getMonth();
         const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         
         const elPeriodeText = document.getElementById('ringkasan-periode-text');
         if (elPeriodeText) elPeriodeText.innerText = `Periode: ${monthNames[currentMonth]} ${currentYear}`;
         
-        const kehadiranThisMonth = hrdData.kehadiran.filter(x => x.tanggal && x.tanggal.startsWith(thisMonth));
-        const totalHadirThisMonth = kehadiranThisMonth.filter(x => x.status === 'Hadir').length;
-        const totalAbsenThisMonth = kehadiranThisMonth.filter(x => x.status !== 'Hadir').length;
+        const kehadiranTargetMonth = hrdData.kehadiran.filter(x => x.tanggal && x.tanggal.startsWith(targetMonthStr));
+        const totalHadirTargetMonth = kehadiranTargetMonth.filter(x => x.status === 'Hadir').length;
+        const totalAbsenTargetMonth = kehadiranTargetMonth.filter(x => x.status !== 'Hadir').length;
+
+        const prodTargetMonth = hrdData.produktivitas.filter(x => x.tanggal && x.tanggal.startsWith(targetMonthStr));
+        let sumTangkapTargetMonth = 0;
+        prodTargetMonth.forEach(p => {
+          sumTangkapTargetMonth += (p.tangkap_ayam_kotak || 0);
+        });
         
         const elTotalSummary = document.getElementById('ringkasan-total-summary');
         if (elTotalSummary) {
+          const labelBulan = filterVal === 'ini' ? 'Bulan Ini' : 'Bulan Lalu';
           elTotalSummary.innerHTML = `
-            Bulan Ini: 
-            <span class="text-emerald-600 font-bold">${totalHadirThisMonth} Hadir</span> | 
-            <span class="text-rose-600 font-bold">${totalAbsenThisMonth} Absen</span> | 
-            <span class="text-blue-600 font-bold">${sumTangkap} Kotak</span>
+            ${labelBulan}: 
+            <span class="text-emerald-600 font-bold">${totalHadirTargetMonth} Hadir</span> | 
+            <span class="text-rose-600 font-bold">${totalAbsenTargetMonth} Absen</span> | 
+            <span class="text-blue-600 font-bold">${sumTangkapTargetMonth} Kotak</span>
           `;
         }
 
-        // Kumpulkan semua tanggal unik dari database online Supabase untuk bulan ini
+        // Kumpulkan semua tanggal unik dari database online Supabase untuk periode target
         const dateSet = new Set();
         
-        // Selalu tampilkan hari ini di bagian teratas meskipun belum ada data terinput agar user merasa interaktif
-        dateSet.add(today);
+        // Selalu tampilkan hari ini di bagian teratas meskipun belum ada data terinput agar user merasa interaktif (hanya jika targetMonth adalah bulan ini)
+        if (filterVal === 'ini') {
+          dateSet.add(today);
+        }
         
         // Ambil semua tanggal transaksi riil dari database online Supabase
         ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(type => {
           (hrdData[type] || []).forEach(item => {
-            if (item.tanggal && item.tanggal.startsWith(thisMonth)) {
+            if (item.tanggal && item.tanggal.startsWith(targetMonthStr)) {
               dateSet.add(item.tanggal);
             }
           });
@@ -999,7 +1030,7 @@
         
         let tableHtml = '';
         if (sortedDates.length === 0) {
-          tableHtml = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">Tidak ada data di database online untuk bulan ini.</td></tr>`;
+          tableHtml = `<tr><td colspan="6" class="px-4 py-8 text-center text-slate-400">Tidak ada data di database online untuk periode ini.</td></tr>`;
         } else {
           sortedDates.forEach(tgl => {
             const isToday = (tgl === today);
@@ -1928,6 +1959,267 @@
             printWindow.print();
         };
       }
+
+      // --- DOWNLOAD RINGKASAN PDF ---
+      window.downloadRingkasanPDF = async function() {
+        const filterVal = document.getElementById('ringkasan-filter-periode')?.value || 'ini';
+        
+        const todayObj = new Date();
+        const today = getLocalDateString(todayObj);
+        let targetMonthObj = new Date(todayObj.getFullYear(), todayObj.getMonth(), 1);
+        if (filterVal === 'lalu') {
+          targetMonthObj.setMonth(targetMonthObj.getMonth() - 1);
+        }
+        const targetMonthStr = getLocalDateString(targetMonthObj).substring(0, 7); // YYYY-MM
+        
+        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const year = targetMonthObj.getFullYear();
+        const monthIndex = targetMonthObj.getMonth();
+        const periodeIndo = `${monthNames[monthIndex]} ${year}`;
+
+        const labelBulan = filterVal === 'ini' ? 'Bulan Ini' : 'Bulan Lalu';
+
+        // Check if there is data
+        const dateSet = new Set();
+        if (filterVal === 'ini') {
+          dateSet.add(today);
+        }
+        ['kehadiran', 'produktivitas', 'pelanggaran', 'pengembangan'].forEach(type => {
+          (hrdData[type] || []).forEach(item => {
+            if (item.tanggal && item.tanggal.startsWith(targetMonthStr)) {
+              dateSet.add(item.tanggal);
+            }
+          });
+        });
+
+        const sortedDates = Array.from(dateSet).sort((a, b) => b.localeCompare(a));
+        if (sortedDates.length === 0) {
+          alert("Tidak ada data untuk dicetak pada periode ini.");
+          return;
+        }
+
+        // Token check / authorization check
+        if(typeof AuthGuard !== 'undefined' && !(await AuthGuard.consumeToken('download', 'Print PDF Ringkasan Laporan Harian: ' + periodeIndo))) return;
+
+        // Calculate totals for summary box
+        const kehadiranTargetMonth = hrdData.kehadiran.filter(x => x.tanggal && x.tanggal.startsWith(targetMonthStr));
+        const totalHadir = kehadiranTargetMonth.filter(x => x.status === 'Hadir').length;
+        const totalAbsen = kehadiranTargetMonth.filter(x => x.status !== 'Hadir').length;
+
+        const prodTargetMonth = hrdData.produktivitas.filter(x => x.tanggal && x.tanggal.startsWith(targetMonthStr));
+        let totalProduksi = 0;
+        prodTargetMonth.forEach(p => {
+          totalProduksi += (p.tangkap_ayam_kotak || 0);
+        });
+
+        let rowsHtml = '';
+        sortedDates.forEach(tgl => {
+            // format date to indo
+            const parts = tgl.split('-');
+            const displayDateText = parts.length === 3 ? `${parseInt(parts[2])} ${monthNames[parseInt(parts[1])-1]} ${parts[0]}` : tgl;
+
+            // Jumlah Hadir
+            const tglHadirList = hrdData.kehadiran.filter(x => x.tanggal === tgl && x.status === 'Hadir');
+            const tglHadirCount = tglHadirList.length;
+            const hadirCell = tglHadirCount > 0 
+              ? `<span class="val-bold hadir">${tglHadirCount}</span> <span class="text-unit">Orang</span>`
+              : `<span class="text-unit">-</span>`;
+
+            // Jumlah Tidak Hadir (Detail)
+            const tglAbsenList = hrdData.kehadiran.filter(x => x.tanggal === tgl && x.status !== 'Hadir');
+            let absenCell = '';
+            if (tglAbsenList.length > 0) {
+              const detailAbsen = tglAbsenList.map(x => `<div class="detail-item"><span class="detail-name">${x.nama}</span> <span class="badge-gray">${x.status}</span></div>`).join('');
+              absenCell = `
+                <div class="detail-list">
+                  <div class="val-bold absen">${tglAbsenList.length} Orang</div>
+                  <div style="margin-top: 4px;">${detailAbsen}</div>
+                </div>
+              `;
+            } else {
+              absenCell = `<span class="text-unit">-</span>`;
+            }
+
+            // Produktivitas
+            const tglProdList = hrdData.produktivitas.filter(x => x.tanggal === tgl);
+            const tglTotalTangkap = tglProdList.reduce((sum, x) => sum + (x.tangkap_ayam_kotak || 0), 0);
+            const prodCell = tglTotalTangkap > 0
+              ? `<span class="val-bold produksi">${tglTotalTangkap}</span> <span class="text-unit">Kotak</span>`
+              : `<span class="text-unit">-</span>`;
+
+            // Pelanggaran
+            const tglPelList = hrdData.pelanggaran.filter(x => x.tanggal === tgl);
+            let pelCell = '';
+            if (tglPelList.length > 0) {
+              const detailPel = tglPelList.map(x => `<div class="detail-item"><span class="detail-name">${x.nama}</span> <span class="badge-gray">${x.kategori}</span><div class="detail-meta">${x.detail_pelanggaran || '-'}</div></div>`).join('');
+              pelCell = `
+                <div class="detail-list">
+                  <div class="val-bold absen">${tglPelList.length} Kasus</div>
+                  <div style="margin-top: 4px;">${detailPel}</div>
+                </div>
+              `;
+            } else {
+              pelCell = `<span class="text-unit">-</span>`;
+            }
+
+            // Pengembangan
+            const tglPengList = hrdData.pengembangan.filter(x => x.tanggal === tgl);
+            let pengCell = '';
+            if (tglPengList.length > 0) {
+              const activities = {};
+              tglPengList.forEach(x => {
+                let actType = x.jenis_kegiatan || 'Kegiatan';
+                if (x.pemateri) actType += ` (Oleh: ${x.pemateri})`;
+                if (!activities[actType]) activities[actType] = [];
+                if (x.kehadiran === 'Hadir') {
+                  activities[actType].push(x.nama);
+                }
+              });
+              
+              const actStrings = Object.keys(activities).map(actType => {
+                const sdmList = activities[actType];
+                const detailSdm = sdmList.length > 0 ? sdmList.join(', ') : 'tidak ada sdm hadir';
+                return `<div class="detail-item"><span class="badge-purple">${actType}</span><div class="detail-meta">Peserta: ${detailSdm}</div></div>`;
+              });
+              
+              pengCell = `<div class="detail-list">${actStrings.join('')}</div>`;
+            } else {
+              pengCell = `<span class="text-unit">-</span>`;
+            }
+
+            rowsHtml += `
+              <tr>
+                <td class="tgl-cell">${displayDateText}</td>
+                <td style="text-align: center;">${hadirCell}</td>
+                <td>${absenCell}</td>
+                <td style="text-align: center;">${prodCell}</td>
+                <td>${pelCell}</td>
+                <td>${pengCell}</td>
+              </tr>
+            `;
+        });
+
+        const printHtml = `<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Laporan Harian HRD - ${periodeIndo}</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 landscape; margin: 10mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; font-size: 9.5px; color: #1e293b; line-height: 1.4; padding: 5mm; }
+  .header { border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .header-left h1 { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.02em; }
+  .header-left p { font-size: 10px; color: #64748b; font-weight: 600; }
+  .header-right { text-align: right; font-size: 9px; color: #475569; }
+  .header-right .brand { font-size: 13px; font-weight: 800; color: #059669; margin-bottom: 2px; }
+  
+  .meta-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 15px; margin-bottom: 15px; display: flex; gap: 40px; }
+  .meta-item .label { font-size: 8px; text-transform: uppercase; color: #64748b; font-weight: 700; margin-bottom: 2px; }
+  .meta-item .val { font-size: 11px; font-weight: 700; color: #0f172a; }
+  
+  .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; max-width: 600px; }
+  .card { padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center; }
+  .card .card-title { font-size: 8px; text-transform: uppercase; font-weight: 800; margin-bottom: 2px; }
+  .card .card-val { font-size: 18px; font-weight: 800; }
+  .card.hadir { background: #ecfdf5; border-color: #d1fae5; color: #047857; }
+  .card.absen { background: #fff1f2; border-color: #ffe4e6; color: #be123c; }
+  .card.produksi { background: #eff6ff; border-color: #dbeafe; color: #1d4ed8; }
+  
+  table { width: 100%; border-collapse: collapse; font-size: 9px; page-break-inside: auto; margin-top: 10px; }
+  tr { page-break-inside: avoid; page-break-after: auto; }
+  th { background: #f8fafc; color: #475569; padding: 8px 10px; text-align: left; font-weight: 700; border: 1px solid #e2e8f0; font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+  td { padding: 8px 10px; border: 1px solid #e2e8f0; vertical-align: top; }
+  tr:nth-child(even) { background: #f8fafc/50; }
+  
+  .tgl-cell { font-weight: 700; color: #0f172a; }
+  .val-bold { font-weight: 700; font-size: 11px; }
+  .val-bold.hadir { color: #059669; }
+  .val-bold.produksi { color: #2563eb; }
+  .val-bold.absen { color: #dc2626; }
+  .text-unit { font-size: 8px; color: #64748b; font-weight: 500; }
+  
+  .badge-gray { background: #e2e8f0; color: #475569; font-size: 8px; font-weight: 600; padding: 1px 4px; border-radius: 4px; display: inline-block; margin-left: 4px; }
+  .badge-purple { background: #f3e8ff; color: #6b21a8; font-size: 8px; font-weight: 600; padding: 1px 4px; border-radius: 4px; display: inline-block; margin-bottom: 2px; }
+  
+  .detail-list { font-size: 8.5px; color: #334155; line-height: 1.35; }
+  .detail-item { margin-bottom: 4px; }
+  .detail-name { font-weight: 600; color: #0f172a; }
+  .detail-meta { color: #64748b; font-size: 8px; margin-top: 1px; }
+  
+  .footer { margin-top: 20px; font-size: 8px; color: #94a3b8; display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+  @media print { body { padding: 0; } }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <h1>LAPORAN HARIAN HRD</h1>
+      <p>Rekapitulasi Harian Kehadiran, Produktivitas, Pelanggaran & Pengembangan</p>
+    </div>
+    <div class="header-right">
+      <div class="brand">TATA GLOBAL</div>
+      <div>Human Resources Dept.</div>
+    </div>
+  </div>
+  
+  <div class="meta-box">
+    <div class="meta-item">
+      <div class="label">Bulan / Periode</div>
+      <div class="val">${periodeIndo}</div>
+    </div>
+    <div class="meta-item">
+      <div class="label">Tipe Laporan</div>
+      <div class="val">Ringkasan Dasbor Harian (${labelBulan})</div>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="card hadir">
+      <div class="card-title">Total Hadir</div>
+      <div class="card-val">${totalHadir}</div>
+    </div>
+    <div class="card absen">
+      <div class="card-title">Total Absen</div>
+      <div class="card-val">${totalAbsen}</div>
+    </div>
+    <div class="card produksi">
+      <div class="card-title">Total Produktivitas (Kotak)</div>
+      <div class="card-val">${totalProduksi}</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 15%">Tanggal</th>
+        <th style="width: 12%; text-align: center;">Jumlah Hadir</th>
+        <th style="width: 25%">Tidak Hadir (Detail)</th>
+        <th style="width: 13%; text-align: center;">Produktivitas (Total)</th>
+        <th style="width: 18%">Pelanggaran (Detail)</th>
+        <th style="width: 17%">Pengembangan (Detail)</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rowsHtml}
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <span>Dicetak oleh Sistem HRD Tata Global pada ${new Date().toLocaleString('id-ID')}</span>
+  </div>
+</body>
+</html>`;
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(printHtml);
+        printWindow.document.close();
+        printWindow.onload = function() {
+            printWindow.focus();
+            printWindow.print();
+        };
+      };
 
       document.addEventListener('DOMContentLoaded', initHRD);
 
